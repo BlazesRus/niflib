@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,13 +15,12 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPSEmitterSpeedCtlr.h"
-#include "../../include/obj/NiObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPSEmitterSpeedCtlr::TYPE("NiPSEmitterSpeedCtlr", &NiTimeController::TYPE );
+const Type NiPSEmitterSpeedCtlr::TYPE("NiPSEmitterSpeedCtlr", &NiPSEmitterFloatCtlr::TYPE );
 
-NiPSEmitterSpeedCtlr::NiPSEmitterSpeedCtlr() : interpolator(NULL), unknown3((int)0) {
+NiPSEmitterSpeedCtlr::NiPSEmitterSpeedCtlr() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,11 +45,7 @@ void NiPSEmitterSpeedCtlr::Read( istream& in, list<unsigned int> & link_stack, c
 
 	//--END CUSTOM CODE--//
 
-	unsigned int block_num;
-	NiTimeController::Read( in, link_stack, info );
-	NifStream( block_num, in, info );
-	link_stack.push_back( block_num );
-	NifStream( unknown3, in, info );
+	NiPSEmitterFloatCtlr::Read( in, link_stack, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -62,25 +57,7 @@ void NiPSEmitterSpeedCtlr::Write( ostream& out, const map<NiObjectRef,unsigned i
 
 	//--END CUSTOM CODE--//
 
-	NiTimeController::Write( out, link_map, missing_link_stack, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*interpolator), out );
-	} else {
-		if ( interpolator != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(interpolator) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( interpolator );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
-	NifStream( unknown3, out, info );
+	NiPSEmitterFloatCtlr::Write( out, link_map, missing_link_stack, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -93,9 +70,7 @@ std::string NiPSEmitterSpeedCtlr::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiTimeController::asString();
-	out << "  Interpolator:  " << interpolator << endl;
-	out << "  Unknown 3:  " << unknown3 << endl;
+	out << NiPSEmitterFloatCtlr::asString();
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -108,8 +83,7 @@ void NiPSEmitterSpeedCtlr::FixLinks( const map<unsigned int,NiObjectRef> & objec
 
 	//--END CUSTOM CODE--//
 
-	NiTimeController::FixLinks( objects, link_stack, missing_link_stack, info );
-	interpolator = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
+	NiPSEmitterFloatCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -118,15 +92,13 @@ void NiPSEmitterSpeedCtlr::FixLinks( const map<unsigned int,NiObjectRef> & objec
 
 std::list<NiObjectRef> NiPSEmitterSpeedCtlr::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiTimeController::GetRefs();
-	if ( interpolator != NULL )
-		refs.push_back(StaticCast<NiObject>(interpolator));
+	refs = NiPSEmitterFloatCtlr::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> NiPSEmitterSpeedCtlr::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiTimeController::GetPtrs();
+	ptrs = NiPSEmitterFloatCtlr::GetPtrs();
 	return ptrs;
 }
 

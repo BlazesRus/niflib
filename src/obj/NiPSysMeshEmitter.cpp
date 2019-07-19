@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,13 +15,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPSysMeshEmitter.h"
-#include "../../include/obj/NiTriBasedGeom.h"
+#include "../../include/obj/NiAVObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiPSysMeshEmitter::TYPE("NiPSysMeshEmitter", &NiPSysEmitter::TYPE );
 
-NiPSysMeshEmitter::NiPSysMeshEmitter() : numEmitterMeshes((unsigned int)0), initialVelocityType((VelocityType)0), emissionType((EmitFrom)0) {
+NiPSysMeshEmitter::NiPSysMeshEmitter() : numEmitterMeshes((unsigned int)0), initialVelocityType((VelocityType)0), emissionType((EmitFrom)0), emissionAxis(1.0, 0.0, 0.0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -67,23 +67,7 @@ void NiPSysMeshEmitter::Write( ostream& out, const map<NiObjectRef,unsigned int>
 	numEmitterMeshes = (unsigned int)(emitterMeshes.size());
 	NifStream( numEmitterMeshes, out, info );
 	for (unsigned int i1 = 0; i1 < emitterMeshes.size(); i1++) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*emitterMeshes[i1]), out );
-		} else {
-			if ( emitterMeshes[i1] != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(emitterMeshes[i1]) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( emitterMeshes[i1] );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(emitterMeshes[i1]), out, info, link_map, missing_link_stack );
 	};
 	NifStream( initialVelocityType, out, info );
 	NifStream( emissionType, out, info );
@@ -129,7 +113,7 @@ void NiPSysMeshEmitter::FixLinks( const map<unsigned int,NiObjectRef> & objects,
 
 	NiPSysEmitter::FixLinks( objects, link_stack, missing_link_stack, info );
 	for (unsigned int i1 = 0; i1 < emitterMeshes.size(); i1++) {
-		emitterMeshes[i1] = FixLink<NiTriBasedGeom>( objects, link_stack, missing_link_stack, info );
+		emitterMeshes[i1] = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
 	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
@@ -140,8 +124,6 @@ std::list<NiObjectRef> NiPSysMeshEmitter::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiPSysEmitter::GetRefs();
 	for (unsigned int i1 = 0; i1 < emitterMeshes.size(); i1++) {
-		if ( emitterMeshes[i1] != NULL )
-			refs.push_back(StaticCast<NiObject>(emitterMeshes[i1]));
 	};
 	return refs;
 }
@@ -150,6 +132,8 @@ std::list<NiObject *> NiPSysMeshEmitter::GetPtrs() const {
 	list<NiObject *> ptrs;
 	ptrs = NiPSysEmitter::GetPtrs();
 	for (unsigned int i1 = 0; i1 < emitterMeshes.size(); i1++) {
+		if ( emitterMeshes[i1] != NULL )
+			ptrs.push_back((NiObject *)(emitterMeshes[i1]));
 	};
 	return ptrs;
 }

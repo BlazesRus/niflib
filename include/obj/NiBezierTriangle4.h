@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,33 +20,36 @@ namespace Niflib {
 class NiBezierTriangle4;
 typedef Ref<NiBezierTriangle4> NiBezierTriangle4Ref;
 
-/*! Sub data of NiBezierMesh */
+/*!
+ * LEGACY (pre-10.1)
+ *         Sub data of NiBezierMesh
+ */
 class NiBezierTriangle4 : public NiObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiBezierTriangle4();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiBezierTriangle4();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -58,7 +61,7 @@ public:
 	//--END CUSTOM CODE--//
 protected:
 	/*! unknown */
-	NifArray<6,unsigned int > unknown1;
+	Niflib::NifArray<6,unsigned int > unknown1;
 	/*! unknown */
 	unsigned short unknown2;
 	/*! unknown */
@@ -68,13 +71,13 @@ protected:
 	/*! unknown */
 	Vector3 vector2;
 	/*! unknown */
-	NifArray<4,short > unknown3;
+	Niflib::NifArray<4,short > unknown3;
 	/*! unknown */
 	byte unknown4;
 	/*! unknown */
 	unsigned int unknown5;
 	/*! unknown */
-	NifArray<24,short > unknown6;
+	Niflib::NifArray<24,short > unknown6;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -92,5 +95,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

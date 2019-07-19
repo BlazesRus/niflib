@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type BSPSysScaleModifier::TYPE("BSPSysScaleModifier", &NiPSysModifier::TYPE );
 
-BSPSysScaleModifier::BSPSysScaleModifier() : numFloats((unsigned int)0) {
+BSPSysScaleModifier::BSPSysScaleModifier() : numScales((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,10 +46,10 @@ void BSPSysScaleModifier::Read( istream& in, list<unsigned int> & link_stack, co
 	//--END CUSTOM CODE--//
 
 	NiPSysModifier::Read( in, link_stack, info );
-	NifStream( numFloats, in, info );
-	floats.resize(numFloats);
-	for (unsigned int i1 = 0; i1 < floats.size(); i1++) {
-		NifStream( floats[i1], in, info );
+	NifStream( numScales, in, info );
+	scales.resize(numScales);
+	for (unsigned int i1 = 0; i1 < scales.size(); i1++) {
+		NifStream( scales[i1], in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -63,10 +63,10 @@ void BSPSysScaleModifier::Write( ostream& out, const map<NiObjectRef,unsigned in
 	//--END CUSTOM CODE--//
 
 	NiPSysModifier::Write( out, link_map, missing_link_stack, info );
-	numFloats = (unsigned int)(floats.size());
-	NifStream( numFloats, out, info );
-	for (unsigned int i1 = 0; i1 < floats.size(); i1++) {
-		NifStream( floats[i1], out, info );
+	numScales = (unsigned int)(scales.size());
+	NifStream( numScales, out, info );
+	for (unsigned int i1 = 0; i1 < scales.size(); i1++) {
+		NifStream( scales[i1], out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -82,10 +82,10 @@ std::string BSPSysScaleModifier::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiPSysModifier::asString();
-	numFloats = (unsigned int)(floats.size());
-	out << "  Num Floats:  " << numFloats << endl;
+	numScales = (unsigned int)(scales.size());
+	out << "  Num Scales:  " << numScales << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < floats.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < scales.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -93,7 +93,7 @@ std::string BSPSysScaleModifier::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Floats[" << i1 << "]:  " << floats[i1] << endl;
+		out << "    Scales[" << i1 << "]:  " << scales[i1] << endl;
 		array_output_count++;
 	};
 	return out.str();

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,43 +14,43 @@ All rights reserved.  Please see niflib.h for license. */
 //--END CUSTOM CODE--//
 
 #include "NiAVObject.h"
-
-// Include structures
-#include "../Ref.h"
 namespace Niflib {
 
 // Forward define of referenced NIF objects
-class NiAVObject;
+class NiNode;
 class NiDynamicEffect;
 typedef Ref<NiDynamicEffect> NiDynamicEffectRef;
 
-/*! A dynamic effect such as a light or environment map. */
+/*!
+ * Abstract base class for dynamic effects such as NiLights or projected texture
+ * effects.
+ */
 class NiDynamicEffect : public NiAVObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiDynamicEffect();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiDynamicEffect();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -85,21 +85,20 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Turns effect on and off?  Switches list to list of unaffected nodes? */
+	/*! If true, then the dynamic effect is applied to affected nodes during rendering. */
 	bool switchState;
-	/*! The number of affected nodes referenced. */
-	mutable unsigned int numAffectedNodeListPointers;
-	/*! The number of affected nodes referenced. */
 	mutable unsigned int numAffectedNodes;
 	/*!
-	 * This is probably the list of affected nodes. For some reason i do not know the
-	 * max exporter seems to write pointers instead of links. But it doesn't matter
-	 * because at least in version 4.0.0.2 the list is automagically updated by the
-	 * engine during the load stage.
+	 * If a node appears in this list, then its entire subtree will be affected by the
+	 * effect.
 	 */
-	vector<unsigned int > affectedNodeListPointers;
-	/*! The list of affected nodes? */
-	vector<Ref<NiAVObject > > affectedNodes;
+	vector<NiNode * > affectedNodes;
+	/*!
+	 * As of 4.0 the pointer hash is no longer stored alongside each NiObject on disk,
+	 * yet this node list still refers to the pointer hashes. Cannot leave the type as
+	 * Ptr because the link will be invalid.
+	 */
+	vector<unsigned int > affectedNodePointers;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -116,5 +115,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

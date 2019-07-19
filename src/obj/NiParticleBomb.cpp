@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiParticleBomb::TYPE("NiParticleBomb", &NiParticleModifier::TYPE );
 
-NiParticleBomb::NiParticleBomb() : decay_(0.0f), duration_(0.0f), deltav_(0.0f), start_(0.0f), decayType_((DecayType)0), symmetryType_((SymmetryType)0) {
+NiParticleBomb::NiParticleBomb() : decay(0.0f), duration(0.0f), deltav(0.0f), start(0.0f), decayType((DecayType)0), symmetryType((SymmetryType)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,16 +42,16 @@ void NiParticleBomb::Read( istream& in, list<unsigned int> & link_stack, const N
 	//--END CUSTOM CODE--//
 
 	NiParticleModifier::Read( in, link_stack, info );
-	NifStream( decay_, in, info );
-	NifStream( duration_, in, info );
-	NifStream( deltav_, in, info );
-	NifStream( start_, in, info );
-	NifStream( decayType_, in, info );
+	NifStream( decay, in, info );
+	NifStream( duration, in, info );
+	NifStream( deltav, in, info );
+	NifStream( start, in, info );
+	NifStream( decayType, in, info );
 	if ( info.version >= 0x0401000C ) {
-		NifStream( symmetryType_, in, info );
+		NifStream( symmetryType, in, info );
 	};
-	NifStream( position_, in, info );
-	NifStream( direction_, in, info );
+	NifStream( position, in, info );
+	NifStream( direction, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -62,16 +62,16 @@ void NiParticleBomb::Write( ostream& out, const map<NiObjectRef,unsigned int> & 
 	//--END CUSTOM CODE--//
 
 	NiParticleModifier::Write( out, link_map, missing_link_stack, info );
-	NifStream( decay_, out, info );
-	NifStream( duration_, out, info );
-	NifStream( deltav_, out, info );
-	NifStream( start_, out, info );
-	NifStream( decayType_, out, info );
+	NifStream( decay, out, info );
+	NifStream( duration, out, info );
+	NifStream( deltav, out, info );
+	NifStream( start, out, info );
+	NifStream( decayType, out, info );
 	if ( info.version >= 0x0401000C ) {
-		NifStream( symmetryType_, out, info );
+		NifStream( symmetryType, out, info );
 	};
-	NifStream( position_, out, info );
-	NifStream( direction_, out, info );
+	NifStream( position, out, info );
+	NifStream( direction, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -83,14 +83,14 @@ std::string NiParticleBomb::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiParticleModifier::asString();
-	out << "  Decay?:  " << decay_ << endl;
-	out << "  Duration?:  " << duration_ << endl;
-	out << "  DeltaV?:  " << deltav_ << endl;
-	out << "  Start?:  " << start_ << endl;
-	out << "  Decay Type?:  " << decayType_ << endl;
-	out << "  Symmetry Type?:  " << symmetryType_ << endl;
-	out << "  Position?:  " << position_ << endl;
-	out << "  Direction?:  " << direction_ << endl;
+	out << "  Decay:  " << decay << endl;
+	out << "  Duration:  " << duration << endl;
+	out << "  DeltaV:  " << deltav << endl;
+	out << "  Start:  " << start << endl;
+	out << "  Decay Type:  " << decayType << endl;
+	out << "  Symmetry Type:  " << symmetryType << endl;
+	out << "  Position:  " << position << endl;
+	out << "  Direction:  " << direction << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

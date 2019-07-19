@@ -1,17 +1,19 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
-//---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
-
-//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
+//-----------------------------------NOTICE----------------------------------//
+// Some of this file is automatically filled in by a Python script.  Only    //
+// add custom code in the designated areas or it will be overwritten during  //
+// the next update.                                                          //
+//-----------------------------------NOTICE----------------------------------//
 
 #include "../../include/gen/Header.h"
-#include "../../include/gen/ExportInfo.h"
+#include "../../include/gen/ByteArray.h"
 #include "../../include/gen/ExportInfo.h"
 using namespace Niflib;
 
 //Constructor
-Header::Header() : version((unsigned int)0x04000002), endianType((EndianType)ENDIAN_LITTLE), userVersion((unsigned int)0), numBlocks((unsigned int)0), userVersion2((unsigned int)0), unknownInt3((unsigned int)0), numBlockTypes((unsigned short)0), numStrings((unsigned int)0), maxStringLength((unsigned int)0), unknownInt2((unsigned int)0) {};
+Header::Header() : version((unsigned int)0x04000002), endianType((EndianType)ENDIAN_LITTLE), userVersion((unsigned int)0), numBlocks((unsigned int)0), userVersion2((unsigned int)0), numBlockTypes((unsigned short)0), numStrings((unsigned int)0), maxStringLength((unsigned int)0), numGroups((unsigned int)0) {};
 
 //Copy Constructor
 Header::Header( const Header & src ) {
@@ -27,8 +29,9 @@ Header & Header::operator=( const Header & src ) {
 	this->userVersion = src.userVersion;
 	this->numBlocks = src.numBlocks;
 	this->userVersion2 = src.userVersion2;
-	this->unknownInt3 = src.unknownInt3;
 	this->exportInfo = src.exportInfo;
+	this->maxFilepath = src.maxFilepath;
+	this->metadata = src.metadata;
 	this->numBlockTypes = src.numBlockTypes;
 	this->blockTypes = src.blockTypes;
 	this->blockTypeIndex = src.blockTypeIndex;
@@ -36,7 +39,8 @@ Header & Header::operator=( const Header & src ) {
 	this->numStrings = src.numStrings;
 	this->maxStringLength = src.maxStringLength;
 	this->strings = src.strings;
-	this->unknownInt2 = src.unknownInt2;
+	this->numGroups = src.numGroups;
+	this->groups = src.groups;
 	return *this;
 };
 
@@ -52,45 +56,35 @@ NifInfo Header::Read( istream& in ) {
 			NifStream( copyright[i2], in, info );
 		};
 	};
-	if ( info.version >= 0x0303000D ) {
+	if ( info.version >= 0x03010001 ) {
 		NifStream( version, in, info );
 	};
-	if ( info.version >= 0x14000004 ) {
+	if ( info.version >= 0x14000003 ) {
 		NifStream( endianType, in, info );
 	};
-	if ( info.version >= 0x0A010000 ) {
+	if ( info.version >= 0x0A000108 ) {
 		NifStream( userVersion, in, info );
 	};
-	if ( info.version >= 0x0303000D ) {
+	if ( info.version >= 0x03010001 ) {
 		NifStream( numBlocks, in, info );
 	};
-	if ( info.version >= 0x0A010000 ) {
-		if ( ((userVersion >= 10) || ((userVersion == 1) && (version != 0x0A020000))) ) {
-			NifStream( userVersion2, in, info );
+	if ( (((version == 0x14020007) || ((version == 0x14000005) || ((version >= 0x0A000102) && ((version <= 0x14000004) && (userVersion <= 11))))) && (userVersion >= 3)) ) {
+		NifStream( userVersion2, in, info );
+		NifStream( exportInfo.author, in, info );
+		NifStream( exportInfo.processScript, in, info );
+		NifStream( exportInfo.exportScript, in, info );
+	};
+	if ( (userVersion2 == 130) ) {
+		NifStream( maxFilepath, in, info );
+	};
+	if ( info.version >= 0x1E000000 ) {
+		NifStream( metadata.dataSize, in, info );
+		metadata.data.resize(metadata.dataSize);
+		for (unsigned int i2 = 0; i2 < metadata.data.size(); i2++) {
+			NifStream( metadata.data[i2], in, info );
 		};
 	};
-	if ( info.version >= 0x1E000002 ) {
-		NifStream( unknownInt3, in, info );
-	};
-	if ( ( info.version >= 0x0A000102 ) && ( info.version <= 0x0A000102 ) ) {
-		if ( info.version <= 0x0A000102 ) {
-			NifStream( exportInfo.unknown, in, info );
-		};
-		NifStream( exportInfo.creator, in, info );
-		NifStream( exportInfo.exportInfo1, in, info );
-		NifStream( exportInfo.exportInfo2, in, info );
-	};
-	if ( info.version >= 0x0A010000 ) {
-		if ( ((userVersion >= 10) || ((userVersion == 1) && (version != 0x0A020000))) ) {
-			if ( info.version <= 0x0A000102 ) {
-				NifStream( exportInfo.unknown, in, info );
-			};
-			NifStream( exportInfo.creator, in, info );
-			NifStream( exportInfo.exportInfo1, in, info );
-			NifStream( exportInfo.exportInfo2, in, info );
-		};
-	};
-	if ( info.version >= 0x0A000100 ) {
+	if ( info.version >= 0x05000001 ) {
 		NifStream( numBlockTypes, in, info );
 		blockTypes.resize(numBlockTypes);
 		for (unsigned int i2 = 0; i2 < blockTypes.size(); i2++) {
@@ -101,13 +95,13 @@ NifInfo Header::Read( istream& in ) {
 			NifStream( blockTypeIndex[i2], in, info );
 		};
 	};
-	if ( info.version >= 0x14020007 ) {
+	if ( info.version >= 0x14020005 ) {
 		blockSize.resize(numBlocks);
 		for (unsigned int i2 = 0; i2 < blockSize.size(); i2++) {
 			NifStream( blockSize[i2], in, info );
 		};
 	};
-	if ( info.version >= 0x14010003 ) {
+	if ( info.version >= 0x14010001 ) {
 		NifStream( numStrings, in, info );
 		NifStream( maxStringLength, in, info );
 		strings.resize(numStrings);
@@ -115,8 +109,12 @@ NifInfo Header::Read( istream& in ) {
 			NifStream( strings[i2], in, info );
 		};
 	};
-	if ( info.version >= 0x0A000100 ) {
-		NifStream( unknownInt2, in, info );
+	if ( info.version >= 0x05000006 ) {
+		NifStream( numGroups, in, info );
+		groups.resize(numGroups);
+		for (unsigned int i2 = 0; i2 < groups.size(); i2++) {
+			NifStream( groups[i2], in, info );
+		};
 	};
 
 	//Copy info.version to local version var.
@@ -135,6 +133,7 @@ NifInfo Header::Read( istream& in ) {
 }
 
 void Header::Write( ostream& out, const NifInfo & info ) const {
+	numGroups = (unsigned int)(groups.size());
 	numStrings = (unsigned int)(strings.size());
 	numBlockTypes = (unsigned short)(blockTypes.size());
 	numBlocks = (unsigned int)(blockTypeIndex.size());
@@ -144,45 +143,35 @@ void Header::Write( ostream& out, const NifInfo & info ) const {
 			NifStream( copyright[i2], out, info );
 		};
 	};
-	if ( info.version >= 0x0303000D ) {
+	if ( info.version >= 0x03010001 ) {
 		NifStream( version, out, info );
 	};
-	if ( info.version >= 0x14000004 ) {
+	if ( info.version >= 0x14000003 ) {
 		NifStream( endianType, out, info );
 	};
-	if ( info.version >= 0x0A010000 ) {
+	if ( info.version >= 0x0A000108 ) {
 		NifStream( userVersion, out, info );
 	};
-	if ( info.version >= 0x0303000D ) {
+	if ( info.version >= 0x03010001 ) {
 		NifStream( numBlocks, out, info );
 	};
-	if ( info.version >= 0x0A010000 ) {
-		if ( ((userVersion >= 10) || ((userVersion == 1) && (version != 0x0A020000))) ) {
-			NifStream( userVersion2, out, info );
+	if ( (((version == 0x14020007) || ((version == 0x14000005) || ((version >= 0x0A000102) && ((version <= 0x14000004) && (userVersion <= 11))))) && (userVersion >= 3)) ) {
+		NifStream( userVersion2, out, info );
+		NifStream( exportInfo.author, out, info );
+		NifStream( exportInfo.processScript, out, info );
+		NifStream( exportInfo.exportScript, out, info );
+	};
+	if ( (userVersion2 == 130) ) {
+		NifStream( maxFilepath, out, info );
+	};
+	if ( info.version >= 0x1E000000 ) {
+		metadata.dataSize = (unsigned int)(metadata.data.size());
+		NifStream( metadata.dataSize, out, info );
+		for (unsigned int i2 = 0; i2 < metadata.data.size(); i2++) {
+			NifStream( metadata.data[i2], out, info );
 		};
 	};
-	if ( info.version >= 0x1E000002 ) {
-		NifStream( unknownInt3, out, info );
-	};
-	if ( ( info.version >= 0x0A000102 ) && ( info.version <= 0x0A000102 ) ) {
-		if ( info.version <= 0x0A000102 ) {
-			NifStream( exportInfo.unknown, out, info );
-		};
-		NifStream( exportInfo.creator, out, info );
-		NifStream( exportInfo.exportInfo1, out, info );
-		NifStream( exportInfo.exportInfo2, out, info );
-	};
-	if ( info.version >= 0x0A010000 ) {
-		if ( ((userVersion >= 10) || ((userVersion == 1) && (version != 0x0A020000))) ) {
-			if ( info.version <= 0x0A000102 ) {
-				NifStream( exportInfo.unknown, out, info );
-			};
-			NifStream( exportInfo.creator, out, info );
-			NifStream( exportInfo.exportInfo1, out, info );
-			NifStream( exportInfo.exportInfo2, out, info );
-		};
-	};
-	if ( info.version >= 0x0A000100 ) {
+	if ( info.version >= 0x05000001 ) {
 		NifStream( numBlockTypes, out, info );
 		for (unsigned int i2 = 0; i2 < blockTypes.size(); i2++) {
 			NifStream( blockTypes[i2], out, info );
@@ -191,26 +180,30 @@ void Header::Write( ostream& out, const NifInfo & info ) const {
 			NifStream( blockTypeIndex[i2], out, info );
 		};
 	};
-	if ( info.version >= 0x14020007 ) {
+	if ( info.version >= 0x14020005 ) {
 		for (unsigned int i2 = 0; i2 < blockSize.size(); i2++) {
 			NifStream( blockSize[i2], out, info );
 		};
 	};
-	if ( info.version >= 0x14010003 ) {
+	if ( info.version >= 0x14010001 ) {
 		NifStream( numStrings, out, info );
 		NifStream( maxStringLength, out, info );
 		for (unsigned int i2 = 0; i2 < strings.size(); i2++) {
 			NifStream( strings[i2], out, info );
 		};
 	};
-	if ( info.version >= 0x0A000100 ) {
-		NifStream( unknownInt2, out, info );
+	if ( info.version >= 0x05000006 ) {
+		NifStream( numGroups, out, info );
+		for (unsigned int i2 = 0; i2 < groups.size(); i2++) {
+			NifStream( groups[i2], out, info );
+		};
 	};
 }
 
 string Header::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
+	numGroups = (unsigned int)(groups.size());
 	numStrings = (unsigned int)(strings.size());
 	numBlockTypes = (unsigned short)(blockTypes.size());
 	numBlocks = (unsigned int)(blockTypeIndex.size());
@@ -231,14 +224,29 @@ string Header::asString( bool verbose ) const {
 	out << "  Endian Type:  " << endianType << endl;
 	out << "  User Version:  " << userVersion << endl;
 	out << "  Num Blocks:  " << numBlocks << endl;
-	if ( ((userVersion >= 10) || ((userVersion == 1) && (version != 0x0A020000))) ) {
+	if ( (((version == 0x14020007) || ((version == 0x14000005) || ((version >= 0x0A000102) && ((version <= 0x14000004) && (userVersion <= 11))))) && (userVersion >= 3)) ) {
 		out << "    User Version 2:  " << userVersion2 << endl;
+		out << "    Author:  " << exportInfo.author << endl;
+		out << "    Process Script:  " << exportInfo.processScript << endl;
+		out << "    Export Script:  " << exportInfo.exportScript << endl;
 	};
-	out << "  Unknown Int 3:  " << unknownInt3 << endl;
-	out << "  Unknown:  " << exportInfo.unknown << endl;
-	out << "  Creator:  " << exportInfo.creator << endl;
-	out << "  Export Info 1:  " << exportInfo.exportInfo1 << endl;
-	out << "  Export Info 2:  " << exportInfo.exportInfo2 << endl;
+	if ( (userVersion2 == 130) ) {
+		out << "    Max Filepath:  " << maxFilepath << endl;
+	};
+	metadata.dataSize = (unsigned int)(metadata.data.size());
+	out << "  Data Size:  " << metadata.dataSize << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < metadata.data.size(); i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Data[" << i1 << "]:  " << metadata.data[i1] << endl;
+		array_output_count++;
+	};
 	out << "  Num Block Types:  " << numBlockTypes << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < blockTypes.size(); i1++) {
@@ -290,7 +298,19 @@ string Header::asString( bool verbose ) const {
 		out << "    Strings[" << i1 << "]:  " << strings[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Unknown Int 2:  " << unknownInt2 << endl;
+	out << "  Num Groups:  " << numGroups << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < groups.size(); i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Groups[" << i1 << "]:  " << groups[i1] << endl;
+		array_output_count++;
+	};
 	return out.str();
 }
 

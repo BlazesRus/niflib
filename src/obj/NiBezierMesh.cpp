@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -93,23 +93,7 @@ void NiBezierMesh::Write( ostream& out, const map<NiObjectRef,unsigned int> & li
 	numBezierTriangles = (unsigned int)(bezierTriangle.size());
 	NifStream( numBezierTriangles, out, info );
 	for (unsigned int i1 = 0; i1 < bezierTriangle.size(); i1++) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*bezierTriangle[i1]), out );
-		} else {
-			if ( bezierTriangle[i1] != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(bezierTriangle[i1]) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( bezierTriangle[i1] );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(bezierTriangle[i1]), out, info, link_map, missing_link_stack );
 	};
 	NifStream( unknown3, out, info );
 	NifStream( count1, out, info );

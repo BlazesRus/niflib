@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type BSOrderedNode::TYPE("BSOrderedNode", &NiNode::TYPE );
 
-BSOrderedNode::BSOrderedNode() : isStaticBound((byte)0) {
+BSOrderedNode::BSOrderedNode() : staticBound(false) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -47,7 +47,7 @@ void BSOrderedNode::Read( istream& in, list<unsigned int> & link_stack, const Ni
 
 	NiNode::Read( in, link_stack, info );
 	NifStream( alphaSortBound, in, info );
-	NifStream( isStaticBound, in, info );
+	NifStream( staticBound, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -61,7 +61,7 @@ void BSOrderedNode::Write( ostream& out, const map<NiObjectRef,unsigned int> & l
 
 	NiNode::Write( out, link_map, missing_link_stack, info );
 	NifStream( alphaSortBound, out, info );
-	NifStream( isStaticBound, out, info );
+	NifStream( staticBound, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -76,7 +76,7 @@ std::string BSOrderedNode::asString( bool verbose ) const {
 	stringstream out;
 	out << NiNode::asString();
 	out << "  Alpha Sort Bound:  " << alphaSortBound << endl;
-	out << "  Is Static Bound:  " << isStaticBound << endl;
+	out << "  Static Bound:  " << staticBound << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,12 +14,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiFloatExtraDataController.h"
+#include "../../include/obj/NiFloatData.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiFloatExtraDataController::TYPE("NiFloatExtraDataController", &NiExtraDataController::TYPE );
 
-NiFloatExtraDataController::NiFloatExtraDataController() : numExtraBytes((byte)0) {
+NiFloatExtraDataController::NiFloatExtraDataController() : numExtraBytes((byte)0), data(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -41,10 +42,8 @@ void NiFloatExtraDataController::Read( istream& in, list<unsigned int> & link_st
 	//--BEGIN PRE-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 
+	unsigned int block_num;
 	NiExtraDataController::Read( in, link_stack, info );
-	if ( info.version >= 0x0A020000 ) {
-		NifStream( controllerData, in, info );
-	};
 	if ( info.version <= 0x0A010000 ) {
 		NifStream( numExtraBytes, in, info );
 		for (unsigned int i2 = 0; i2 < 7; i2++) {
@@ -54,6 +53,10 @@ void NiFloatExtraDataController::Read( istream& in, list<unsigned int> & link_st
 		for (unsigned int i2 = 0; i2 < unknownExtraBytes.size(); i2++) {
 			NifStream( unknownExtraBytes[i2], in, info );
 		};
+	};
+	if ( info.version <= 0x0A010067 ) {
+		NifStream( block_num, in, info );
+		link_stack.push_back( block_num );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -66,9 +69,6 @@ void NiFloatExtraDataController::Write( ostream& out, const map<NiObjectRef,unsi
 
 	NiExtraDataController::Write( out, link_map, missing_link_stack, info );
 	numExtraBytes = (byte)(unknownExtraBytes.size());
-	if ( info.version >= 0x0A020000 ) {
-		NifStream( controllerData, out, info );
-	};
 	if ( info.version <= 0x0A010000 ) {
 		NifStream( numExtraBytes, out, info );
 		for (unsigned int i2 = 0; i2 < 7; i2++) {
@@ -77,6 +77,9 @@ void NiFloatExtraDataController::Write( ostream& out, const map<NiObjectRef,unsi
 		for (unsigned int i2 = 0; i2 < unknownExtraBytes.size(); i2++) {
 			NifStream( unknownExtraBytes[i2], out, info );
 		};
+	};
+	if ( info.version <= 0x0A010067 ) {
+		WriteRef( StaticCast<NiObject>(data), out, info, link_map, missing_link_stack );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -91,7 +94,6 @@ std::string NiFloatExtraDataController::asString( bool verbose ) const {
 	unsigned int array_output_count = 0;
 	out << NiExtraDataController::asString();
 	numExtraBytes = (byte)(unknownExtraBytes.size());
-	out << "  Controller Data:  " << controllerData << endl;
 	out << "  Num Extra Bytes:  " << numExtraBytes << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < 7; i1++) {
@@ -117,6 +119,7 @@ std::string NiFloatExtraDataController::asString( bool verbose ) const {
 		out << "    Unknown Extra Bytes[" << i1 << "]:  " << unknownExtraBytes[i1] << endl;
 		array_output_count++;
 	};
+	out << "  Data:  " << data << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -128,6 +131,9 @@ void NiFloatExtraDataController::FixLinks( const map<unsigned int,NiObjectRef> &
 	//--END CUSTOM CODE--//
 
 	NiExtraDataController::FixLinks( objects, link_stack, missing_link_stack, info );
+	if ( info.version <= 0x0A010067 ) {
+		data = FixLink<NiFloatData>( objects, link_stack, missing_link_stack, info );
+	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -136,6 +142,8 @@ void NiFloatExtraDataController::FixLinks( const map<unsigned int,NiObjectRef> &
 std::list<NiObjectRef> NiFloatExtraDataController::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiExtraDataController::GetRefs();
+	if ( data != NULL )
+		refs.push_back(StaticCast<NiObject>(data));
 	return refs;
 }
 

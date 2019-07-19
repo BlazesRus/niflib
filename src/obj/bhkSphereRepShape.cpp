@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,12 +15,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkSphereRepShape.h"
+#include "../../include/gen/HavokMaterial.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type bhkSphereRepShape::TYPE("bhkSphereRepShape", &bhkShape::TYPE );
 
-bhkSphereRepShape::bhkSphereRepShape() : material((HavokMaterial)0), skyrimMaterial((SkyrimHavokMaterial)0), radius(0.0f) {
+bhkSphereRepShape::bhkSphereRepShape() : radius(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -43,11 +44,14 @@ void bhkSphereRepShape::Read( istream& in, list<unsigned int> & link_stack, cons
 	//--END CUSTOM CODE--//
 
 	bhkShape::Read( in, link_stack, info );
-	if ( (info.userVersion < 12) ) {
-		NifStream( material, in, info );
+	if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
+		NifStream( material.material_ob, in, info );
 	};
-	if ( (info.userVersion >= 12) ) {
-		NifStream( skyrimMaterial, in, info );
+	if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
+		NifStream( material.material_fo, in, info );
+	};
+	if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
+		NifStream( material.material_sk, in, info );
 	};
 	NifStream( radius, in, info );
 
@@ -60,11 +64,14 @@ void bhkSphereRepShape::Write( ostream& out, const map<NiObjectRef,unsigned int>
 	//--END CUSTOM CODE--//
 
 	bhkShape::Write( out, link_map, missing_link_stack, info );
-	if ( (info.userVersion < 12) ) {
-		NifStream( material, out, info );
+	if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
+		NifStream( material.material_ob, out, info );
 	};
-	if ( (info.userVersion >= 12) ) {
-		NifStream( skyrimMaterial, out, info );
+	if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
+		NifStream( material.material_fo, out, info );
+	};
+	if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
+		NifStream( material.material_sk, out, info );
 	};
 	NifStream( radius, out, info );
 
@@ -78,8 +85,9 @@ std::string bhkSphereRepShape::asString( bool verbose ) const {
 
 	stringstream out;
 	out << bhkShape::asString();
-	out << "  Material:  " << material << endl;
-	out << "  Skyrim Material:  " << skyrimMaterial << endl;
+	out << "  Material:  " << material.material_ob << endl;
+	out << "  Material:  " << material.material_fo << endl;
+	out << "  Material:  " << material.material_sk << endl;
 	out << "  Radius:  " << radius << endl;
 	return out.str();
 
@@ -117,14 +125,6 @@ HavokMaterial bhkSphereRepShape::GetMaterial() const {
 
 void bhkSphereRepShape::SetMaterial( HavokMaterial value ) {
 	material = value;
-}
-
-SkyrimHavokMaterial bhkSphereRepShape::GetSkyrimMaterial() const {
-	return skyrimMaterial;
-}
-
-void bhkSphereRepShape::SetSkyrimMaterial( SkyrimHavokMaterial value ) {
-	skyrimMaterial = value;
 }
 
 float bhkSphereRepShape::GetRadius() const {

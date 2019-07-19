@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type BSShaderNoLightingProperty::TYPE("BSShaderNoLightingProperty", &BSShaderLightingProperty::TYPE );
 
-BSShaderNoLightingProperty::BSShaderNoLightingProperty() : unknownFloat2(1.0f), unknownFloat3(0.0f), unknownFloat4(1.0f), unknownFloat5(0.0f) {
+BSShaderNoLightingProperty::BSShaderNoLightingProperty() : falloffStartAngle(1.0f), falloffStopAngle(0.0f), falloffStartOpacity(1.0f), falloffStopOpacity(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -47,11 +47,11 @@ void BSShaderNoLightingProperty::Read( istream& in, list<unsigned int> & link_st
 
 	BSShaderLightingProperty::Read( in, link_stack, info );
 	NifStream( fileName, in, info );
-	if ( ((info.userVersion >= 11) && (info.userVersion2 > 26)) ) {
-		NifStream( unknownFloat2, in, info );
-		NifStream( unknownFloat3, in, info );
-		NifStream( unknownFloat4, in, info );
-		NifStream( unknownFloat5, in, info );
+	if ( (info.userVersion2 > 26) ) {
+		NifStream( falloffStartAngle, in, info );
+		NifStream( falloffStopAngle, in, info );
+		NifStream( falloffStartOpacity, in, info );
+		NifStream( falloffStopOpacity, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -66,11 +66,11 @@ void BSShaderNoLightingProperty::Write( ostream& out, const map<NiObjectRef,unsi
 
 	BSShaderLightingProperty::Write( out, link_map, missing_link_stack, info );
 	NifStream( fileName, out, info );
-	if ( ((info.userVersion >= 11) && (info.userVersion2 > 26)) ) {
-		NifStream( unknownFloat2, out, info );
-		NifStream( unknownFloat3, out, info );
-		NifStream( unknownFloat4, out, info );
-		NifStream( unknownFloat5, out, info );
+	if ( (info.userVersion2 > 26) ) {
+		NifStream( falloffStartAngle, out, info );
+		NifStream( falloffStopAngle, out, info );
+		NifStream( falloffStartOpacity, out, info );
+		NifStream( falloffStopOpacity, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -84,12 +84,13 @@ std::string BSShaderNoLightingProperty::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
+	unsigned int array_output_count = 0;
 	out << BSShaderLightingProperty::asString();
 	out << "  File Name:  " << fileName << endl;
-	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
-	out << "  Unknown Float 3:  " << unknownFloat3 << endl;
-	out << "  Unknown Float 4:  " << unknownFloat4 << endl;
-	out << "  Unknown Float 5:  " << unknownFloat5 << endl;
+	out << "  Falloff Start Angle:  " << falloffStartAngle << endl;
+	out << "  Falloff Stop Angle:  " << falloffStopAngle << endl;
+	out << "  Falloff Start Opacity:  " << falloffStartOpacity << endl;
+	out << "  Falloff Stop Opacity:  " << falloffStopOpacity << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

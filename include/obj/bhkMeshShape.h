@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -25,33 +25,32 @@ class NiTriStripsData;
 class bhkMeshShape;
 typedef Ref<bhkMeshShape> bhkMeshShapeRef;
 
-/*!  */
 class bhkMeshShape : public bhkShape {
 public:
 	/*! Constructor */
 	NIFLIB_API bhkMeshShape();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~bhkMeshShape();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -63,13 +62,12 @@ public:
 	//--END CUSTOM CODE--//
 protected:
 	/*! Unknown. */
-	NifArray<9,float > unknown1;
-	/*! Unknown. */
+	Niflib::NifArray<9,float > unknown1;
 	mutable int numUnknownFloats;
 	/*! Unknown. */
-	vector< NifArray<3,float > > unknownFloats;
+	vector< Niflib::NifArray<3,float > > unknownFloats;
 	/*! Unknown. */
-	NifArray<3,int > unknown2;
+	Niflib::NifArray<3,int > unknown2;
 	/*! The number of strips data objects referenced. */
 	mutable unsigned int numStripsData;
 	/*! Refers to a bunch of NiTriStripsData objects that make up this shape. */
@@ -91,5 +89,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

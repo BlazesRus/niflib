@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,46 +20,33 @@ namespace Niflib {
 class BSEffectShaderPropertyFloatController;
 typedef Ref<BSEffectShaderPropertyFloatController> BSEffectShaderPropertyFloatControllerRef;
 
-/*!
- * This controller is used to animate variables in
- * BSEffectShaderPropertyFloatController, target is a number in order they appear:
- *     0: Visibility?
- *     1:
- *     2:
- *     3:
- *     4: Emissive or Saturation?
- *     5: Alpha Transparency
- *     6: U Offset
- *     7: U Scale
- *     8: V Offset
- *     9: V Scale
- */
+/*! This controller is used to animate float variables in BSEffectShaderProperty. */
 class BSEffectShaderPropertyFloatController : public NiFloatInterpController {
 public:
 	/*! Constructor */
 	NIFLIB_API BSEffectShaderPropertyFloatController();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~BSEffectShaderPropertyFloatController();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -79,8 +66,8 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Which float variable in BSEffectShaderProperty to animate */
-	EffectShaderControlledVariable targetVariable;
+	/*! Which float variable in BSEffectShaderProperty to animate: */
+	EffectShaderControlledVariable typeOfControlledVariable;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -98,5 +85,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

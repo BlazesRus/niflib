@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -25,33 +25,33 @@ class NiDefaultAVObjectPalette;
 class NiControllerManager;
 typedef Ref<NiControllerManager> NiControllerManagerRef;
 
-/*! Unknown. Root of all controllers? */
+/*! Controls animation sequences on a specific branch of the scene graph. */
 class NiControllerManager : public NiTimeController {
 public:
 	/*! Constructor */
 	NIFLIB_API NiControllerManager();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiControllerManager();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -115,13 +115,14 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Designates whether animation sequences are cumulative? */
+	/*!
+	 * Whether transformation accumulation is enabled. If accumulation is not enabled,
+	 * the manager will treat all sequence data on the accumulation root as absolute
+	 * data instead of relative delta values.
+	 */
 	bool cumulative;
-	/*! The number of controller sequence objects. */
 	mutable unsigned int numControllerSequences;
-	/*! Refers to a list of NiControllerSequence object. */
 	vector<Ref<NiControllerSequence > > controllerSequences;
-	/*! Refers to a NiDefaultAVObjectPalette. */
 	Ref<NiDefaultAVObjectPalette > objectPalette;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -139,5 +140,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

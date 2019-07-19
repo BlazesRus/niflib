@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiVectorExtraData::TYPE("NiVectorExtraData", &NiExtraData::TYPE );
 
-NiVectorExtraData::NiVectorExtraData() : unknownFloat(0.0f) {
+NiVectorExtraData::NiVectorExtraData() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -43,7 +43,6 @@ void NiVectorExtraData::Read( istream& in, list<unsigned int> & link_stack, cons
 
 	NiExtraData::Read( in, link_stack, info );
 	NifStream( vectorData, in, info );
-	NifStream( unknownFloat, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -55,7 +54,6 @@ void NiVectorExtraData::Write( ostream& out, const map<NiObjectRef,unsigned int>
 
 	NiExtraData::Write( out, link_map, missing_link_stack, info );
 	NifStream( vectorData, out, info );
-	NifStream( unknownFloat, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -68,7 +66,6 @@ std::string NiVectorExtraData::asString( bool verbose ) const {
 	stringstream out;
 	out << NiExtraData::asString();
 	out << "  Vector Data:  " << vectorData << endl;
-	out << "  Unknown Float:  " << unknownFloat << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

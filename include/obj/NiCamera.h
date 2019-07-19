@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ All rights reserved.  Please see niflib.h for license. */
 namespace Niflib {
 
 // Forward define of referenced NIF objects
-class NiObject;
+class NiAVObject;
 class NiCamera;
 typedef Ref<NiCamera> NiCameraRef;
 
@@ -29,28 +29,28 @@ class NiCamera : public NiAVObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiCamera();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiCamera();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -200,8 +200,8 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Unknown. */
-	unsigned short unknownShort;
+	/*! Obsolete flags. */
+	unsigned short cameraFlags;
 	/*! Frustrum left. */
 	float frustumLeft;
 	/*! Frustrum right. */
@@ -226,12 +226,11 @@ protected:
 	float viewportBottom;
 	/*! Level of detail adjust. */
 	float lodAdjust;
-	/*! Unknown. */
-	Ref<NiObject > unknownLink;
-	/*! Unknown.  Changing value crashes viewer. */
-	unsigned int unknownInt;
-	/*! Unknown.  Changing value crashes viewer. */
-	unsigned int unknownInt2;
+	Ref<NiAVObject > scene;
+	/*! Deprecated. Array is always zero length on disk write. */
+	unsigned int numScreenPolygons;
+	/*! Deprecated. Array is always zero length on disk write. */
+	unsigned int numScreenTextures;
 	/*! Unknown. */
 	unsigned int unknownInt3;
 public:
@@ -250,5 +249,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,12 +14,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiScreenLODData.h"
+#include "../../include/gen/NiBound.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiScreenLODData::TYPE("NiScreenLODData", &NiLODData::TYPE );
 
-NiScreenLODData::NiScreenLODData() : boundRadius(0.0f), worldRadius(0.0f), proportionCount((unsigned int)0) {
+NiScreenLODData::NiScreenLODData() : numProportions((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,12 +43,12 @@ void NiScreenLODData::Read( istream& in, list<unsigned int> & link_stack, const 
 	//--END CUSTOM CODE--//
 
 	NiLODData::Read( in, link_stack, info );
-	NifStream( boundCenter, in, info );
-	NifStream( boundRadius, in, info );
-	NifStream( worldCenter, in, info );
-	NifStream( worldRadius, in, info );
-	NifStream( proportionCount, in, info );
-	proportionLevels.resize(proportionCount);
+	NifStream( bound.center, in, info );
+	NifStream( bound.radius, in, info );
+	NifStream( worldBound.center, in, info );
+	NifStream( worldBound.radius, in, info );
+	NifStream( numProportions, in, info );
+	proportionLevels.resize(numProportions);
 	for (unsigned int i1 = 0; i1 < proportionLevels.size(); i1++) {
 		NifStream( proportionLevels[i1], in, info );
 	};
@@ -61,12 +62,12 @@ void NiScreenLODData::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	//--END CUSTOM CODE--//
 
 	NiLODData::Write( out, link_map, missing_link_stack, info );
-	proportionCount = (unsigned int)(proportionLevels.size());
-	NifStream( boundCenter, out, info );
-	NifStream( boundRadius, out, info );
-	NifStream( worldCenter, out, info );
-	NifStream( worldRadius, out, info );
-	NifStream( proportionCount, out, info );
+	numProportions = (unsigned int)(proportionLevels.size());
+	NifStream( bound.center, out, info );
+	NifStream( bound.radius, out, info );
+	NifStream( worldBound.center, out, info );
+	NifStream( worldBound.radius, out, info );
+	NifStream( numProportions, out, info );
 	for (unsigned int i1 = 0; i1 < proportionLevels.size(); i1++) {
 		NifStream( proportionLevels[i1], out, info );
 	};
@@ -82,12 +83,12 @@ std::string NiScreenLODData::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiLODData::asString();
-	proportionCount = (unsigned int)(proportionLevels.size());
-	out << "  Bound Center:  " << boundCenter << endl;
-	out << "  Bound Radius:  " << boundRadius << endl;
-	out << "  World Center:  " << worldCenter << endl;
-	out << "  World Radius:  " << worldRadius << endl;
-	out << "  Proportion Count:  " << proportionCount << endl;
+	numProportions = (unsigned int)(proportionLevels.size());
+	out << "  Center:  " << bound.center << endl;
+	out << "  Radius:  " << bound.radius << endl;
+	out << "  Center:  " << worldBound.center << endl;
+	out << "  Radius:  " << worldBound.radius << endl;
+	out << "  Num Proportions:  " << numProportions << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < proportionLevels.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {

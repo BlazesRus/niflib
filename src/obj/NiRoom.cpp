@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,6 +15,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiRoom.h"
+#include "../../include/gen/NiPlane.h"
 #include "../../include/obj/NiAVObject.h"
 #include "../../include/obj/NiPortal.h"
 using namespace Niflib;
@@ -22,7 +23,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiRoom::TYPE("NiRoom", &NiNode::TYPE );
 
-NiRoom::NiRoom() : numWalls((int)0), numInPortals((int)0), numPortals2((int)0), numItems((int)0) {
+NiRoom::NiRoom() : numWalls((int)0), numInPortals((unsigned int)0), numOutPortals((unsigned int)0), numFixtures((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -50,9 +51,10 @@ void NiRoom::Read( istream& in, list<unsigned int> & link_stack, const NifInfo &
 	unsigned int block_num;
 	NiNode::Read( in, link_stack, info );
 	NifStream( numWalls, in, info );
-	wallPlane.resize(numWalls);
-	for (unsigned int i1 = 0; i1 < wallPlane.size(); i1++) {
-		NifStream( wallPlane[i1], in, info );
+	wallPlanes.resize(numWalls);
+	for (unsigned int i1 = 0; i1 < wallPlanes.size(); i1++) {
+		NifStream( wallPlanes[i1].normal, in, info );
+		NifStream( wallPlanes[i1].constant, in, info );
 	};
 	NifStream( numInPortals, in, info );
 	inPortals.resize(numInPortals);
@@ -60,15 +62,15 @@ void NiRoom::Read( istream& in, list<unsigned int> & link_stack, const NifInfo &
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	NifStream( numPortals2, in, info );
-	portals2.resize(numPortals2);
-	for (unsigned int i1 = 0; i1 < portals2.size(); i1++) {
+	NifStream( numOutPortals, in, info );
+	outPortals.resize(numOutPortals);
+	for (unsigned int i1 = 0; i1 < outPortals.size(); i1++) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	NifStream( numItems, in, info );
-	items.resize(numItems);
-	for (unsigned int i1 = 0; i1 < items.size(); i1++) {
+	NifStream( numFixtures, in, info );
+	fixtures.resize(numFixtures);
+	for (unsigned int i1 = 0; i1 < fixtures.size(); i1++) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
@@ -84,73 +86,26 @@ void NiRoom::Write( ostream& out, const map<NiObjectRef,unsigned int> & link_map
 	//--END CUSTOM CODE--//
 
 	NiNode::Write( out, link_map, missing_link_stack, info );
-	numItems = (int)(items.size());
-	numPortals2 = (int)(portals2.size());
-	numInPortals = (int)(inPortals.size());
-	numWalls = (int)(wallPlane.size());
+	numFixtures = (unsigned int)(fixtures.size());
+	numOutPortals = (unsigned int)(outPortals.size());
+	numInPortals = (unsigned int)(inPortals.size());
+	numWalls = (int)(wallPlanes.size());
 	NifStream( numWalls, out, info );
-	for (unsigned int i1 = 0; i1 < wallPlane.size(); i1++) {
-		NifStream( wallPlane[i1], out, info );
+	for (unsigned int i1 = 0; i1 < wallPlanes.size(); i1++) {
+		NifStream( wallPlanes[i1].normal, out, info );
+		NifStream( wallPlanes[i1].constant, out, info );
 	};
 	NifStream( numInPortals, out, info );
 	for (unsigned int i1 = 0; i1 < inPortals.size(); i1++) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*inPortals[i1]), out );
-		} else {
-			if ( inPortals[i1] != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(inPortals[i1]) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( inPortals[i1] );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(inPortals[i1]), out, info, link_map, missing_link_stack );
 	};
-	NifStream( numPortals2, out, info );
-	for (unsigned int i1 = 0; i1 < portals2.size(); i1++) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*portals2[i1]), out );
-		} else {
-			if ( portals2[i1] != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(portals2[i1]) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( portals2[i1] );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+	NifStream( numOutPortals, out, info );
+	for (unsigned int i1 = 0; i1 < outPortals.size(); i1++) {
+		WriteRef( StaticCast<NiObject>(outPortals[i1]), out, info, link_map, missing_link_stack );
 	};
-	NifStream( numItems, out, info );
-	for (unsigned int i1 = 0; i1 < items.size(); i1++) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*items[i1]), out );
-		} else {
-			if ( items[i1] != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(items[i1]) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( items[i1] );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+	NifStream( numFixtures, out, info );
+	for (unsigned int i1 = 0; i1 < fixtures.size(); i1++) {
+		WriteRef( StaticCast<NiObject>(fixtures[i1]), out, info, link_map, missing_link_stack );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -166,22 +121,19 @@ std::string NiRoom::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiNode::asString();
-	numItems = (int)(items.size());
-	numPortals2 = (int)(portals2.size());
-	numInPortals = (int)(inPortals.size());
-	numWalls = (int)(wallPlane.size());
+	numFixtures = (unsigned int)(fixtures.size());
+	numOutPortals = (unsigned int)(outPortals.size());
+	numInPortals = (unsigned int)(inPortals.size());
+	numWalls = (int)(wallPlanes.size());
 	out << "  Num Walls:  " << numWalls << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < wallPlane.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < wallPlanes.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
 		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Wall Plane[" << i1 << "]:  " << wallPlane[i1] << endl;
-		array_output_count++;
+		out << "    Normal:  " << wallPlanes[i1].normal << endl;
+		out << "    Constant:  " << wallPlanes[i1].constant << endl;
 	};
 	out << "  Num In Portals:  " << numInPortals << endl;
 	array_output_count = 0;
@@ -196,9 +148,9 @@ std::string NiRoom::asString( bool verbose ) const {
 		out << "    In Portals[" << i1 << "]:  " << inPortals[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Num Portals 2:  " << numPortals2 << endl;
+	out << "  Num Out Portals:  " << numOutPortals << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < portals2.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < outPortals.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -206,12 +158,12 @@ std::string NiRoom::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Portals 2[" << i1 << "]:  " << portals2[i1] << endl;
+		out << "    Out Portals[" << i1 << "]:  " << outPortals[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Num Items:  " << numItems << endl;
+	out << "  Num Fixtures:  " << numFixtures << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < items.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < fixtures.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -219,7 +171,7 @@ std::string NiRoom::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Items[" << i1 << "]:  " << items[i1] << endl;
+		out << "    Fixtures[" << i1 << "]:  " << fixtures[i1] << endl;
 		array_output_count++;
 	};
 	return out.str();
@@ -238,11 +190,11 @@ void NiRoom::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<unsig
 	for (unsigned int i1 = 0; i1 < inPortals.size(); i1++) {
 		inPortals[i1] = FixLink<NiPortal>( objects, link_stack, missing_link_stack, info );
 	};
-	for (unsigned int i1 = 0; i1 < portals2.size(); i1++) {
-		portals2[i1] = FixLink<NiPortal>( objects, link_stack, missing_link_stack, info );
+	for (unsigned int i1 = 0; i1 < outPortals.size(); i1++) {
+		outPortals[i1] = FixLink<NiPortal>( objects, link_stack, missing_link_stack, info );
 	};
-	for (unsigned int i1 = 0; i1 < items.size(); i1++) {
-		items[i1] = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
+	for (unsigned int i1 = 0; i1 < fixtures.size(); i1++) {
+		fixtures[i1] = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
 	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
@@ -255,9 +207,9 @@ std::list<NiObjectRef> NiRoom::GetRefs() const {
 	refs = NiNode::GetRefs();
 	for (unsigned int i1 = 0; i1 < inPortals.size(); i1++) {
 	};
-	for (unsigned int i1 = 0; i1 < portals2.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < outPortals.size(); i1++) {
 	};
-	for (unsigned int i1 = 0; i1 < items.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < fixtures.size(); i1++) {
 	};
 	return refs;
 }
@@ -269,13 +221,13 @@ std::list<NiObject *> NiRoom::GetPtrs() const {
 		if ( inPortals[i1] != NULL )
 			ptrs.push_back((NiObject *)(inPortals[i1]));
 	};
-	for (unsigned int i1 = 0; i1 < portals2.size(); i1++) {
-		if ( portals2[i1] != NULL )
-			ptrs.push_back((NiObject *)(portals2[i1]));
+	for (unsigned int i1 = 0; i1 < outPortals.size(); i1++) {
+		if ( outPortals[i1] != NULL )
+			ptrs.push_back((NiObject *)(outPortals[i1]));
 	};
-	for (unsigned int i1 = 0; i1 < items.size(); i1++) {
-		if ( items[i1] != NULL )
-			ptrs.push_back((NiObject *)(items[i1]));
+	for (unsigned int i1 = 0; i1 < fixtures.size(); i1++) {
+		if ( fixtures[i1] != NULL )
+			ptrs.push_back((NiObject *)(fixtures[i1]));
 	};
 	return ptrs;
 }

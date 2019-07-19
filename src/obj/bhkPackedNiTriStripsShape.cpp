@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,6 +15,8 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkPackedNiTriStripsShape.h"
+#include "../../include/gen/HavokFilter.h"
+#include "../../include/gen/HavokMaterial.h"
 #include "../../include/gen/OblivionSubShape.h"
 #include "../../include/obj/hkPackedNiTriStripsData.h"
 using namespace Niflib;
@@ -22,7 +24,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type bhkPackedNiTriStripsShape::TYPE("bhkPackedNiTriStripsShape", &bhkShapeCollection::TYPE );
 
-bhkPackedNiTriStripsShape::bhkPackedNiTriStripsShape() : numSubShapes((unsigned short)0), unknownInt1((unsigned int)0), unknownInt2((unsigned int)0x014E9DD8), unknownFloat1(0.1f), unknownInt3((unsigned int)0), scaleCopy_(1.0, 1.0, 1.0), unknownFloat2(0.0f), unknownFloat3(0.1f), scale(1.0, 1.0, 1.0), unknownFloat4(0.0f), data(NULL) {
+bhkPackedNiTriStripsShape::bhkPackedNiTriStripsShape() : numSubShapes((unsigned short)0), userData((unsigned int)0), unused1((unsigned int)0), radius(0.1f), unused2((unsigned int)0), scale(1.0, 1.0, 1.0, 0.0), radiusCopy(0.1f), scaleCopy(1.0, 1.0, 1.0, 0.0), data(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -50,22 +52,36 @@ void bhkPackedNiTriStripsShape::Read( istream& in, list<unsigned int> & link_sta
 		NifStream( numSubShapes, in, info );
 		subShapes.resize(numSubShapes);
 		for (unsigned int i2 = 0; i2 < subShapes.size(); i2++) {
-			NifStream( subShapes[i2].layer, in, info );
-			NifStream( subShapes[i2].colFilter, in, info );
-			NifStream( subShapes[i2].unknownShort, in, info );
+			if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
+				NifStream( subShapes[i2].havokFilter.layer_ob, in, info );
+			};
+			if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
+				NifStream( subShapes[i2].havokFilter.layer_fo, in, info );
+			};
+			if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
+				NifStream( subShapes[i2].havokFilter.layer_sk, in, info );
+			};
+			NifStream( subShapes[i2].havokFilter.flagsAndPartNumber, in, info );
+			NifStream( subShapes[i2].havokFilter.group, in, info );
 			NifStream( subShapes[i2].numVertices, in, info );
-			NifStream( subShapes[i2].material, in, info );
+			if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
+				NifStream( subShapes[i2].material.material_ob, in, info );
+			};
+			if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
+				NifStream( subShapes[i2].material.material_fo, in, info );
+			};
+			if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
+				NifStream( subShapes[i2].material.material_sk, in, info );
+			};
 		};
 	};
-	NifStream( unknownInt1, in, info );
-	NifStream( unknownInt2, in, info );
-	NifStream( unknownFloat1, in, info );
-	NifStream( unknownInt3, in, info );
-	NifStream( scaleCopy_, in, info );
-	NifStream( unknownFloat2, in, info );
-	NifStream( unknownFloat3, in, info );
+	NifStream( userData, in, info );
+	NifStream( unused1, in, info );
+	NifStream( radius, in, info );
+	NifStream( unused2, in, info );
 	NifStream( scale, in, info );
-	NifStream( unknownFloat4, in, info );
+	NifStream( radiusCopy, in, info );
+	NifStream( scaleCopy, in, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
 
@@ -82,39 +98,37 @@ void bhkPackedNiTriStripsShape::Write( ostream& out, const map<NiObjectRef,unsig
 	if ( info.version <= 0x14000005 ) {
 		NifStream( numSubShapes, out, info );
 		for (unsigned int i2 = 0; i2 < subShapes.size(); i2++) {
-			NifStream( subShapes[i2].layer, out, info );
-			NifStream( subShapes[i2].colFilter, out, info );
-			NifStream( subShapes[i2].unknownShort, out, info );
+			if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
+				NifStream( subShapes[i2].havokFilter.layer_ob, out, info );
+			};
+			if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
+				NifStream( subShapes[i2].havokFilter.layer_fo, out, info );
+			};
+			if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
+				NifStream( subShapes[i2].havokFilter.layer_sk, out, info );
+			};
+			NifStream( subShapes[i2].havokFilter.flagsAndPartNumber, out, info );
+			NifStream( subShapes[i2].havokFilter.group, out, info );
 			NifStream( subShapes[i2].numVertices, out, info );
-			NifStream( subShapes[i2].material, out, info );
+			if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
+				NifStream( subShapes[i2].material.material_ob, out, info );
+			};
+			if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
+				NifStream( subShapes[i2].material.material_fo, out, info );
+			};
+			if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
+				NifStream( subShapes[i2].material.material_sk, out, info );
+			};
 		};
 	};
-	NifStream( unknownInt1, out, info );
-	NifStream( unknownInt2, out, info );
-	NifStream( unknownFloat1, out, info );
-	NifStream( unknownInt3, out, info );
-	NifStream( scaleCopy_, out, info );
-	NifStream( unknownFloat2, out, info );
-	NifStream( unknownFloat3, out, info );
+	NifStream( userData, out, info );
+	NifStream( unused1, out, info );
+	NifStream( radius, out, info );
+	NifStream( unused2, out, info );
 	NifStream( scale, out, info );
-	NifStream( unknownFloat4, out, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*data), out );
-	} else {
-		if ( data != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(data) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( data );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	NifStream( radiusCopy, out, info );
+	NifStream( scaleCopy, out, info );
+	WriteRef( StaticCast<NiObject>(data), out, info, link_map, missing_link_stack );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -135,21 +149,23 @@ std::string bhkPackedNiTriStripsShape::asString( bool verbose ) const {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
 		};
-		out << "    Layer:  " << subShapes[i1].layer << endl;
-		out << "    Col Filter:  " << subShapes[i1].colFilter << endl;
-		out << "    Unknown Short:  " << subShapes[i1].unknownShort << endl;
+		out << "    Layer:  " << subShapes[i1].havokFilter.layer_ob << endl;
+		out << "    Layer:  " << subShapes[i1].havokFilter.layer_fo << endl;
+		out << "    Layer:  " << subShapes[i1].havokFilter.layer_sk << endl;
+		out << "    Flags and Part Number:  " << subShapes[i1].havokFilter.flagsAndPartNumber << endl;
+		out << "    Group:  " << subShapes[i1].havokFilter.group << endl;
 		out << "    Num Vertices:  " << subShapes[i1].numVertices << endl;
-		out << "    Material:  " << subShapes[i1].material << endl;
+		out << "    Material:  " << subShapes[i1].material.material_ob << endl;
+		out << "    Material:  " << subShapes[i1].material.material_fo << endl;
+		out << "    Material:  " << subShapes[i1].material.material_sk << endl;
 	};
-	out << "  Unknown Int 1:  " << unknownInt1 << endl;
-	out << "  Unknown Int 2:  " << unknownInt2 << endl;
-	out << "  Unknown Float 1:  " << unknownFloat1 << endl;
-	out << "  Unknown Int 3:  " << unknownInt3 << endl;
-	out << "  Scale Copy?:  " << scaleCopy_ << endl;
-	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
-	out << "  Unknown Float 3:  " << unknownFloat3 << endl;
+	out << "  User Data:  " << userData << endl;
+	out << "  Unused 1:  " << unused1 << endl;
+	out << "  Radius:  " << radius << endl;
+	out << "  Unused 2:  " << unused2 << endl;
 	out << "  Scale:  " << scale << endl;
-	out << "  Unknown Float 4:  " << unknownFloat4 << endl;
+	out << "  Radius Copy:  " << radiusCopy << endl;
+	out << "  Scale Copy:  " << scaleCopy << endl;
 	out << "  Data:  " << data << endl;
 	return out.str();
 

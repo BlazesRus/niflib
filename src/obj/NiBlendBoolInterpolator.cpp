@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiBlendBoolInterpolator::TYPE("NiBlendBoolInterpolator", &NiBlendInterpolator::TYPE );
 
-NiBlendBoolInterpolator::NiBlendBoolInterpolator() : boolValue((byte)0) {
+NiBlendBoolInterpolator::NiBlendBoolInterpolator() : value((byte)2) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,7 +42,7 @@ void NiBlendBoolInterpolator::Read( istream& in, list<unsigned int> & link_stack
 	//--END CUSTOM CODE--//
 
 	NiBlendInterpolator::Read( in, link_stack, info );
-	NifStream( boolValue, in, info );
+	NifStream( value, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -53,7 +53,7 @@ void NiBlendBoolInterpolator::Write( ostream& out, const map<NiObjectRef,unsigne
 	//--END CUSTOM CODE--//
 
 	NiBlendInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( boolValue, out, info );
+	NifStream( value, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -65,7 +65,7 @@ std::string NiBlendBoolInterpolator::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiBlendInterpolator::asString();
-	out << "  Bool Value:  " << boolValue << endl;
+	out << "  Value:  " << value << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

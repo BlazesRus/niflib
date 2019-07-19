@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,12 +15,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPSEmitParticlesCtlr.h"
+#include "../../include/obj/NiInterpolator.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPSEmitParticlesCtlr::TYPE("NiPSEmitParticlesCtlr", &NiPSysEmitterCtlr::TYPE );
+const Type NiPSEmitParticlesCtlr::TYPE("NiPSEmitParticlesCtlr", &NiPSEmitterCtlr::TYPE );
 
-NiPSEmitParticlesCtlr::NiPSEmitParticlesCtlr() {
+NiPSEmitParticlesCtlr::NiPSEmitParticlesCtlr() : emitterActiveInterpolator(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,7 +46,10 @@ void NiPSEmitParticlesCtlr::Read( istream& in, list<unsigned int> & link_stack, 
 
 	//--END CUSTOM CODE--//
 
-	NiPSysEmitterCtlr::Read( in, link_stack, info );
+	unsigned int block_num;
+	NiPSEmitterCtlr::Read( in, link_stack, info );
+	NifStream( block_num, in, info );
+	link_stack.push_back( block_num );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -57,7 +61,8 @@ void NiPSEmitParticlesCtlr::Write( ostream& out, const map<NiObjectRef,unsigned 
 
 	//--END CUSTOM CODE--//
 
-	NiPSysEmitterCtlr::Write( out, link_map, missing_link_stack, info );
+	NiPSEmitterCtlr::Write( out, link_map, missing_link_stack, info );
+	WriteRef( StaticCast<NiObject>(emitterActiveInterpolator), out, info, link_map, missing_link_stack );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -70,7 +75,8 @@ std::string NiPSEmitParticlesCtlr::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiPSysEmitterCtlr::asString();
+	out << NiPSEmitterCtlr::asString();
+	out << "  Emitter Active Interpolator:  " << emitterActiveInterpolator << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -83,7 +89,8 @@ void NiPSEmitParticlesCtlr::FixLinks( const map<unsigned int,NiObjectRef> & obje
 
 	//--END CUSTOM CODE--//
 
-	NiPSysEmitterCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiPSEmitterCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
+	emitterActiveInterpolator = FixLink<NiInterpolator>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -92,13 +99,15 @@ void NiPSEmitParticlesCtlr::FixLinks( const map<unsigned int,NiObjectRef> & obje
 
 std::list<NiObjectRef> NiPSEmitParticlesCtlr::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiPSysEmitterCtlr::GetRefs();
+	refs = NiPSEmitterCtlr::GetRefs();
+	if ( emitterActiveInterpolator != NULL )
+		refs.push_back(StaticCast<NiObject>(emitterActiveInterpolator));
 	return refs;
 }
 
 std::list<NiObject *> NiPSEmitParticlesCtlr::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiPSysEmitterCtlr::GetPtrs();
+	ptrs = NiPSEmitterCtlr::GetPtrs();
 	return ptrs;
 }
 

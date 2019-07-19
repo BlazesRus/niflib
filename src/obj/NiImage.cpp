@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -71,23 +71,7 @@ void NiImage::Write( ostream& out, const map<NiObjectRef,unsigned int> & link_ma
 		NifStream( fileName, out, info );
 	};
 	if ( (useExternal == 0) ) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*imageData), out );
-		} else {
-			if ( imageData != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(imageData) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( imageData );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(imageData), out, info, link_map, missing_link_stack );
 	};
 	NifStream( unknownInt, out, info );
 	if ( info.version >= 0x03010000 ) {
@@ -103,6 +87,7 @@ std::string NiImage::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
+	unsigned int array_output_count = 0;
 	out << NiObject::asString();
 	out << "  Use External:  " << useExternal << endl;
 	if ( (useExternal != 0) ) {

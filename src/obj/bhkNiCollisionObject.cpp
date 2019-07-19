@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,13 +14,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkNiCollisionObject.h"
-#include "../../include/obj/NiObject.h"
+#include "../../include/obj/bhkWorldObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type bhkNiCollisionObject::TYPE("bhkNiCollisionObject", &NiCollisionObject::TYPE );
 
-bhkNiCollisionObject::bhkNiCollisionObject() : flags((unsigned short)1), body(NULL) {
+bhkNiCollisionObject::bhkNiCollisionObject() : flags((bhkCOFlags)1), body(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -58,23 +58,7 @@ void bhkNiCollisionObject::Write( ostream& out, const map<NiObjectRef,unsigned i
 
 	NiCollisionObject::Write( out, link_map, missing_link_stack, info );
 	NifStream( flags, out, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*body), out );
-	} else {
-		if ( body != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(body) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( body );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	WriteRef( StaticCast<NiObject>(body), out, info, link_map, missing_link_stack );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -99,7 +83,7 @@ void bhkNiCollisionObject::FixLinks( const map<unsigned int,NiObjectRef> & objec
 	//--END CUSTOM CODE--//
 
 	NiCollisionObject::FixLinks( objects, link_stack, missing_link_stack, info );
-	body = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
+	body = FixLink<bhkWorldObject>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,6 +15,9 @@ All rights reserved.  Please see niflib.h for license. */
 //--END CUSTOM CODE--//
 
 #include "NiNode.h"
+
+// Include structures
+#include "../gen/NiPlane.h"
 namespace Niflib {
 
 // Forward define of referenced NIF objects
@@ -23,33 +26,33 @@ class NiAVObject;
 class NiRoom;
 typedef Ref<NiRoom> NiRoomRef;
 
-/*! Grouping node for nodes in a Portal */
+/*! NiRoom objects represent cells in a cell-portal culling system. */
 class NiRoom : public NiNode {
 public:
 	/*! Constructor */
 	NIFLIB_API NiRoom();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiRoom();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -60,22 +63,17 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Number of walls in a room? */
 	mutable int numWalls;
-	/*! Face normal and unknown value. */
-	vector<Vector4 > wallPlane;
-	/*! Number of doors into room */
-	mutable int numInPortals;
-	/*! Number of portals into room */
+	vector<NiPlane > wallPlanes;
+	mutable unsigned int numInPortals;
+	/*! The portals which see into the room. */
 	vector<NiPortal * > inPortals;
-	/*! Number of doors out of room */
-	mutable int numPortals2;
-	/*! Number of portals out of room */
-	vector<NiPortal * > portals2;
-	/*! Number of unknowns */
-	mutable int numItems;
-	/*! All geometry associated with room. */
-	vector<NiAVObject * > items;
+	mutable unsigned int numOutPortals;
+	/*! The portals which see out of the room. */
+	vector<NiPortal * > outPortals;
+	mutable unsigned int numFixtures;
+	/*! All geometry associated with the room. */
+	vector<NiAVObject * > fixtures;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -93,5 +91,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type BSBehaviorGraphExtraData::TYPE("BSBehaviorGraphExtraData", &NiExtraData::TYPE );
 
-BSBehaviorGraphExtraData::BSBehaviorGraphExtraData() : controlsBaseSkeleton((byte)0) {
+BSBehaviorGraphExtraData::BSBehaviorGraphExtraData() : controlsBaseSkeleton(false) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -74,6 +74,7 @@ std::string BSBehaviorGraphExtraData::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
+	unsigned int array_output_count = 0;
 	out << NiExtraData::asString();
 	out << "  Behaviour Graph File:  " << behaviourGraphFile << endl;
 	out << "  Controls Base Skeleton:  " << controlsBaseSkeleton << endl;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiFogProperty::TYPE("NiFogProperty", &NiProperty::TYPE );
 
-NiFogProperty::NiFogProperty() : flags((unsigned short)0), fogDepth(0.0f) {
+NiFogProperty::NiFogProperty() : flags((unsigned short)0), fogDepth(1.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }

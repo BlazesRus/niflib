@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiMaterialProperty::TYPE("NiMaterialProperty", &NiProperty::TYPE );
 
-NiMaterialProperty::NiMaterialProperty() : flags((unsigned short)0), glossiness(0.0f), alpha(0.0f), emitMulti(1.0f) {
+NiMaterialProperty::NiMaterialProperty() : flags((unsigned short)0), ambientColor(1.0, 1.0, 1.0), diffuseColor(1.0, 1.0, 1.0), specularColor(1.0, 1.0, 1.0), emissiveColor(0.0, 0.0, 0.0), glossiness(10.0f), alpha(1.0f), emissiveMult(1.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -45,7 +45,7 @@ void NiMaterialProperty::Read( istream& in, list<unsigned int> & link_stack, con
 	if ( ( info.version >= 0x03000000 ) && ( info.version <= 0x0A000102 ) ) {
 		NifStream( flags, in, info );
 	};
-	if ( (!((info.version == 0x14020007) && ((info.userVersion >= 11) && (info.userVersion2 > 21)))) ) {
+	if ( (info.userVersion2 < 26) ) {
 		NifStream( ambientColor, in, info );
 		NifStream( diffuseColor, in, info );
 	};
@@ -53,8 +53,8 @@ void NiMaterialProperty::Read( istream& in, list<unsigned int> & link_stack, con
 	NifStream( emissiveColor, in, info );
 	NifStream( glossiness, in, info );
 	NifStream( alpha, in, info );
-	if ( ((info.version == 0x14020007) && ((info.userVersion >= 11) && (info.userVersion2 > 21))) ) {
-		NifStream( emitMulti, in, info );
+	if ( (info.userVersion2 > 21) ) {
+		NifStream( emissiveMult, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -69,7 +69,7 @@ void NiMaterialProperty::Write( ostream& out, const map<NiObjectRef,unsigned int
 	if ( ( info.version >= 0x03000000 ) && ( info.version <= 0x0A000102 ) ) {
 		NifStream( flags, out, info );
 	};
-	if ( (!((info.version == 0x14020007) && ((info.userVersion >= 11) && (info.userVersion2 > 21)))) ) {
+	if ( (info.userVersion2 < 26) ) {
 		NifStream( ambientColor, out, info );
 		NifStream( diffuseColor, out, info );
 	};
@@ -77,8 +77,8 @@ void NiMaterialProperty::Write( ostream& out, const map<NiObjectRef,unsigned int
 	NifStream( emissiveColor, out, info );
 	NifStream( glossiness, out, info );
 	NifStream( alpha, out, info );
-	if ( ((info.version == 0x14020007) && ((info.userVersion >= 11) && (info.userVersion2 > 21))) ) {
-		NifStream( emitMulti, out, info );
+	if ( (info.userVersion2 > 21) ) {
+		NifStream( emissiveMult, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -98,7 +98,7 @@ std::string NiMaterialProperty::asString( bool verbose ) const {
 	out << "  Emissive Color:  " << emissiveColor << endl;
 	out << "  Glossiness:  " << glossiness << endl;
 	out << "  Alpha:  " << alpha << endl;
-	out << "  Emit Multi:  " << emitMulti << endl;
+	out << "  Emissive Mult:  " << emissiveMult << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

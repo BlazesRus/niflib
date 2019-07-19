@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -78,7 +78,7 @@ void NiTriStripsData::Read( istream& in, list<unsigned int> & link_stack, const 
 			for (unsigned int i3 = 0; i3 < points.size(); i3++) {
 				points[i3].resize(stripLengths[i3]);
 				for (unsigned int i4 = 0; i4 < stripLengths[i3]; i4++) {
-					NifStream( points[i3][i4], in, info );
+					NifStream( (unsigned short&)points[i3][i4], in, info );
 				};
 			};
 		};
@@ -114,7 +114,7 @@ void NiTriStripsData::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 		if ( hasPoints ) {
 			for (unsigned int i3 = 0; i3 < points.size(); i3++) {
 				for (unsigned int i4 = 0; i4 < stripLengths[i3]; i4++) {
-					NifStream( points[i3][i4], out, info );
+					NifStream( (unsigned short&)points[i3][i4], out, info );
 				};
 			};
 		};

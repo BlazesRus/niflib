@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiPoint3Interpolator::TYPE("NiPoint3Interpolator", &NiKeyBasedInterpolator::TYPE );
 
-NiPoint3Interpolator::NiPoint3Interpolator() : data(NULL) {
+NiPoint3Interpolator::NiPoint3Interpolator() : value(-3.402823466e+38, -3.402823466e+38, -3.402823466e+38), data(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -44,7 +44,7 @@ void NiPoint3Interpolator::Read( istream& in, list<unsigned int> & link_stack, c
 
 	unsigned int block_num;
 	NiKeyBasedInterpolator::Read( in, link_stack, info );
-	NifStream( point3Value, in, info );
+	NifStream( value, in, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
 
@@ -57,24 +57,8 @@ void NiPoint3Interpolator::Write( ostream& out, const map<NiObjectRef,unsigned i
 	//--END CUSTOM CODE--//
 
 	NiKeyBasedInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( point3Value, out, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*data), out );
-	} else {
-		if ( data != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(data) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( data );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	NifStream( value, out, info );
+	WriteRef( StaticCast<NiObject>(data), out, info, link_map, missing_link_stack );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -86,7 +70,7 @@ std::string NiPoint3Interpolator::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiKeyBasedInterpolator::asString();
-	out << "  Point 3 Value:  " << point3Value << endl;
+	out << "  Value:  " << value << endl;
 	out << "  Data:  " << data << endl;
 	return out.str();
 

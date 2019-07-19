@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -77,23 +77,7 @@ void NiTextureProperty::Write( ostream& out, const map<NiObjectRef,unsigned int>
 	if ( info.version >= 0x03000000 ) {
 		NifStream( flags, out, info );
 	};
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*image), out );
-	} else {
-		if ( image != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(image) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( image );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	WriteRef( StaticCast<NiObject>(image), out, info, link_map, missing_link_stack );
 	if ( ( info.version >= 0x03000000 ) && ( info.version <= 0x03000300 ) ) {
 		for (unsigned int i2 = 0; i2 < 2; i2++) {
 			NifStream( unknownInts2[i2], out, info );

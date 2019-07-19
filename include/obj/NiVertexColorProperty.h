@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -28,28 +28,28 @@ class NiVertexColorProperty : public NiProperty {
 public:
 	/*! Constructor */
 	NIFLIB_API NiVertexColorProperty();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiVertexColorProperty();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -97,20 +97,14 @@ public:
 	//--END CUSTOM CODE--//
 protected:
 	/*!
-	 * Property flags. Appears to be unused until 20.1.0.3.
-	 * 
-	 *             Bits 0-2: Unknown
-	 *             Bit 3: Lighting Mode?
-	 *             Bits 4-5: Vertex Mode?
+	 * Bits 0-2: Unknown
+	 *             Bit 3: Lighting Mode
+	 *             Bits 4-5: Vertex Mode
 	 */
 	unsigned short flags;
-	/*!
-	 * Determines how vertex and material colors are mixed.
-	 *             related gl function: glColorMaterial
-	 *             In Flags from version 20.1.0.3 onwards.
-	 */
+	/*! In Flags from 20.1.0.3 on. */
 	VertMode vertexMode;
-	/*! The light mode. In Flags from 20.1.0.3 on. */
+	/*! In Flags from 20.1.0.3 on. */
 	LightMode lightingMode;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -128,5 +122,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiSpotLight::TYPE("NiSpotLight", &NiPointLight::TYPE );
 
-NiSpotLight::NiSpotLight() : cutoffAngle(0.0f), unknownFloat(0.0f), exponent(0.0f) {
+NiSpotLight::NiSpotLight() : outerSpotAngle(0.0f), innerSpotAngle(0.0f), exponent(1.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,9 +42,9 @@ void NiSpotLight::Read( istream& in, list<unsigned int> & link_stack, const NifI
 	//--END CUSTOM CODE--//
 
 	NiPointLight::Read( in, link_stack, info );
-	NifStream( cutoffAngle, in, info );
-	if ( info.version >= 0x14020007 ) {
-		NifStream( unknownFloat, in, info );
+	NifStream( outerSpotAngle, in, info );
+	if ( info.version >= 0x14020005 ) {
+		NifStream( innerSpotAngle, in, info );
 	};
 	NifStream( exponent, in, info );
 
@@ -57,9 +57,9 @@ void NiSpotLight::Write( ostream& out, const map<NiObjectRef,unsigned int> & lin
 	//--END CUSTOM CODE--//
 
 	NiPointLight::Write( out, link_map, missing_link_stack, info );
-	NifStream( cutoffAngle, out, info );
-	if ( info.version >= 0x14020007 ) {
-		NifStream( unknownFloat, out, info );
+	NifStream( outerSpotAngle, out, info );
+	if ( info.version >= 0x14020005 ) {
+		NifStream( innerSpotAngle, out, info );
 	};
 	NifStream( exponent, out, info );
 
@@ -73,8 +73,8 @@ std::string NiSpotLight::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiPointLight::asString();
-	out << "  Cutoff Angle:  " << cutoffAngle << endl;
-	out << "  Unknown Float:  " << unknownFloat << endl;
+	out << "  Outer Spot Angle:  " << outerSpotAngle << endl;
+	out << "  Inner Spot Angle:  " << innerSpotAngle << endl;
 	out << "  Exponent:  " << exponent << endl;
 	return out.str();
 

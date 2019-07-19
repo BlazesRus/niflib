@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -23,33 +23,33 @@ namespace Niflib {
 class BSDismemberSkinInstance;
 typedef Ref<BSDismemberSkinInstance> BSDismemberSkinInstanceRef;
 
-/*! Bethesda-specific node. */
+/*! Bethesda-specific skin instance. */
 class BSDismemberSkinInstance : public NiSkinInstance {
 public:
 	/*! Constructor */
 	NIFLIB_API BSDismemberSkinInstance();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~BSDismemberSkinInstance();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -72,9 +72,7 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Unknown */
 	mutable int numPartitions;
-	/*! Unknown */
 	vector<BodyPartList > partitions;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -93,5 +91,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

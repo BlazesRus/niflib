@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,7 +15,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPSSimulatorForcesStep.h"
-#include "../../include/obj/NiObject.h"
+#include "../../include/obj/NiPSForce.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
@@ -69,23 +69,7 @@ void NiPSSimulatorForcesStep::Write( ostream& out, const map<NiObjectRef,unsigne
 	numForces = (unsigned int)(forces.size());
 	NifStream( numForces, out, info );
 	for (unsigned int i1 = 0; i1 < forces.size(); i1++) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*forces[i1]), out );
-		} else {
-			if ( forces[i1] != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(forces[i1]) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( forces[i1] );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(forces[i1]), out, info, link_map, missing_link_stack );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -129,7 +113,7 @@ void NiPSSimulatorForcesStep::FixLinks( const map<unsigned int,NiObjectRef> & ob
 
 	NiPSSimulatorStep::FixLinks( objects, link_stack, missing_link_stack, info );
 	for (unsigned int i1 = 0; i1 < forces.size(); i1++) {
-		forces[i1] = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
+		forces[i1] = FixLink<NiPSForce>( objects, link_stack, missing_link_stack, info );
 	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//

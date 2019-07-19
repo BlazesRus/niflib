@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,13 +14,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPSysDragModifier.h"
-#include "../../include/obj/NiObject.h"
+#include "../../include/obj/NiAVObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiPSysDragModifier::TYPE("NiPSysDragModifier", &NiPSysModifier::TYPE );
 
-NiPSysDragModifier::NiPSysDragModifier() : parent(NULL), percentage(0.0f), range(0.0f), rangeFalloff(0.0f) {
+NiPSysDragModifier::NiPSysDragModifier() : dragObject(NULL), dragAxis(1.0, 0.0, 0.0), percentage(0.05f), range(3.402823466e+38f), rangeFalloff(3.402823466e+38f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -60,23 +60,7 @@ void NiPSysDragModifier::Write( ostream& out, const map<NiObjectRef,unsigned int
 	//--END CUSTOM CODE--//
 
 	NiPSysModifier::Write( out, link_map, missing_link_stack, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*parent), out );
-	} else {
-		if ( parent != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(parent) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( parent );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	WriteRef( StaticCast<NiObject>(dragObject), out, info, link_map, missing_link_stack );
 	NifStream( dragAxis, out, info );
 	NifStream( percentage, out, info );
 	NifStream( range, out, info );
@@ -92,7 +76,7 @@ std::string NiPSysDragModifier::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiPSysModifier::asString();
-	out << "  Parent:  " << parent << endl;
+	out << "  Drag Object:  " << dragObject << endl;
 	out << "  Drag Axis:  " << dragAxis << endl;
 	out << "  Percentage:  " << percentage << endl;
 	out << "  Range:  " << range << endl;
@@ -108,7 +92,7 @@ void NiPSysDragModifier::FixLinks( const map<unsigned int,NiObjectRef> & objects
 	//--END CUSTOM CODE--//
 
 	NiPSysModifier::FixLinks( objects, link_stack, missing_link_stack, info );
-	parent = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
+	dragObject = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -123,8 +107,8 @@ std::list<NiObjectRef> NiPSysDragModifier::GetRefs() const {
 std::list<NiObject *> NiPSysDragModifier::GetPtrs() const {
 	list<NiObject *> ptrs;
 	ptrs = NiPSysModifier::GetPtrs();
-	if ( parent != NULL )
-		ptrs.push_back((NiObject *)(parent));
+	if ( dragObject != NULL )
+		ptrs.push_back((NiObject *)(dragObject));
 	return ptrs;
 }
 

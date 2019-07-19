@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -47,12 +47,12 @@ void BSFurnitureMarker::Read( istream& in, list<unsigned int> & link_stack, cons
 	positions.resize(numPositions);
 	for (unsigned int i1 = 0; i1 < positions.size(); i1++) {
 		NifStream( positions[i1].offset, in, info );
-		if ( (info.userVersion <= 11) ) {
+		if ( (info.userVersion2 <= 34) ) {
 			NifStream( positions[i1].orientation, in, info );
 			NifStream( positions[i1].positionRef1, in, info );
 			NifStream( positions[i1].positionRef2, in, info );
 		};
-		if ( ((info.version >= 0x14020007) && (info.userVersion >= 12)) ) {
+		if ( (info.userVersion2 > 34) ) {
 			NifStream( positions[i1].heading, in, info );
 			NifStream( positions[i1].animationType, in, info );
 			NifStream( positions[i1].entryProperties, in, info );
@@ -72,12 +72,12 @@ void BSFurnitureMarker::Write( ostream& out, const map<NiObjectRef,unsigned int>
 	NifStream( numPositions, out, info );
 	for (unsigned int i1 = 0; i1 < positions.size(); i1++) {
 		NifStream( positions[i1].offset, out, info );
-		if ( (info.userVersion <= 11) ) {
+		if ( (info.userVersion2 <= 34) ) {
 			NifStream( positions[i1].orientation, out, info );
 			NifStream( positions[i1].positionRef1, out, info );
 			NifStream( positions[i1].positionRef2, out, info );
 		};
-		if ( ((info.version >= 0x14020007) && (info.userVersion >= 12)) ) {
+		if ( (info.userVersion2 > 34) ) {
 			NifStream( positions[i1].heading, out, info );
 			NifStream( positions[i1].animationType, out, info );
 			NifStream( positions[i1].entryProperties, out, info );

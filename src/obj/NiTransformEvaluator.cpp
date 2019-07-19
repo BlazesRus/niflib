@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,12 +15,14 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiTransformEvaluator.h"
+#include "../../include/gen/NiQuatTransform.h"
+#include "../../include/obj/NiTransformData.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiTransformEvaluator::TYPE("NiTransformEvaluator", &NiObject::TYPE );
+const Type NiTransformEvaluator::TYPE("NiTransformEvaluator", &NiKeyBasedEvaluator::TYPE );
 
-NiTransformEvaluator::NiTransformEvaluator() {
+NiTransformEvaluator::NiTransformEvaluator() : data(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,7 +47,22 @@ void NiTransformEvaluator::Read( istream& in, list<unsigned int> & link_stack, c
 
 	//--END CUSTOM CODE--//
 
-	NiObject::Read( in, link_stack, info );
+	unsigned int block_num;
+	NiKeyBasedEvaluator::Read( in, link_stack, info );
+	NifStream( value.translation, in, info );
+	NifStream( value.rotation, in, info );
+	NifStream( value.scale, in, info );
+	if ( info.version <= 0x0A01006D ) {
+		for (unsigned int i2 = 0; i2 < 3; i2++) {
+			{
+				bool tmp;
+				NifStream( tmp, in, info );
+				value.trsValid[i2] = tmp;
+			};
+		};
+	};
+	NifStream( block_num, in, info );
+	link_stack.push_back( block_num );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -57,7 +74,19 @@ void NiTransformEvaluator::Write( ostream& out, const map<NiObjectRef,unsigned i
 
 	//--END CUSTOM CODE--//
 
-	NiObject::Write( out, link_map, missing_link_stack, info );
+	NiKeyBasedEvaluator::Write( out, link_map, missing_link_stack, info );
+	NifStream( value.translation, out, info );
+	NifStream( value.rotation, out, info );
+	NifStream( value.scale, out, info );
+	if ( info.version <= 0x0A01006D ) {
+		for (unsigned int i2 = 0; i2 < 3; i2++) {
+			{
+				bool tmp = value.trsValid[i2];
+				NifStream( tmp, out, info );
+			};
+		};
+	};
+	WriteRef( StaticCast<NiObject>(data), out, info, link_map, missing_link_stack );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -70,7 +99,24 @@ std::string NiTransformEvaluator::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiObject::asString();
+	unsigned int array_output_count = 0;
+	out << NiKeyBasedEvaluator::asString();
+	out << "  Translation:  " << value.translation << endl;
+	out << "  Rotation:  " << value.rotation << endl;
+	out << "  Scale:  " << value.scale << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < 3; i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    TRS Valid[" << i1 << "]:  " << value.trsValid[i1] << endl;
+		array_output_count++;
+	};
+	out << "  Data:  " << data << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -83,7 +129,8 @@ void NiTransformEvaluator::FixLinks( const map<unsigned int,NiObjectRef> & objec
 
 	//--END CUSTOM CODE--//
 
-	NiObject::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiKeyBasedEvaluator::FixLinks( objects, link_stack, missing_link_stack, info );
+	data = FixLink<NiTransformData>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -92,13 +139,15 @@ void NiTransformEvaluator::FixLinks( const map<unsigned int,NiObjectRef> & objec
 
 std::list<NiObjectRef> NiTransformEvaluator::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiObject::GetRefs();
+	refs = NiKeyBasedEvaluator::GetRefs();
+	if ( data != NULL )
+		refs.push_back(StaticCast<NiObject>(data));
 	return refs;
 }
 
 std::list<NiObject *> NiTransformEvaluator::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiObject::GetPtrs();
+	ptrs = NiKeyBasedEvaluator::GetPtrs();
 	return ptrs;
 }
 

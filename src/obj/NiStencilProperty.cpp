@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiStencilProperty::TYPE("NiStencilProperty", &NiProperty::TYPE );
 
-NiStencilProperty::NiStencilProperty() : flags((unsigned short)0), stencilEnabled((byte)0), stencilFunction((StencilCompareMode)0), stencilRef((unsigned int)0), stencilMask((unsigned int)4294967295), failAction((StencilAction)0), zFailAction((StencilAction)0), passAction((StencilAction)0), drawMode((FaceDrawMode)DRAW_BOTH) {
+NiStencilProperty::NiStencilProperty() : flags((unsigned short)0), stencilEnabled((byte)0), stencilFunction((StencilCompareMode)0), stencilRef((unsigned int)0), stencilMask((unsigned int)4294967295), failAction((StencilAction)0), zFailAction((StencilAction)0), passAction((StencilAction)0), drawMode((StencilDrawMode)DRAW_BOTH) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -56,9 +56,9 @@ void NiStencilProperty::Read( istream& in, list<unsigned int> & link_stack, cons
 		NifStream( drawMode, in, info );
 	};
 	if ( info.version >= 0x14010003 ) {
-		NifStream( flags, in, info );
-		NifStream( stencilRef, in, info );
-		NifStream( stencilMask, in, info );
+		NifStream( (unsigned short&)flags, in, info );
+		NifStream( (unsigned int&)stencilRef, in, info );
+		NifStream( (unsigned int&)stencilMask, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -84,9 +84,9 @@ void NiStencilProperty::Write( ostream& out, const map<NiObjectRef,unsigned int>
 		NifStream( drawMode, out, info );
 	};
 	if ( info.version >= 0x14010003 ) {
-		NifStream( flags, out, info );
-		NifStream( stencilRef, out, info );
-		NifStream( stencilMask, out, info );
+		NifStream( (unsigned short&)flags, out, info );
+		NifStream( (unsigned int&)stencilRef, out, info );
+		NifStream( (unsigned int&)stencilMask, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//

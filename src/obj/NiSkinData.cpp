@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -17,11 +17,9 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiSkinData.h"
-#include "../../include/gen/SkinTransform.h"
-#include "../../include/gen/SkinData.h"
-#include "../../include/gen/SkinTransform.h"
-#include "../../include/gen/SkinWeight.h"
-#include "../../include/gen/SkinWeight.h"
+#include "../../include/gen/BoneData.h"
+#include "../../include/gen/BoneVertData.h"
+#include "../../include/gen/NiTransform.h"
 #include "../../include/obj/NiSkinPartition.h"
 using namespace Niflib;
 
@@ -109,23 +107,7 @@ void NiSkinData::Write( ostream& out, const map<NiObjectRef,unsigned int> & link
 	NifStream( skinTransform.scale, out, info );
 	NifStream( numBones, out, info );
 	if ( ( info.version >= 0x04000002 ) && ( info.version <= 0x0A010000 ) ) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*skinPartition), out );
-		} else {
-			if ( skinPartition != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(skinPartition) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( skinPartition );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(skinPartition), out, info, link_map, missing_link_stack );
 	};
 	if ( info.version >= 0x04020100 ) {
 		NifStream( hasVertexWeights, out, info );

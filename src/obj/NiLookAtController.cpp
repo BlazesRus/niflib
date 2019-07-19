@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiLookAtController::TYPE("NiLookAtController", &NiTimeController::TYPE );
 
-NiLookAtController::NiLookAtController() : unknown1((unsigned short)0), lookAtNode(NULL) {
+NiLookAtController::NiLookAtController() : flags((LookAtFlags)0), lookAt(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -45,7 +45,7 @@ void NiLookAtController::Read( istream& in, list<unsigned int> & link_stack, con
 	unsigned int block_num;
 	NiTimeController::Read( in, link_stack, info );
 	if ( info.version >= 0x0A010000 ) {
-		NifStream( unknown1, in, info );
+		NifStream( flags, in, info );
 	};
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
@@ -60,25 +60,9 @@ void NiLookAtController::Write( ostream& out, const map<NiObjectRef,unsigned int
 
 	NiTimeController::Write( out, link_map, missing_link_stack, info );
 	if ( info.version >= 0x0A010000 ) {
-		NifStream( unknown1, out, info );
+		NifStream( flags, out, info );
 	};
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*lookAtNode), out );
-	} else {
-		if ( lookAtNode != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(lookAtNode) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( lookAtNode );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	WriteRef( StaticCast<NiObject>(lookAt), out, info, link_map, missing_link_stack );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -90,8 +74,8 @@ std::string NiLookAtController::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiTimeController::asString();
-	out << "  Unknown1:  " << unknown1 << endl;
-	out << "  Look At Node:  " << lookAtNode << endl;
+	out << "  Flags:  " << flags << endl;
+	out << "  Look At:  " << lookAt << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -103,7 +87,7 @@ void NiLookAtController::FixLinks( const map<unsigned int,NiObjectRef> & objects
 	//--END CUSTOM CODE--//
 
 	NiTimeController::FixLinks( objects, link_stack, missing_link_stack, info );
-	lookAtNode = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
+	lookAt = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -118,8 +102,8 @@ std::list<NiObjectRef> NiLookAtController::GetRefs() const {
 std::list<NiObject *> NiLookAtController::GetPtrs() const {
 	list<NiObject *> ptrs;
 	ptrs = NiTimeController::GetPtrs();
-	if ( lookAtNode != NULL )
-		ptrs.push_back((NiObject *)(lookAtNode));
+	if ( lookAt != NULL )
+		ptrs.push_back((NiObject *)(lookAt));
 	return ptrs;
 }
 

@@ -1,9 +1,9 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
 
-//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
+// To change this file, alter the gen_niflib.py script.
 
 #ifndef _LODRANGE_H_
 #define _LODRANGE_H_
@@ -28,7 +28,7 @@ struct LODRange {
 	/*! End of Range. */
 	float farExtent;
 	/*! Unknown (0,0,0). */
-	NifArray<3,unsigned int > unknownInts;
+	Niflib::NifArray<3,unsigned int > unknownInts;
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 };

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,12 +15,14 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPSMeshEmitter.h"
+#include "../../include/obj/NiAVObject.h"
+#include "../../include/obj/NiMesh.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPSMeshEmitter::TYPE("NiPSMeshEmitter", &NiObject::TYPE );
+const Type NiPSMeshEmitter::TYPE("NiPSMeshEmitter", &NiPSEmitter::TYPE );
 
-NiPSMeshEmitter::NiPSMeshEmitter() : unknown1((int)0), unknown2((int)0), unknown3((int)0), unknown27((int)0), unknown4(0.0f), unknown5(0.0f), unknown6(0.0f), unknown28(0.0f), unknown7((int)0), unknown8(0.0f), unknown9(0.0f), unknown10(0.0f), unknown11(0.0f), unknown12(0.0f), unknown13((int)0), unknown14(0.0f), unknown15(0.0f), unknown16(0.0f), unknown17((int)0), unknown18((int)0), unknown19((short)0), unknown20((int)0), unknown21((int)0), unknown22(0.0f), unknown23((int)0), unknown24((int)0), unknown25((int)0), unknown26((int)0) {
+NiPSMeshEmitter::NiPSMeshEmitter() : numMeshEmitters((unsigned int)0), emitterObject(NULL), meshEmissionType((EmitFrom)0), initialVelocityType((VelocityType)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,44 +47,23 @@ void NiPSMeshEmitter::Read( istream& in, list<unsigned int> & link_stack, const 
 
 	//--END CUSTOM CODE--//
 
-	NiObject::Read( in, link_stack, info );
-	NifStream( name, in, info );
-	NifStream( unknown1, in, info );
-	NifStream( unknown2, in, info );
-	NifStream( unknown3, in, info );
-	if ( info.version >= 0x1E000002 ) {
-		NifStream( unknown27, in, info );
+	unsigned int block_num;
+	NiPSEmitter::Read( in, link_stack, info );
+	NifStream( numMeshEmitters, in, info );
+	meshEmitters.resize(numMeshEmitters);
+	for (unsigned int i1 = 0; i1 < meshEmitters.size(); i1++) {
+		NifStream( block_num, in, info );
+		link_stack.push_back( block_num );
 	};
-	NifStream( unknown4, in, info );
-	NifStream( unknown5, in, info );
-	NifStream( unknown6, in, info );
-	if ( info.version >= 0x1E000002 ) {
-		NifStream( unknown28, in, info );
-	};
-	NifStream( unknown7, in, info );
-	NifStream( unknown8, in, info );
-	NifStream( unknown9, in, info );
-	NifStream( unknown10, in, info );
-	NifStream( unknown11, in, info );
-	NifStream( unknown12, in, info );
-	NifStream( unknown13, in, info );
-	NifStream( unknown14, in, info );
-	NifStream( unknown15, in, info );
-	NifStream( unknown16, in, info );
 	if ( info.version <= 0x14060000 ) {
-		NifStream( unknown17, in, info );
-		NifStream( unknown18, in, info );
+		NifStream( emitAxis, in, info );
 	};
-	NifStream( unknown19, in, info );
-	NifStream( unknown20, in, info );
-	NifStream( unknown21, in, info );
-	if ( info.version <= 0x14060000 ) {
-		NifStream( unknown22, in, info );
-		NifStream( unknown23, in, info );
+	if ( info.version >= 0x14060100 ) {
+		NifStream( block_num, in, info );
+		link_stack.push_back( block_num );
 	};
-	NifStream( unknown24, in, info );
-	NifStream( unknown25, in, info );
-	NifStream( unknown26, in, info );
+	NifStream( meshEmissionType, in, info );
+	NifStream( initialVelocityType, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -94,44 +75,20 @@ void NiPSMeshEmitter::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 
 	//--END CUSTOM CODE--//
 
-	NiObject::Write( out, link_map, missing_link_stack, info );
-	NifStream( name, out, info );
-	NifStream( unknown1, out, info );
-	NifStream( unknown2, out, info );
-	NifStream( unknown3, out, info );
-	if ( info.version >= 0x1E000002 ) {
-		NifStream( unknown27, out, info );
+	NiPSEmitter::Write( out, link_map, missing_link_stack, info );
+	numMeshEmitters = (unsigned int)(meshEmitters.size());
+	NifStream( numMeshEmitters, out, info );
+	for (unsigned int i1 = 0; i1 < meshEmitters.size(); i1++) {
+		WriteRef( StaticCast<NiObject>(meshEmitters[i1]), out, info, link_map, missing_link_stack );
 	};
-	NifStream( unknown4, out, info );
-	NifStream( unknown5, out, info );
-	NifStream( unknown6, out, info );
-	if ( info.version >= 0x1E000002 ) {
-		NifStream( unknown28, out, info );
-	};
-	NifStream( unknown7, out, info );
-	NifStream( unknown8, out, info );
-	NifStream( unknown9, out, info );
-	NifStream( unknown10, out, info );
-	NifStream( unknown11, out, info );
-	NifStream( unknown12, out, info );
-	NifStream( unknown13, out, info );
-	NifStream( unknown14, out, info );
-	NifStream( unknown15, out, info );
-	NifStream( unknown16, out, info );
 	if ( info.version <= 0x14060000 ) {
-		NifStream( unknown17, out, info );
-		NifStream( unknown18, out, info );
+		NifStream( emitAxis, out, info );
 	};
-	NifStream( unknown19, out, info );
-	NifStream( unknown20, out, info );
-	NifStream( unknown21, out, info );
-	if ( info.version <= 0x14060000 ) {
-		NifStream( unknown22, out, info );
-		NifStream( unknown23, out, info );
+	if ( info.version >= 0x14060100 ) {
+		WriteRef( StaticCast<NiObject>(emitterObject), out, info, link_map, missing_link_stack );
 	};
-	NifStream( unknown24, out, info );
-	NifStream( unknown25, out, info );
-	NifStream( unknown26, out, info );
+	NifStream( meshEmissionType, out, info );
+	NifStream( initialVelocityType, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -144,36 +101,26 @@ std::string NiPSMeshEmitter::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiObject::asString();
-	out << "  Name:  " << name << endl;
-	out << "  Unknown 1:  " << unknown1 << endl;
-	out << "  Unknown 2:  " << unknown2 << endl;
-	out << "  Unknown 3:  " << unknown3 << endl;
-	out << "  Unknown 27:  " << unknown27 << endl;
-	out << "  Unknown 4:  " << unknown4 << endl;
-	out << "  Unknown 5:  " << unknown5 << endl;
-	out << "  Unknown 6:  " << unknown6 << endl;
-	out << "  Unknown 28:  " << unknown28 << endl;
-	out << "  Unknown 7:  " << unknown7 << endl;
-	out << "  Unknown 8:  " << unknown8 << endl;
-	out << "  Unknown 9:  " << unknown9 << endl;
-	out << "  Unknown 10:  " << unknown10 << endl;
-	out << "  Unknown 11:  " << unknown11 << endl;
-	out << "  Unknown 12:  " << unknown12 << endl;
-	out << "  Unknown 13:  " << unknown13 << endl;
-	out << "  Unknown 14:  " << unknown14 << endl;
-	out << "  Unknown 15:  " << unknown15 << endl;
-	out << "  Unknown 16:  " << unknown16 << endl;
-	out << "  Unknown 17:  " << unknown17 << endl;
-	out << "  Unknown 18:  " << unknown18 << endl;
-	out << "  Unknown 19:  " << unknown19 << endl;
-	out << "  Unknown 20:  " << unknown20 << endl;
-	out << "  Unknown 21:  " << unknown21 << endl;
-	out << "  Unknown 22:  " << unknown22 << endl;
-	out << "  Unknown 23:  " << unknown23 << endl;
-	out << "  Unknown 24:  " << unknown24 << endl;
-	out << "  Unknown 25:  " << unknown25 << endl;
-	out << "  Unknown 26:  " << unknown26 << endl;
+	unsigned int array_output_count = 0;
+	out << NiPSEmitter::asString();
+	numMeshEmitters = (unsigned int)(meshEmitters.size());
+	out << "  Num Mesh Emitters:  " << numMeshEmitters << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < meshEmitters.size(); i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Mesh Emitters[" << i1 << "]:  " << meshEmitters[i1] << endl;
+		array_output_count++;
+	};
+	out << "  Emit Axis:  " << emitAxis << endl;
+	out << "  Emitter Object:  " << emitterObject << endl;
+	out << "  Mesh Emission Type:  " << meshEmissionType << endl;
+	out << "  Initial Velocity Type:  " << initialVelocityType << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -186,7 +133,13 @@ void NiPSMeshEmitter::FixLinks( const map<unsigned int,NiObjectRef> & objects, l
 
 	//--END CUSTOM CODE--//
 
-	NiObject::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiPSEmitter::FixLinks( objects, link_stack, missing_link_stack, info );
+	for (unsigned int i1 = 0; i1 < meshEmitters.size(); i1++) {
+		meshEmitters[i1] = FixLink<NiMesh>( objects, link_stack, missing_link_stack, info );
+	};
+	if ( info.version >= 0x14060100 ) {
+		emitterObject = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
+	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -195,13 +148,21 @@ void NiPSMeshEmitter::FixLinks( const map<unsigned int,NiObjectRef> & objects, l
 
 std::list<NiObjectRef> NiPSMeshEmitter::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiObject::GetRefs();
+	refs = NiPSEmitter::GetRefs();
+	for (unsigned int i1 = 0; i1 < meshEmitters.size(); i1++) {
+	};
 	return refs;
 }
 
 std::list<NiObject *> NiPSMeshEmitter::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiObject::GetPtrs();
+	ptrs = NiPSEmitter::GetPtrs();
+	for (unsigned int i1 = 0; i1 < meshEmitters.size(); i1++) {
+		if ( meshEmitters[i1] != NULL )
+			ptrs.push_back((NiObject *)(meshEmitters[i1]));
+	};
+	if ( emitterObject != NULL )
+		ptrs.push_back((NiObject *)(emitterObject));
 	return ptrs;
 }
 

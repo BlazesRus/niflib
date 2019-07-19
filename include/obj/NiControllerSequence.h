@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -30,33 +30,33 @@ class BSAnimNotes;
 class NiControllerSequence;
 typedef Ref<NiControllerSequence> NiControllerSequenceRef;
 
-/*! Root node in .kf files (version 10.0.1.0 and up). */
+/*! Root node in Gamebryo .kf files (version 10.0.1.0 and up). */
 class NiControllerSequence : public NiSequence {
 public:
 	/*! Constructor */
 	NIFLIB_API NiControllerSequence();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiControllerSequence();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -274,42 +274,30 @@ protected:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Weight/priority of animation? */
+	/*!
+	 * The weight of a sequence describes how it blends with other sequences at the
+	 * same priority.
+	 */
 	float weight;
-	/*!
-	 * Link to NiTextKeyExtraData. Replaces the other Text Keys field in versions
-	 * 10.1.0.106 and up.
-	 */
 	Ref<NiTextKeyExtraData > textKeys;
-	/*! Anim cycle type? Is part of "Flags" in other objects? */
 	CycleType cycleType;
-	/*! Unknown. */
-	unsigned int unknownInt0;
-	/*! The animation frequency. */
 	float frequency;
-	/*! The controller sequence start time? */
+	float phase;
 	float startTime;
-	/*! Unknown. */
-	float unknownFloat2;
-	/*! The controller sequence stop time? */
 	float stopTime;
-	/*! Unknown. */
-	byte unknownByte;
-	/*! Refers to NiControllerManager which references this object, if any. */
+	bool playBackwards;
+	/*! The owner of this sequence. */
 	NiControllerManager * manager;
-	/*! Name of target node Controller acts on. */
-	IndexString targetName;
-	/*! Refers to NiStringPalette. */
-	Ref<NiStringPalette > stringPalette;
-	/*! Unknown */
-	Ref<BSAnimNotes > animNotes;
-	/*! Unknown */
-	short unknownShort1;
 	/*!
-	 * Unknown, found in some Lazeska and Krazy Rain .KFs (seems to be 64 when
-	 * present).
+	 * The name of the NiAVObject serving as the accumulation root. This is where all
+	 * accumulated translations, scales, and rotations are applied.
 	 */
-	unsigned int unknownInt3;
+	IndexString accumRootName;
+	AccumFlags accumFlags;
+	Ref<NiStringPalette > stringPalette;
+	Ref<BSAnimNotes > animNotes;
+	mutable unsigned short numAnimNoteArrays;
+	vector<Ref<BSAnimNotes > > animNoteArrays;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -326,5 +314,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

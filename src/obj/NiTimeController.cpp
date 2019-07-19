@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiTimeController::TYPE("NiTimeController", &NiObject::TYPE );
 
-NiTimeController::NiTimeController() : nextController(NULL), flags((unsigned short)0), frequency(0.0f), phase(0.0f), startTime(0.0f), stopTime(0.0f), target(NULL), unknownInteger((unsigned int)0) {
+NiTimeController::NiTimeController() : nextController(NULL), flags((unsigned short)0), frequency(1.0f), phase(0.0f), startTime(3.402823466e+38f), stopTime(-3.402823466e+38f), target(NULL), unknownInteger((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -68,46 +68,14 @@ void NiTimeController::Write( ostream& out, const map<NiObjectRef,unsigned int> 
 	//--END CUSTOM CODE--//
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*nextController), out );
-	} else {
-		if ( nextController != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(nextController) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( nextController );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	WriteRef( StaticCast<NiObject>(nextController), out, info, link_map, missing_link_stack );
 	NifStream( flags, out, info );
 	NifStream( frequency, out, info );
 	NifStream( phase, out, info );
 	NifStream( startTime, out, info );
 	NifStream( stopTime, out, info );
 	if ( info.version >= 0x0303000D ) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*target), out );
-		} else {
-			if ( target != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(target) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( target );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(target), out, info, link_map, missing_link_stack );
 	};
 	if ( info.version <= 0x03010000 ) {
 		NifStream( unknownInteger, out, info );

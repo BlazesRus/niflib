@@ -1,17 +1,20 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
-//---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
-
-//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
+//-----------------------------------NOTICE----------------------------------//
+// Some of this file is automatically filled in by a Python script.  Only    //
+// add custom code in the designated areas or it will be overwritten during  //
+// the next update.                                                          //
+//-----------------------------------NOTICE----------------------------------//
 
 #include "../../include/gen/ShaderTexDesc.h"
 #include "../../include/gen/TexDesc.h"
+#include "../../include/obj/NiImage.h"
 #include "../../include/obj/NiSourceTexture.h"
 using namespace Niflib;
 
 //Constructor
-ShaderTexDesc::ShaderTexDesc() : isUsed(false), mapIndex((unsigned int)0) {};
+ShaderTexDesc::ShaderTexDesc() : hasMap(false), mapId((unsigned int)0) {};
 
 //Copy Constructor
 ShaderTexDesc::ShaderTexDesc( const ShaderTexDesc & src ) {
@@ -20,9 +23,9 @@ ShaderTexDesc::ShaderTexDesc( const ShaderTexDesc & src ) {
 
 //Copy Operator
 ShaderTexDesc & ShaderTexDesc::operator=( const ShaderTexDesc & src ) {
-	this->isUsed = src.isUsed;
-	this->textureData = src.textureData;
-	this->mapIndex = src.mapIndex;
+	this->hasMap = src.hasMap;
+	this->map = src.map;
+	this->mapId = src.mapId;
 	return *this;
 };
 

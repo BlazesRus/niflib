@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,35 +21,35 @@ class NiPSysAirFieldModifier;
 typedef Ref<NiPSysAirFieldModifier> NiPSysAirFieldModifierRef;
 
 /*!
- * Particle system modifier, used for controlling the particle velocity in a field
- * like wind.
+ * Particle system modifier, updates the particle velocity to simulate the effects
+ * of air movements like wind, fans, or wake.
  */
 class NiPSysAirFieldModifier : public NiPSysFieldModifier {
 public:
 	/*! Constructor */
 	NIFLIB_API NiPSysAirFieldModifier();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiPSysAirFieldModifier();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -62,18 +62,15 @@ public:
 protected:
 	/*! Direction of the particle velocity */
 	Vector3 direction;
-	/*! Unknown */
-	float unknownFloat2;
-	/*! Unknown */
-	float unknownFloat3;
-	/*! Unknown */
-	bool unknownBoolean1;
-	/*! Unknown */
-	bool unknownBoolean2;
-	/*! Unknown */
-	bool unknownBoolean3;
-	/*! Unknown */
-	float unknownFloat4;
+	/*! How quickly particles will accelerate to the magnitude of the air field. */
+	float airFriction;
+	/*! How much of the air field velocity will be added to the particle velocity. */
+	float inheritVelocity;
+	bool inheritRotation;
+	bool componentOnly;
+	bool enableSpread;
+	/*! The angle of the air field cone if Enable Spread is true. */
+	float spread;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -91,5 +88,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

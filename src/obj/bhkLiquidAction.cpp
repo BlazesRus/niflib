@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type bhkLiquidAction::TYPE("bhkLiquidAction", &bhkSerializable::TYPE );
 
-bhkLiquidAction::bhkLiquidAction() : unknownInt1((int)0), unknownInt2((int)0), unknownInt3((int)0), unknownFloat1(0.0f), unknownFloat2(0.0f), unknownFloat3(0.0f), unknownFloat4(0.0f) {
+bhkLiquidAction::bhkLiquidAction() : userData((unsigned int)0), unknownInt2((int)0), unknownInt3((int)0), initialStickForce(0.0f), stickStrength(0.0f), neighborDistance(0.0f), neighborStrength(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,13 +46,13 @@ void bhkLiquidAction::Read( istream& in, list<unsigned int> & link_stack, const 
 	//--END CUSTOM CODE--//
 
 	bhkSerializable::Read( in, link_stack, info );
-	NifStream( unknownInt1, in, info );
+	NifStream( userData, in, info );
 	NifStream( unknownInt2, in, info );
 	NifStream( unknownInt3, in, info );
-	NifStream( unknownFloat1, in, info );
-	NifStream( unknownFloat2, in, info );
-	NifStream( unknownFloat3, in, info );
-	NifStream( unknownFloat4, in, info );
+	NifStream( initialStickForce, in, info );
+	NifStream( stickStrength, in, info );
+	NifStream( neighborDistance, in, info );
+	NifStream( neighborStrength, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -65,13 +65,13 @@ void bhkLiquidAction::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	//--END CUSTOM CODE--//
 
 	bhkSerializable::Write( out, link_map, missing_link_stack, info );
-	NifStream( unknownInt1, out, info );
+	NifStream( userData, out, info );
 	NifStream( unknownInt2, out, info );
 	NifStream( unknownInt3, out, info );
-	NifStream( unknownFloat1, out, info );
-	NifStream( unknownFloat2, out, info );
-	NifStream( unknownFloat3, out, info );
-	NifStream( unknownFloat4, out, info );
+	NifStream( initialStickForce, out, info );
+	NifStream( stickStrength, out, info );
+	NifStream( neighborDistance, out, info );
+	NifStream( neighborStrength, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -85,13 +85,13 @@ std::string bhkLiquidAction::asString( bool verbose ) const {
 
 	stringstream out;
 	out << bhkSerializable::asString();
-	out << "  Unknown Int 1:  " << unknownInt1 << endl;
+	out << "  User Data:  " << userData << endl;
 	out << "  Unknown Int 2:  " << unknownInt2 << endl;
 	out << "  Unknown Int 3:  " << unknownInt3 << endl;
-	out << "  Unknown Float 1:  " << unknownFloat1 << endl;
-	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
-	out << "  Unknown Float 3:  " << unknownFloat3 << endl;
-	out << "  Unknown Float 4:  " << unknownFloat4 << endl;
+	out << "  Initial Stick Force:  " << initialStickForce << endl;
+	out << "  Stick Strength:  " << stickStrength << endl;
+	out << "  Neighbor Distance:  " << neighborDistance << endl;
+	out << "  Neighbor Strength:  " << neighborStrength << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

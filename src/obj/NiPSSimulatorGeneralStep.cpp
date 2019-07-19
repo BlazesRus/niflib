@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiPSSimulatorGeneralStep::TYPE("NiPSSimulatorGeneralStep", &NiPSSimulatorStep::TYPE );
 
-NiPSSimulatorGeneralStep::NiPSSimulatorGeneralStep() : numSizeKeys((byte)0), sizeLoopBehavior((PSLoopBehavior)0), unknown1(0.0f), unknown2(0.0f), unknown3(0.0f), numColorKeys((byte)0), colorLoopBehavior((PSLoopBehavior)0), numRotationKeys((byte)0), rotationLoopBehavior((PSLoopBehavior)0), growTime(0.0f), shrinkTime(0.0f), growGeneration((unsigned short)0), shrinkGeneration((unsigned short)0) {
+NiPSSimulatorGeneralStep::NiPSSimulatorGeneralStep() : numSizeKeys((byte)0), sizeLoopBehavior((PSLoopBehavior)0), numColorKeys((byte)0), colorLoopBehavior((PSLoopBehavior)0), numRotationKeys((byte)0), rotationLoopBehavior((PSLoopBehavior)0), growTime(0.0f), shrinkTime(0.0f), growGeneration((unsigned short)0), shrinkGeneration((unsigned short)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,25 +46,20 @@ void NiPSSimulatorGeneralStep::Read( istream& in, list<unsigned int> & link_stac
 	//--END CUSTOM CODE--//
 
 	NiPSSimulatorStep::Read( in, link_stack, info );
-	NifStream( numSizeKeys, in, info );
-	sizeKeys.resize(numSizeKeys);
-	for (unsigned int i1 = 0; i1 < sizeKeys.size(); i1++) {
-		NifStream( sizeKeys[i1], in, info, 1 );
-	};
-	if ( info.version >= 0x1E000002 ) {
+	if ( info.version >= 0x14060100 ) {
+		NifStream( numSizeKeys, in, info );
+		sizeKeys.resize(numSizeKeys);
+		for (unsigned int i2 = 0; i2 < sizeKeys.size(); i2++) {
+			NifStream( sizeKeys[i2], in, info, 1 );
+		};
 		NifStream( sizeLoopBehavior, in, info );
 	};
-	if ( info.version <= 0x14060000 ) {
-		NifStream( unknown1, in, info );
-		NifStream( unknown2, in, info );
-		NifStream( unknown3, in, info );
+	NifStream( numColorKeys, in, info );
+	colorKeys.resize(numColorKeys);
+	for (unsigned int i1 = 0; i1 < colorKeys.size(); i1++) {
+		NifStream( colorKeys[i1], in, info, 1 );
 	};
-	if ( info.version >= 0x1E000002 ) {
-		NifStream( numColorKeys, in, info );
-		colorKeys.resize(numColorKeys);
-		for (unsigned int i2 = 0; i2 < colorKeys.size(); i2++) {
-			NifStream( colorKeys[i2], in, info, 1 );
-		};
+	if ( info.version >= 0x14060100 ) {
 		NifStream( colorLoopBehavior, in, info );
 		NifStream( numRotationKeys, in, info );
 		rotationKeys.resize(numRotationKeys);
@@ -72,11 +67,11 @@ void NiPSSimulatorGeneralStep::Read( istream& in, list<unsigned int> & link_stac
 			NifStream( rotationKeys[i2], in, info, 1 );
 		};
 		NifStream( rotationLoopBehavior, in, info );
-		NifStream( growTime, in, info );
-		NifStream( shrinkTime, in, info );
-		NifStream( growGeneration, in, info );
-		NifStream( shrinkGeneration, in, info );
 	};
+	NifStream( growTime, in, info );
+	NifStream( shrinkTime, in, info );
+	NifStream( growGeneration, in, info );
+	NifStream( shrinkGeneration, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -92,34 +87,29 @@ void NiPSSimulatorGeneralStep::Write( ostream& out, const map<NiObjectRef,unsign
 	numRotationKeys = (byte)(rotationKeys.size());
 	numColorKeys = (byte)(colorKeys.size());
 	numSizeKeys = (byte)(sizeKeys.size());
-	NifStream( numSizeKeys, out, info );
-	for (unsigned int i1 = 0; i1 < sizeKeys.size(); i1++) {
-		NifStream( sizeKeys[i1], out, info, 1 );
-	};
-	if ( info.version >= 0x1E000002 ) {
+	if ( info.version >= 0x14060100 ) {
+		NifStream( numSizeKeys, out, info );
+		for (unsigned int i2 = 0; i2 < sizeKeys.size(); i2++) {
+			NifStream( sizeKeys[i2], out, info, 1 );
+		};
 		NifStream( sizeLoopBehavior, out, info );
 	};
-	if ( info.version <= 0x14060000 ) {
-		NifStream( unknown1, out, info );
-		NifStream( unknown2, out, info );
-		NifStream( unknown3, out, info );
+	NifStream( numColorKeys, out, info );
+	for (unsigned int i1 = 0; i1 < colorKeys.size(); i1++) {
+		NifStream( colorKeys[i1], out, info, 1 );
 	};
-	if ( info.version >= 0x1E000002 ) {
-		NifStream( numColorKeys, out, info );
-		for (unsigned int i2 = 0; i2 < colorKeys.size(); i2++) {
-			NifStream( colorKeys[i2], out, info, 1 );
-		};
+	if ( info.version >= 0x14060100 ) {
 		NifStream( colorLoopBehavior, out, info );
 		NifStream( numRotationKeys, out, info );
 		for (unsigned int i2 = 0; i2 < rotationKeys.size(); i2++) {
 			NifStream( rotationKeys[i2], out, info, 1 );
 		};
 		NifStream( rotationLoopBehavior, out, info );
-		NifStream( growTime, out, info );
-		NifStream( shrinkTime, out, info );
-		NifStream( growGeneration, out, info );
-		NifStream( shrinkGeneration, out, info );
 	};
+	NifStream( growTime, out, info );
+	NifStream( shrinkTime, out, info );
+	NifStream( growGeneration, out, info );
+	NifStream( shrinkGeneration, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -151,9 +141,6 @@ std::string NiPSSimulatorGeneralStep::asString( bool verbose ) const {
 		array_output_count++;
 	};
 	out << "  Size Loop Behavior:  " << sizeLoopBehavior << endl;
-	out << "  Unknown 1:  " << unknown1 << endl;
-	out << "  Unknown 2:  " << unknown2 << endl;
-	out << "  Unknown 3:  " << unknown3 << endl;
 	out << "  Num Color Keys:  " << numColorKeys << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < colorKeys.size(); i1++) {

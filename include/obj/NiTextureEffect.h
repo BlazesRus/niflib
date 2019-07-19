@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -17,6 +17,7 @@ All rights reserved.  Please see niflib.h for license. */
 
 // Include structures
 #include "../Ref.h"
+#include "../gen/NiPlane.h"
 namespace Niflib {
 
 // Forward define of referenced NIF objects
@@ -26,37 +27,35 @@ class NiTextureEffect;
 typedef Ref<NiTextureEffect> NiTextureEffectRef;
 
 /*!
- * Enables environment mapping. Should be in both the children list and effects
- * list of the NiTriShape object. For Morrowind: the bump map can be used to bump
- * the environment map (note that the bump map is ignored if no NiTextureEffect
- * object is present).
+ * Represents an effect that uses projected textures such as projected lights
+ * (gobos), environment maps, and fog maps.
  */
 class NiTextureEffect : public NiDynamicEffect {
 public:
 	/*! Constructor */
 	NIFLIB_API NiTextureEffect();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiTextureEffect();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -215,27 +214,21 @@ protected:
 	Vector3 modelProjectionTransform;
 	/*! Texture Filtering mode. */
 	TexFilterMode textureFiltering;
+	unsigned short maxAnisotropy;
 	/*! Texture Clamp mode. */
 	TexClampMode textureClamping;
-	/*! Unknown. */
-	short unknown;
 	/*! The type of effect that the texture is used for. */
-	EffectType textureType;
+	TextureType textureType;
 	/*! The method that will be used to generate UV coordinates for the texture effect. */
 	CoordGenType coordinateGenerationType;
 	/*! Image index. */
 	Ref<NiImage > image;
 	/*! Source texture index. */
 	Ref<NiSourceTexture > sourceTexture;
-	/*! Determines whether a clipping plane is used.  0 means that a plane is not used. */
-	byte clippingPlane;
-	/*! Unknown: (1,0,0)? */
-	Vector3 unknownVector;
-	/*! Unknown. 0? */
-	float unknownFloat;
-	/*! 0? */
+	/*! Determines whether a clipping plane is used. */
+	byte enablePlane;
+	NiPlane plane;
 	short ps2L;
-	/*! -75? */
 	short ps2K;
 	/*! Unknown: 0. */
 	unsigned short unknownShort;
@@ -255,5 +248,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

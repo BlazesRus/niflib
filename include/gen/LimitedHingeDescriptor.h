@@ -1,9 +1,9 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
 
-//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
+// To change this file, alter the gen_niflib.py script.
 
 #ifndef _LIMITEDHINGEDESCRIPTOR_H_
 #define _LIMITEDHINGEDESCRIPTOR_H_
@@ -54,9 +54,6 @@ struct LimitedHingeDescriptor {
 	float maxAngle;
 	/*! Maximum friction, typically either 0 or 10. In Fallout 3, typically 100. */
 	float maxFriction;
-	/*! Unknown */
-	bool enableMotor;
-	/*! Unknown. */
 	MotorDescriptor motor;
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//

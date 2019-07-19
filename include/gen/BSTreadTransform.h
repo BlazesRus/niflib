@@ -1,9 +1,9 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
 
-//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
+// To change this file, alter the gen_niflib.py script.
 
 #ifndef _BSTREADTRANSFORM_H_
 #define _BSTREADTRANSFORM_H_
@@ -11,11 +11,11 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../NIF_IO.h"
 
 // Include structures
-#include "BSTreadTransformData.h"
+#include "NiQuatTransform.h"
 namespace Niflib {
 
 
-/*! Bethesda-specific node. */
+/*! Bethesda-specific compound. */
 struct BSTreadTransform {
 	/*! Default Constructor */
 	NIFLIB_API BSTreadTransform();
@@ -25,12 +25,9 @@ struct BSTreadTransform {
 	NIFLIB_API BSTreadTransform( const BSTreadTransform & src );
 	/*! Copy Operator */
 	NIFLIB_API BSTreadTransform & operator=( const BSTreadTransform & src );
-	/*! Name of affected node? */
 	IndexString name;
-	/*! Transform data. */
-	BSTreadTransformData transform1;
-	/*! Transform data. */
-	BSTreadTransformData transform2;
+	NiQuatTransform transform1;
+	NiQuatTransform transform2;
 	//--BEGIN MISC CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//

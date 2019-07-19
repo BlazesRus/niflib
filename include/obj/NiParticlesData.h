@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,13 +14,8 @@ All rights reserved.  Please see niflib.h for license. */
 //--END CUSTOM CODE--//
 
 #include "NiGeometryData.h"
-
-// Include structures
-#include "../Ref.h"
 namespace Niflib {
 
-// Forward define of referenced NIF objects
-class NiObject;
 class NiParticlesData;
 typedef Ref<NiParticlesData> NiParticlesDataRef;
 
@@ -29,28 +24,28 @@ class NiParticlesData : public NiGeometryData {
 public:
 	/*! Constructor */
 	NIFLIB_API NiParticlesData();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiParticlesData();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -66,7 +61,7 @@ protected:
 	float particleRadius;
 	/*! Is the particle size array present? */
 	bool hasRadii;
-	/*! The individual particel sizes. */
+	/*! The individual particle sizes. */
 	vector<float > radii;
 	/*!
 	 * The number of active particles at the time the system was saved. This is also
@@ -75,35 +70,31 @@ protected:
 	unsigned short numActive;
 	/*! Is the particle size array present? */
 	bool hasSizes;
-	/*! The individual particel sizes. */
+	/*! The individual particle sizes. */
 	vector<float > sizes;
 	/*! Is the particle rotation array present? */
 	bool hasRotations;
 	/*! The individual particle rotations. */
 	vector<Quaternion > rotations;
-	/*! Unknown, probably a boolean. */
-	byte unknownByte1;
-	/*! Unknown */
-	Ref<NiObject > unknownLink;
 	/*! Are the angles of rotation present? */
 	bool hasRotationAngles;
 	/*! Angles of rotation */
 	vector<float > rotationAngles;
 	/*! Are axes of rotation present? */
 	bool hasRotationAxes;
-	/*! Unknown */
+	/*! Axes of rotation. */
 	vector<Vector3 > rotationAxes;
-	/*! if value is no, a single image rendered */
-	bool hasUvQuadrants;
-	/*!
-	 * 2,4,8,16,32,64 are potential values. If "Has" was no then this should be 256,
-	 * which represents a 16x16 framed image, which is invalid
-	 */
-	mutable byte numUvQuadrants;
-	/*! Unknown. */
-	vector<Vector4 > uvQuadrants;
-	/*! Unknown */
-	byte unknownByte2;
+	bool hasTextureIndices;
+	/*! How many quads to use in BSPSysSubTexModifier for texture atlasing */
+	mutable unsigned int numSubtextureOffsets;
+	/*! Defines UV offsets */
+	vector<Vector4 > subtextureOffsets;
+	/*! Sets aspect ratio for Subtexture Offset UV quads */
+	float aspectRatio;
+	unsigned short aspectFlags;
+	float speedToAspectAspect2;
+	float speedToAspectSpeed1;
+	float speedToAspectSpeed2;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -120,5 +111,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

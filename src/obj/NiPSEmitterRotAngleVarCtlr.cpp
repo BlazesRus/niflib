@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,7 +18,7 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPSEmitterRotAngleVarCtlr::TYPE("NiPSEmitterRotAngleVarCtlr", &NiPSEmitterRotAngleCtlr::TYPE );
+const Type NiPSEmitterRotAngleVarCtlr::TYPE("NiPSEmitterRotAngleVarCtlr", &NiPSEmitterFloatCtlr::TYPE );
 
 NiPSEmitterRotAngleVarCtlr::NiPSEmitterRotAngleVarCtlr() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
@@ -45,7 +45,7 @@ void NiPSEmitterRotAngleVarCtlr::Read( istream& in, list<unsigned int> & link_st
 
 	//--END CUSTOM CODE--//
 
-	NiPSEmitterRotAngleCtlr::Read( in, link_stack, info );
+	NiPSEmitterFloatCtlr::Read( in, link_stack, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -57,7 +57,7 @@ void NiPSEmitterRotAngleVarCtlr::Write( ostream& out, const map<NiObjectRef,unsi
 
 	//--END CUSTOM CODE--//
 
-	NiPSEmitterRotAngleCtlr::Write( out, link_map, missing_link_stack, info );
+	NiPSEmitterFloatCtlr::Write( out, link_map, missing_link_stack, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -70,7 +70,7 @@ std::string NiPSEmitterRotAngleVarCtlr::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiPSEmitterRotAngleCtlr::asString();
+	out << NiPSEmitterFloatCtlr::asString();
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -83,7 +83,7 @@ void NiPSEmitterRotAngleVarCtlr::FixLinks( const map<unsigned int,NiObjectRef> &
 
 	//--END CUSTOM CODE--//
 
-	NiPSEmitterRotAngleCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiPSEmitterFloatCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -92,13 +92,13 @@ void NiPSEmitterRotAngleVarCtlr::FixLinks( const map<unsigned int,NiObjectRef> &
 
 std::list<NiObjectRef> NiPSEmitterRotAngleVarCtlr::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiPSEmitterRotAngleCtlr::GetRefs();
+	refs = NiPSEmitterFloatCtlr::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> NiPSEmitterRotAngleVarCtlr::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiPSEmitterRotAngleCtlr::GetPtrs();
+	ptrs = NiPSEmitterFloatCtlr::GetPtrs();
 	return ptrs;
 }
 

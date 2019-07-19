@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,7 +21,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiFlipController::TYPE("NiFlipController", &NiFloatInterpController::TYPE );
 
-NiFlipController::NiFlipController() : textureSlot((TexType)0), unknownInt2((unsigned int)0), delta(0.0f), numSources((unsigned int)0) {
+NiFlipController::NiFlipController() : textureSlot((TexType)0), startTime(0.0f), delta(0.0f), numSources((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -46,10 +46,10 @@ void NiFlipController::Read( istream& in, list<unsigned int> & link_stack, const
 	unsigned int block_num;
 	NiFloatInterpController::Read( in, link_stack, info );
 	NifStream( textureSlot, in, info );
-	if ( ( info.version >= 0x04000000 ) && ( info.version <= 0x0A010000 ) ) {
-		NifStream( unknownInt2, in, info );
+	if ( ( info.version >= 0x0303000D ) && ( info.version <= 0x0A010067 ) ) {
+		NifStream( startTime, in, info );
 	};
-	if ( info.version <= 0x0A010000 ) {
+	if ( info.version <= 0x0A010067 ) {
 		NifStream( delta, in, info );
 	};
 	NifStream( numSources, in, info );
@@ -79,53 +79,21 @@ void NiFlipController::Write( ostream& out, const map<NiObjectRef,unsigned int> 
 	NiFloatInterpController::Write( out, link_map, missing_link_stack, info );
 	numSources = (unsigned int)(sources.size());
 	NifStream( textureSlot, out, info );
-	if ( ( info.version >= 0x04000000 ) && ( info.version <= 0x0A010000 ) ) {
-		NifStream( unknownInt2, out, info );
+	if ( ( info.version >= 0x0303000D ) && ( info.version <= 0x0A010067 ) ) {
+		NifStream( startTime, out, info );
 	};
-	if ( info.version <= 0x0A010000 ) {
+	if ( info.version <= 0x0A010067 ) {
 		NifStream( delta, out, info );
 	};
 	NifStream( numSources, out, info );
 	if ( info.version >= 0x04000000 ) {
 		for (unsigned int i2 = 0; i2 < sources.size(); i2++) {
-			if ( info.version < VER_3_3_0_13 ) {
-				WritePtr32( &(*sources[i2]), out );
-			} else {
-				if ( sources[i2] != NULL ) {
-					map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(sources[i2]) );
-					if (it != link_map.end()) {
-						NifStream( it->second, out, info );
-						missing_link_stack.push_back( NULL );
-					} else {
-						NifStream( 0xFFFFFFFF, out, info );
-						missing_link_stack.push_back( sources[i2] );
-					}
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( NULL );
-				}
-			}
+			WriteRef( StaticCast<NiObject>(sources[i2]), out, info, link_map, missing_link_stack );
 		};
 	};
 	if ( info.version <= 0x03010000 ) {
 		for (unsigned int i2 = 0; i2 < images.size(); i2++) {
-			if ( info.version < VER_3_3_0_13 ) {
-				WritePtr32( &(*images[i2]), out );
-			} else {
-				if ( images[i2] != NULL ) {
-					map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(images[i2]) );
-					if (it != link_map.end()) {
-						NifStream( it->second, out, info );
-						missing_link_stack.push_back( NULL );
-					} else {
-						NifStream( 0xFFFFFFFF, out, info );
-						missing_link_stack.push_back( images[i2] );
-					}
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( NULL );
-				}
-			}
+			WriteRef( StaticCast<NiObject>(images[i2]), out, info, link_map, missing_link_stack );
 		};
 	};
 
@@ -142,7 +110,7 @@ std::string NiFlipController::asString( bool verbose ) const {
 	out << NiFloatInterpController::asString();
 	numSources = (unsigned int)(sources.size());
 	out << "  Texture Slot:  " << textureSlot << endl;
-	out << "  Unknown Int 2:  " << unknownInt2 << endl;
+	out << "  Start Time:  " << startTime << endl;
 	out << "  Delta:  " << delta << endl;
 	out << "  Num Sources:  " << numSources << endl;
 	array_output_count = 0;

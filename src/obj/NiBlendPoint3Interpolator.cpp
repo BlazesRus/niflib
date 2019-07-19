@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiBlendPoint3Interpolator::TYPE("NiBlendPoint3Interpolator", &NiBlendInterpolator::TYPE );
 
-NiBlendPoint3Interpolator::NiBlendPoint3Interpolator() {
+NiBlendPoint3Interpolator::NiBlendPoint3Interpolator() : value(-3.402823466e+38, -3.402823466e+38, -3.402823466e+38) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,7 +42,7 @@ void NiBlendPoint3Interpolator::Read( istream& in, list<unsigned int> & link_sta
 	//--END CUSTOM CODE--//
 
 	NiBlendInterpolator::Read( in, link_stack, info );
-	NifStream( pointValue, in, info );
+	NifStream( value, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -53,7 +53,7 @@ void NiBlendPoint3Interpolator::Write( ostream& out, const map<NiObjectRef,unsig
 	//--END CUSTOM CODE--//
 
 	NiBlendInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( pointValue, out, info );
+	NifStream( value, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -65,7 +65,7 @@ std::string NiBlendPoint3Interpolator::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiBlendInterpolator::asString();
-	out << "  Point Value:  " << pointValue << endl;
+	out << "  Value:  " << value << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

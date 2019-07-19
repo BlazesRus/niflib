@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiLight::TYPE("NiLight", &NiDynamicEffect::TYPE );
 
-NiLight::NiLight() : dimmer(0.0f) {
+NiLight::NiLight() : dimmer(1.0f), ambientColor(0.0, 0.0, 0.0), diffuseColor(0.0, 0.0, 0.0), specularColor(0.0, 0.0, 0.0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,13 +15,15 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkListShape.h"
+#include "../../include/gen/HavokMaterial.h"
+#include "../../include/gen/hkWorldObjCinfoProperty.h"
 #include "../../include/obj/bhkShape.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type bhkListShape::TYPE("bhkListShape", &bhkShapeCollection::TYPE );
 
-bhkListShape::bhkListShape() : numSubShapes((unsigned int)0), material((HavokMaterial)0), skyrimMaterial((SkyrimHavokMaterial)0), numUnknownInts((unsigned int)0) {
+bhkListShape::bhkListShape() : numSubShapes((unsigned int)0), numUnknownInts((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -51,15 +53,21 @@ void bhkListShape::Read( istream& in, list<unsigned int> & link_stack, const Nif
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	if ( (info.userVersion < 12) ) {
-		NifStream( material, in, info );
+	if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
+		NifStream( material.material_ob, in, info );
 	};
-	if ( (info.userVersion >= 12) ) {
-		NifStream( skyrimMaterial, in, info );
+	if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
+		NifStream( material.material_fo, in, info );
 	};
-	for (unsigned int i1 = 0; i1 < 6; i1++) {
-		NifStream( unknownFloats[i1], in, info );
+	if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
+		NifStream( material.material_sk, in, info );
 	};
+	NifStream( childShapeProperty.data, in, info );
+	NifStream( childShapeProperty.size, in, info );
+	NifStream( childShapeProperty.capacityAndFlags, in, info );
+	NifStream( childFilterProperty.data, in, info );
+	NifStream( childFilterProperty.size, in, info );
+	NifStream( childFilterProperty.capacityAndFlags, in, info );
 	NifStream( numUnknownInts, in, info );
 	unknownInts.resize(numUnknownInts);
 	for (unsigned int i1 = 0; i1 < unknownInts.size(); i1++) {
@@ -79,33 +87,23 @@ void bhkListShape::Write( ostream& out, const map<NiObjectRef,unsigned int> & li
 	numSubShapes = (unsigned int)(subShapes.size());
 	NifStream( numSubShapes, out, info );
 	for (unsigned int i1 = 0; i1 < subShapes.size(); i1++) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*subShapes[i1]), out );
-		} else {
-			if ( subShapes[i1] != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(subShapes[i1]) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( subShapes[i1] );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(subShapes[i1]), out, info, link_map, missing_link_stack );
 	};
-	if ( (info.userVersion < 12) ) {
-		NifStream( material, out, info );
+	if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
+		NifStream( material.material_ob, out, info );
 	};
-	if ( (info.userVersion >= 12) ) {
-		NifStream( skyrimMaterial, out, info );
+	if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
+		NifStream( material.material_fo, out, info );
 	};
-	for (unsigned int i1 = 0; i1 < 6; i1++) {
-		NifStream( unknownFloats[i1], out, info );
+	if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
+		NifStream( material.material_sk, out, info );
 	};
+	NifStream( childShapeProperty.data, out, info );
+	NifStream( childShapeProperty.size, out, info );
+	NifStream( childShapeProperty.capacityAndFlags, out, info );
+	NifStream( childFilterProperty.data, out, info );
+	NifStream( childFilterProperty.size, out, info );
+	NifStream( childFilterProperty.capacityAndFlags, out, info );
 	NifStream( numUnknownInts, out, info );
 	for (unsigned int i1 = 0; i1 < unknownInts.size(); i1++) {
 		NifStream( unknownInts[i1], out, info );
@@ -137,20 +135,15 @@ std::string bhkListShape::asString( bool verbose ) const {
 		out << "    Sub Shapes[" << i1 << "]:  " << subShapes[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Material:  " << material << endl;
-	out << "  Skyrim Material:  " << skyrimMaterial << endl;
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < 6; i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
-		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Unknown Floats[" << i1 << "]:  " << unknownFloats[i1] << endl;
-		array_output_count++;
-	};
+	out << "  Material:  " << material.material_ob << endl;
+	out << "  Material:  " << material.material_fo << endl;
+	out << "  Material:  " << material.material_sk << endl;
+	out << "  Data:  " << childShapeProperty.data << endl;
+	out << "  Size:  " << childShapeProperty.size << endl;
+	out << "  Capacity and Flags:  " << childShapeProperty.capacityAndFlags << endl;
+	out << "  Data:  " << childFilterProperty.data << endl;
+	out << "  Size:  " << childFilterProperty.size << endl;
+	out << "  Capacity and Flags:  " << childFilterProperty.capacityAndFlags << endl;
 	out << "  Num Unknown Ints:  " << numUnknownInts << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < unknownInts.size(); i1++) {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,9 +18,9 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type BSShaderProperty::TYPE("BSShaderProperty", &NiProperty::TYPE );
+const Type BSShaderProperty::TYPE("BSShaderProperty", &NiShadeProperty::TYPE );
 
-BSShaderProperty::BSShaderProperty() : flags((unsigned short)1), shaderType((BSShaderType)SHADER_DEFAULT), shaderFlags((BSShaderFlags)0x82000000), unknownInt2((int)1), envmapScale(1.0f) {
+BSShaderProperty::BSShaderProperty() : shaderType((BSShaderType)SHADER_DEFAULT), shaderFlags((BSShaderFlags)0x82000000), shaderFlags2((BSShaderFlags2)1), environmentMapScale(1.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,13 +45,12 @@ void BSShaderProperty::Read( istream& in, list<unsigned int> & link_stack, const
 
 	//--END CUSTOM CODE--//
 
-	NiProperty::Read( in, link_stack, info );
-	NifStream( flags, in, info );
-	NifStream( shaderType, in, info );
-	NifStream( shaderFlags, in, info );
-	NifStream( unknownInt2, in, info );
-	if ( (info.userVersion == 11) ) {
-		NifStream( envmapScale, in, info );
+	NiShadeProperty::Read( in, link_stack, info );
+	if ( (info.userVersion2 <= 34) ) {
+		NifStream( shaderType, in, info );
+		NifStream( shaderFlags, in, info );
+		NifStream( shaderFlags2, in, info );
+		NifStream( environmentMapScale, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -64,13 +63,12 @@ void BSShaderProperty::Write( ostream& out, const map<NiObjectRef,unsigned int> 
 
 	//--END CUSTOM CODE--//
 
-	NiProperty::Write( out, link_map, missing_link_stack, info );
-	NifStream( flags, out, info );
-	NifStream( shaderType, out, info );
-	NifStream( shaderFlags, out, info );
-	NifStream( unknownInt2, out, info );
-	if ( (info.userVersion == 11) ) {
-		NifStream( envmapScale, out, info );
+	NiShadeProperty::Write( out, link_map, missing_link_stack, info );
+	if ( (info.userVersion2 <= 34) ) {
+		NifStream( shaderType, out, info );
+		NifStream( shaderFlags, out, info );
+		NifStream( shaderFlags2, out, info );
+		NifStream( environmentMapScale, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -84,12 +82,11 @@ std::string BSShaderProperty::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiProperty::asString();
-	out << "  Flags:  " << flags << endl;
+	out << NiShadeProperty::asString();
 	out << "  Shader Type:  " << shaderType << endl;
 	out << "  Shader Flags:  " << shaderFlags << endl;
-	out << "  Unknown Int 2:  " << unknownInt2 << endl;
-	out << "  Envmap Scale:  " << envmapScale << endl;
+	out << "  Shader Flags 2:  " << shaderFlags2 << endl;
+	out << "  Environment Map Scale:  " << environmentMapScale << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -102,7 +99,7 @@ void BSShaderProperty::FixLinks( const map<unsigned int,NiObjectRef> & objects, 
 
 	//--END CUSTOM CODE--//
 
-	NiProperty::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiShadeProperty::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -111,13 +108,13 @@ void BSShaderProperty::FixLinks( const map<unsigned int,NiObjectRef> & objects, 
 
 std::list<NiObjectRef> BSShaderProperty::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiProperty::GetRefs();
+	refs = NiShadeProperty::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> BSShaderProperty::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiProperty::GetPtrs();
+	ptrs = NiShadeProperty::GetPtrs();
 	return ptrs;
 }
 

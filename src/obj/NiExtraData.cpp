@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,6 +14,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiExtraData.h"
+#include "../../include/obj/BSExtraData.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
@@ -44,7 +45,9 @@ void NiExtraData::Read( istream& in, list<unsigned int> & link_stack, const NifI
 	unsigned int block_num;
 	NiObject::Read( in, link_stack, info );
 	if ( info.version >= 0x0A000100 ) {
-		NifStream( name, in, info );
+		if ( (!IsDerivedType(BSExtraData::TYPE)) ) {
+			NifStream( name, in, info );
+		};
 	};
 	if ( info.version <= 0x04020200 ) {
 		NifStream( block_num, in, info );
@@ -61,26 +64,12 @@ void NiExtraData::Write( ostream& out, const map<NiObjectRef,unsigned int> & lin
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
 	if ( info.version >= 0x0A000100 ) {
-		NifStream( name, out, info );
+		if ( (!IsDerivedType(BSExtraData::TYPE)) ) {
+			NifStream( name, out, info );
+		};
 	};
 	if ( info.version <= 0x04020200 ) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*nextExtraData), out );
-		} else {
-			if ( nextExtraData != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(nextExtraData) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( nextExtraData );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(nextExtraData), out, info, link_map, missing_link_stack );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -92,8 +81,11 @@ std::string NiExtraData::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
+	unsigned int array_output_count = 0;
 	out << NiObject::asString();
-	out << "  Name:  " << name << endl;
+	if ( (!IsDerivedType(BSExtraData::TYPE)) ) {
+		out << "    Name:  " << name << endl;
+	};
 	out << "  Next Extra Data:  " << nextExtraData << endl;
 	return out.str();
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiBSplineData::TYPE("NiBSplineData", &NiObject::TYPE );
 
-NiBSplineData::NiBSplineData() : numFloatControlPoints((unsigned int)0), numShortControlPoints((unsigned int)0) {
+NiBSplineData::NiBSplineData() : numFloatControlPoints((unsigned int)0), numCompactControlPoints((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -47,10 +47,10 @@ void NiBSplineData::Read( istream& in, list<unsigned int> & link_stack, const Ni
 	for (unsigned int i1 = 0; i1 < floatControlPoints.size(); i1++) {
 		NifStream( floatControlPoints[i1], in, info );
 	};
-	NifStream( numShortControlPoints, in, info );
-	shortControlPoints.resize(numShortControlPoints);
-	for (unsigned int i1 = 0; i1 < shortControlPoints.size(); i1++) {
-		NifStream( shortControlPoints[i1], in, info );
+	NifStream( numCompactControlPoints, in, info );
+	compactControlPoints.resize(numCompactControlPoints);
+	for (unsigned int i1 = 0; i1 < compactControlPoints.size(); i1++) {
+		NifStream( compactControlPoints[i1], in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -62,15 +62,15 @@ void NiBSplineData::Write( ostream& out, const map<NiObjectRef,unsigned int> & l
 	//--END CUSTOM CODE--//
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
-	numShortControlPoints = (unsigned int)(shortControlPoints.size());
+	numCompactControlPoints = (unsigned int)(compactControlPoints.size());
 	numFloatControlPoints = (unsigned int)(floatControlPoints.size());
 	NifStream( numFloatControlPoints, out, info );
 	for (unsigned int i1 = 0; i1 < floatControlPoints.size(); i1++) {
 		NifStream( floatControlPoints[i1], out, info );
 	};
-	NifStream( numShortControlPoints, out, info );
-	for (unsigned int i1 = 0; i1 < shortControlPoints.size(); i1++) {
-		NifStream( shortControlPoints[i1], out, info );
+	NifStream( numCompactControlPoints, out, info );
+	for (unsigned int i1 = 0; i1 < compactControlPoints.size(); i1++) {
+		NifStream( compactControlPoints[i1], out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -84,7 +84,7 @@ std::string NiBSplineData::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiObject::asString();
-	numShortControlPoints = (unsigned int)(shortControlPoints.size());
+	numCompactControlPoints = (unsigned int)(compactControlPoints.size());
 	numFloatControlPoints = (unsigned int)(floatControlPoints.size());
 	out << "  Num Float Control Points:  " << numFloatControlPoints << endl;
 	array_output_count = 0;
@@ -99,9 +99,9 @@ std::string NiBSplineData::asString( bool verbose ) const {
 		out << "    Float Control Points[" << i1 << "]:  " << floatControlPoints[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Num Short Control Points:  " << numShortControlPoints << endl;
+	out << "  Num Compact Control Points:  " << numCompactControlPoints << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < shortControlPoints.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < compactControlPoints.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -109,7 +109,7 @@ std::string NiBSplineData::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Short Control Points[" << i1 << "]:  " << shortControlPoints[i1] << endl;
+		out << "    Compact Control Points[" << i1 << "]:  " << compactControlPoints[i1] << endl;
 		array_output_count++;
 	};
 	return out.str();

@@ -1,9 +1,9 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
 
-//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
+// To change this file, alter the gen_niflib.py script.
 
 #ifndef _REGION_H_
 #define _REGION_H_
@@ -23,9 +23,7 @@ struct Region {
 	NIFLIB_API Region( const Region & src );
 	/*! Copy Operator */
 	NIFLIB_API Region & operator=( const Region & src );
-	/*! Unknown. */
 	unsigned int startIndex;
-	/*! Unknown. */
 	unsigned int numIndices;
 	//--BEGIN MISC CUSTOM CODE--//
 

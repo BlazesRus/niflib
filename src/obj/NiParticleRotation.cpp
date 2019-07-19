@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiParticleRotation::TYPE("NiParticleRotation", &NiParticleModifier::TYPE );
 
-NiParticleRotation::NiParticleRotation() : randomInitialAxis_((byte)0), rotationSpeed_(0.0f) {
+NiParticleRotation::NiParticleRotation() : randomInitialAxis((byte)0), rotationSpeed(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,9 +42,9 @@ void NiParticleRotation::Read( istream& in, list<unsigned int> & link_stack, con
 	//--END CUSTOM CODE--//
 
 	NiParticleModifier::Read( in, link_stack, info );
-	NifStream( randomInitialAxis_, in, info );
-	NifStream( initialAxis_, in, info );
-	NifStream( rotationSpeed_, in, info );
+	NifStream( randomInitialAxis, in, info );
+	NifStream( initialAxis, in, info );
+	NifStream( rotationSpeed, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -55,9 +55,9 @@ void NiParticleRotation::Write( ostream& out, const map<NiObjectRef,unsigned int
 	//--END CUSTOM CODE--//
 
 	NiParticleModifier::Write( out, link_map, missing_link_stack, info );
-	NifStream( randomInitialAxis_, out, info );
-	NifStream( initialAxis_, out, info );
-	NifStream( rotationSpeed_, out, info );
+	NifStream( randomInitialAxis, out, info );
+	NifStream( initialAxis, out, info );
+	NifStream( rotationSpeed, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -69,9 +69,9 @@ std::string NiParticleRotation::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiParticleModifier::asString();
-	out << "  Random Initial Axis?:  " << randomInitialAxis_ << endl;
-	out << "  Initial Axis?:  " << initialAxis_ << endl;
-	out << "  Rotation Speed?:  " << rotationSpeed_ << endl;
+	out << "  Random Initial Axis:  " << randomInitialAxis << endl;
+	out << "  Initial Axis:  " << initialAxis << endl;
+	out << "  Rotation Speed:  " << rotationSpeed << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

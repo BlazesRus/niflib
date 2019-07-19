@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,14 +15,12 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiKeyframeData.h"
 #include "../../include/gen/KeyGroup.h"
-#include "../../include/gen/KeyGroup.h"
-#include "../../include/gen/KeyGroup.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiKeyframeData::TYPE("NiKeyframeData", &NiObject::TYPE );
 
-NiKeyframeData::NiKeyframeData() : numRotationKeys((unsigned int)0), rotationType((KeyType)0), unknownFloat(0.0f) {
+NiKeyframeData::NiKeyframeData() : numRotationKeys((unsigned int)0), rotationType((KeyType)0), order(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -57,7 +55,7 @@ void NiKeyframeData::Read( istream& in, list<unsigned int> & link_stack, const N
 	};
 	if ( info.version <= 0x0A010000 ) {
 		if ( (rotationType == 4) ) {
-			NifStream( unknownFloat, in, info );
+			NifStream( order, in, info );
 		};
 	};
 	if ( (rotationType == 4) ) {
@@ -109,7 +107,7 @@ void NiKeyframeData::Write( ostream& out, const map<NiObjectRef,unsigned int> & 
 	};
 	if ( info.version <= 0x0A010000 ) {
 		if ( (rotationType == 4) ) {
-			NifStream( unknownFloat, out, info );
+			NifStream( order, out, info );
 		};
 	};
 	if ( (rotationType == 4) ) {
@@ -171,7 +169,7 @@ std::string NiKeyframeData::asString( bool verbose ) const {
 		};
 	};
 	if ( (rotationType == 4) ) {
-		out << "    Unknown Float:  " << unknownFloat << endl;
+		out << "    Order:  " << order << endl;
 		array_output_count = 0;
 		for (unsigned int i2 = 0; i2 < 3; i2++) {
 			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {

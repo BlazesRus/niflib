@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,12 +14,14 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPixelData.h"
+#include "../../include/gen/MipMap.h"
+#include "../../include/obj/NiPalette.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPixelData::TYPE("NiPixelData", &ATextureRenderData::TYPE );
+const Type NiPixelData::TYPE("NiPixelData", &NiPixelFormat::TYPE );
 
-NiPixelData::NiPixelData() : numPixels((unsigned int)0), numFaces((unsigned int)1) {
+NiPixelData::NiPixelData() : palette(NULL), numMipmaps((unsigned int)0), bytesPerPixel((unsigned int)0), numPixels((unsigned int)0), numFaces((unsigned int)1) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -44,24 +46,32 @@ void NiPixelData::Read( istream& in, list<unsigned int> & link_stack, const NifI
 	}
 	//--END CUSTOM CODE--//
 
-	ATextureRenderData::Read( in, link_stack, info );
+	unsigned int block_num;
+	NiPixelFormat::Read( in, link_stack, info );
+	NifStream( block_num, in, info );
+	link_stack.push_back( block_num );
+	NifStream( numMipmaps, in, info );
+	NifStream( bytesPerPixel, in, info );
+	mipmaps.resize(numMipmaps);
+	for (unsigned int i1 = 0; i1 < mipmaps.size(); i1++) {
+		NifStream( mipmaps[i1].width, in, info );
+		NifStream( mipmaps[i1].height, in, info );
+		NifStream( mipmaps[i1].offset, in, info );
+	};
 	NifStream( numPixels, in, info );
-	if ( info.version >= 0x14000004 ) {
+	if ( info.version >= 0x0A030006 ) {
 		NifStream( numFaces, in, info );
-		pixelData.resize(numFaces);
+	};
+	if ( info.version <= 0x0A030005 ) {
+		pixelData.resize(numPixels);
 		for (unsigned int i2 = 0; i2 < pixelData.size(); i2++) {
-			pixelData[i2].resize(numPixels);
-			for (unsigned int i3 = 0; i3 < pixelData[i2].size(); i3++) {
-				NifStream( pixelData[i2][i3], in, info );
-			};
+			NifStream( pixelData[i2], in, info );
 		};
 	};
-	if ( info.version <= 0x0A020000 ) {
-		for (unsigned int i2 = 0; i2 < 1; i2++) {
-			pixelData[i2].resize(numPixels);
-			for (unsigned int i3 = 0; i3 < pixelData[i2].size(); i3++) {
-				NifStream( pixelData[i2][i3], in, info );
-			};
+	if ( info.version >= 0x0A030006 ) {
+		pixelData.resize((numPixels * numFaces));
+		for (unsigned int i2 = 0; i2 < pixelData.size(); i2++) {
+			NifStream( (byte&)pixelData[i2], in, info );
 		};
 	};
 
@@ -73,23 +83,29 @@ void NiPixelData::Write( ostream& out, const map<NiObjectRef,unsigned int> & lin
 	//--BEGIN PRE-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 
-	ATextureRenderData::Write( out, link_map, missing_link_stack, info );
-	numFaces = (unsigned int)(pixelData.size());
-	numPixels = (unsigned int)((pixelData.size() > 0) ? pixelData[0].size() : 0);
+	NiPixelFormat::Write( out, link_map, missing_link_stack, info );
+	numPixels = (unsigned int)(pixelData.size());
+	numMipmaps = (unsigned int)(mipmaps.size());
+	WriteRef( StaticCast<NiObject>(palette), out, info, link_map, missing_link_stack );
+	NifStream( numMipmaps, out, info );
+	NifStream( bytesPerPixel, out, info );
+	for (unsigned int i1 = 0; i1 < mipmaps.size(); i1++) {
+		NifStream( mipmaps[i1].width, out, info );
+		NifStream( mipmaps[i1].height, out, info );
+		NifStream( mipmaps[i1].offset, out, info );
+	};
 	NifStream( numPixels, out, info );
-	if ( info.version >= 0x14000004 ) {
+	if ( info.version >= 0x0A030006 ) {
 		NifStream( numFaces, out, info );
+	};
+	if ( info.version <= 0x0A030005 ) {
 		for (unsigned int i2 = 0; i2 < pixelData.size(); i2++) {
-			for (unsigned int i3 = 0; i3 < pixelData[i2].size(); i3++) {
-				NifStream( pixelData[i2][i3], out, info );
-			};
+			NifStream( pixelData[i2], out, info );
 		};
 	};
-	if ( info.version <= 0x0A020000 ) {
-		for (unsigned int i2 = 0; i2 < 1; i2++) {
-			for (unsigned int i3 = 0; i3 < pixelData[i2].size(); i3++) {
-				NifStream( pixelData[i2][i3], out, info );
-			};
+	if ( info.version >= 0x0A030006 ) {
+		for (unsigned int i2 = 0; i2 < pixelData.size(); i2++) {
+			NifStream( (byte&)pixelData[i2], out, info );
 		};
 	};
 
@@ -103,9 +119,22 @@ std::string NiPixelData::asString( bool verbose ) const {
 
 	stringstream out;
 	unsigned int array_output_count = 0;
-	out << ATextureRenderData::asString();
-	numFaces = (unsigned int)(pixelData.size());
-	numPixels = (unsigned int)((pixelData.size() > 0) ? pixelData[0].size() : 0);
+	out << NiPixelFormat::asString();
+	numPixels = (unsigned int)(pixelData.size());
+	numMipmaps = (unsigned int)(mipmaps.size());
+	out << "  Palette:  " << palette << endl;
+	out << "  Num Mipmaps:  " << numMipmaps << endl;
+	out << "  Bytes Per Pixel:  " << bytesPerPixel << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < mipmaps.size(); i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		out << "    Width:  " << mipmaps[i1].width << endl;
+		out << "    Height:  " << mipmaps[i1].height << endl;
+		out << "    Offset:  " << mipmaps[i1].offset << endl;
+	};
 	out << "  Num Pixels:  " << numPixels << endl;
 	out << "  Num Faces:  " << numFaces << endl;
 	array_output_count = 0;
@@ -114,13 +143,11 @@ std::string NiPixelData::asString( bool verbose ) const {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
 		};
-		for (unsigned int i2 = 0; i2 < pixelData[i1].size(); i2++) {
-			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-				break;
-			};
-			out << "      Pixel Data[" << i2 << "]:  " << pixelData[i1][i2] << endl;
-			array_output_count++;
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
 		};
+		out << "    Pixel Data[" << i1 << "]:  " << pixelData[i1] << endl;
+		array_output_count++;
 	};
 	return out.str();
 
@@ -132,7 +159,8 @@ void NiPixelData::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<
 	//--BEGIN PRE-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 
-	ATextureRenderData::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiPixelFormat::FixLinks( objects, link_stack, missing_link_stack, info );
+	palette = FixLink<NiPalette>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -140,13 +168,15 @@ void NiPixelData::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<
 
 std::list<NiObjectRef> NiPixelData::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = ATextureRenderData::GetRefs();
+	refs = NiPixelFormat::GetRefs();
+	if ( palette != NULL )
+		refs.push_back(StaticCast<NiObject>(palette));
 	return refs;
 }
 
 std::list<NiObject *> NiPixelData::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = ATextureRenderData::GetPtrs();
+	ptrs = NiPixelFormat::GetPtrs();
 	return ptrs;
 }
 

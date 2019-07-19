@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -46,7 +46,7 @@ void NiPSysGrowFadeModifier::Read( istream& in, list<unsigned int> & link_stack,
 	NifStream( growGeneration, in, info );
 	NifStream( fadeTime, in, info );
 	NifStream( fadeGeneration, in, info );
-	if ( ( info.version >= 0x14020007 ) && ( info.userVersion == 11 ) ) {
+	if ( (info.userVersion2 >= 34) ) {
 		NifStream( baseScale, in, info );
 	};
 
@@ -63,7 +63,7 @@ void NiPSysGrowFadeModifier::Write( ostream& out, const map<NiObjectRef,unsigned
 	NifStream( growGeneration, out, info );
 	NifStream( fadeTime, out, info );
 	NifStream( fadeGeneration, out, info );
-	if ( ( info.version >= 0x14020007 ) && ( info.userVersion == 11 ) ) {
+	if ( (info.userVersion2 >= 34) ) {
 		NifStream( baseScale, out, info );
 	};
 

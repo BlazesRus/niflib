@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,14 +15,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/BSPSysMultiTargetEmitterCtlr.h"
-#include "../../include/obj/NiInterpolator.h"
-#include "../../include/obj/NiPSysEmitterCtlrData.h"
+#include "../../include/obj/BSMasterParticleSystem.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type BSPSysMultiTargetEmitterCtlr::TYPE("BSPSysMultiTargetEmitterCtlr", &NiPSysModifierCtlr::TYPE );
+const Type BSPSysMultiTargetEmitterCtlr::TYPE("BSPSysMultiTargetEmitterCtlr", &NiPSysEmitterCtlr::TYPE );
 
-BSPSysMultiTargetEmitterCtlr::BSPSysMultiTargetEmitterCtlr() : data(NULL), visibilityInterpolator(NULL), unknownShort1((short)0), unknownInt1((int)0) {
+BSPSysMultiTargetEmitterCtlr::BSPSysMultiTargetEmitterCtlr() : maxEmitters((unsigned short)0), masterParticleSystem(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -48,17 +47,10 @@ void BSPSysMultiTargetEmitterCtlr::Read( istream& in, list<unsigned int> & link_
 	//--END CUSTOM CODE--//
 
 	unsigned int block_num;
-	NiPSysModifierCtlr::Read( in, link_stack, info );
-	if ( info.version <= 0x0A010000 ) {
-		NifStream( block_num, in, info );
-		link_stack.push_back( block_num );
-	};
-	if ( info.version >= 0x0A020000 ) {
-		NifStream( block_num, in, info );
-		link_stack.push_back( block_num );
-	};
-	NifStream( unknownShort1, in, info );
-	NifStream( unknownInt1, in, info );
+	NiPSysEmitterCtlr::Read( in, link_stack, info );
+	NifStream( maxEmitters, in, info );
+	NifStream( block_num, in, info );
+	link_stack.push_back( block_num );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -70,47 +62,9 @@ void BSPSysMultiTargetEmitterCtlr::Write( ostream& out, const map<NiObjectRef,un
 
 	//--END CUSTOM CODE--//
 
-	NiPSysModifierCtlr::Write( out, link_map, missing_link_stack, info );
-	if ( info.version <= 0x0A010000 ) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*data), out );
-		} else {
-			if ( data != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(data) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( data );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
-	};
-	if ( info.version >= 0x0A020000 ) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*visibilityInterpolator), out );
-		} else {
-			if ( visibilityInterpolator != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(visibilityInterpolator) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( visibilityInterpolator );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
-	};
-	NifStream( unknownShort1, out, info );
-	NifStream( unknownInt1, out, info );
+	NiPSysEmitterCtlr::Write( out, link_map, missing_link_stack, info );
+	NifStream( maxEmitters, out, info );
+	WriteRef( StaticCast<NiObject>(masterParticleSystem), out, info, link_map, missing_link_stack );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -123,11 +77,9 @@ std::string BSPSysMultiTargetEmitterCtlr::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiPSysModifierCtlr::asString();
-	out << "  Data:  " << data << endl;
-	out << "  Visibility Interpolator:  " << visibilityInterpolator << endl;
-	out << "  Unknown Short 1:  " << unknownShort1 << endl;
-	out << "  Unknown Int 1:  " << unknownInt1 << endl;
+	out << NiPSysEmitterCtlr::asString();
+	out << "  Max Emitters:  " << maxEmitters << endl;
+	out << "  Master Particle System:  " << masterParticleSystem << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -140,13 +92,8 @@ void BSPSysMultiTargetEmitterCtlr::FixLinks( const map<unsigned int,NiObjectRef>
 
 	//--END CUSTOM CODE--//
 
-	NiPSysModifierCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
-	if ( info.version <= 0x0A010000 ) {
-		data = FixLink<NiPSysEmitterCtlrData>( objects, link_stack, missing_link_stack, info );
-	};
-	if ( info.version >= 0x0A020000 ) {
-		visibilityInterpolator = FixLink<NiInterpolator>( objects, link_stack, missing_link_stack, info );
-	};
+	NiPSysEmitterCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
+	masterParticleSystem = FixLink<BSMasterParticleSystem>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -155,17 +102,15 @@ void BSPSysMultiTargetEmitterCtlr::FixLinks( const map<unsigned int,NiObjectRef>
 
 std::list<NiObjectRef> BSPSysMultiTargetEmitterCtlr::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiPSysModifierCtlr::GetRefs();
-	if ( data != NULL )
-		refs.push_back(StaticCast<NiObject>(data));
-	if ( visibilityInterpolator != NULL )
-		refs.push_back(StaticCast<NiObject>(visibilityInterpolator));
+	refs = NiPSysEmitterCtlr::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> BSPSysMultiTargetEmitterCtlr::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiPSysModifierCtlr::GetPtrs();
+	ptrs = NiPSysEmitterCtlr::GetPtrs();
+	if ( masterParticleSystem != NULL )
+		ptrs.push_back((NiObject *)(masterParticleSystem));
 	return ptrs;
 }
 

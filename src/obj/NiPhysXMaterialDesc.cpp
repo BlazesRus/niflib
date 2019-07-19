@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,12 +15,14 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPhysXMaterialDesc.h"
+#include "../../include/gen/NxMaterialDesc.h"
+#include "../../include/gen/NxSpringDesc.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiPhysXMaterialDesc::TYPE("NiPhysXMaterialDesc", &NiObject::TYPE );
 
-NiPhysXMaterialDesc::NiPhysXMaterialDesc() : unknownByte1((byte)0), unknownByte2((byte)0) {
+NiPhysXMaterialDesc::NiPhysXMaterialDesc() : index((unsigned short)0), numStates((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,11 +48,28 @@ void NiPhysXMaterialDesc::Read( istream& in, list<unsigned int> & link_stack, co
 	//--END CUSTOM CODE--//
 
 	NiObject::Read( in, link_stack, info );
-	for (unsigned int i1 = 0; i1 < 12; i1++) {
-		NifStream( unknownInt[i1], in, info );
+	NifStream( index, in, info );
+	NifStream( numStates, in, info );
+	materialDescs.resize(numStates);
+	for (unsigned int i1 = 0; i1 < materialDescs.size(); i1++) {
+		NifStream( materialDescs[i1].dynamicFriction, in, info );
+		NifStream( materialDescs[i1].staticFriction, in, info );
+		NifStream( materialDescs[i1].restitution, in, info );
+		NifStream( materialDescs[i1].dynamicFrictionV, in, info );
+		NifStream( materialDescs[i1].staticFrictionV, in, info );
+		NifStream( materialDescs[i1].directionOfAnisotropy, in, info );
+		NifStream( materialDescs[i1].flags, in, info );
+		NifStream( materialDescs[i1].frictionCombineMode, in, info );
+		NifStream( materialDescs[i1].restitutionCombineMode, in, info );
+		if ( info.version <= 0x14020300 ) {
+			NifStream( materialDescs[i1].hasSpring, in, info );
+			if ( materialDescs[i1].hasSpring ) {
+				NifStream( materialDescs[i1].spring.spring, in, info );
+				NifStream( materialDescs[i1].spring.damper, in, info );
+				NifStream( materialDescs[i1].spring.targetValue, in, info );
+			};
+		};
 	};
-	NifStream( unknownByte1, in, info );
-	NifStream( unknownByte2, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -63,11 +82,28 @@ void NiPhysXMaterialDesc::Write( ostream& out, const map<NiObjectRef,unsigned in
 	//--END CUSTOM CODE--//
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
-	for (unsigned int i1 = 0; i1 < 12; i1++) {
-		NifStream( unknownInt[i1], out, info );
+	numStates = (unsigned int)(materialDescs.size());
+	NifStream( index, out, info );
+	NifStream( numStates, out, info );
+	for (unsigned int i1 = 0; i1 < materialDescs.size(); i1++) {
+		NifStream( materialDescs[i1].dynamicFriction, out, info );
+		NifStream( materialDescs[i1].staticFriction, out, info );
+		NifStream( materialDescs[i1].restitution, out, info );
+		NifStream( materialDescs[i1].dynamicFrictionV, out, info );
+		NifStream( materialDescs[i1].staticFrictionV, out, info );
+		NifStream( materialDescs[i1].directionOfAnisotropy, out, info );
+		NifStream( materialDescs[i1].flags, out, info );
+		NifStream( materialDescs[i1].frictionCombineMode, out, info );
+		NifStream( materialDescs[i1].restitutionCombineMode, out, info );
+		if ( info.version <= 0x14020300 ) {
+			NifStream( materialDescs[i1].hasSpring, out, info );
+			if ( materialDescs[i1].hasSpring ) {
+				NifStream( materialDescs[i1].spring.spring, out, info );
+				NifStream( materialDescs[i1].spring.damper, out, info );
+				NifStream( materialDescs[i1].spring.targetValue, out, info );
+			};
+		};
 	};
-	NifStream( unknownByte1, out, info );
-	NifStream( unknownByte2, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -82,20 +118,31 @@ std::string NiPhysXMaterialDesc::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiObject::asString();
+	numStates = (unsigned int)(materialDescs.size());
+	out << "  Index:  " << index << endl;
+	out << "  Num States:  " << numStates << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < 12; i1++) {
+	for (unsigned int i1 = 0; i1 < materialDescs.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
 		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
+		out << "    Dynamic Friction:  " << materialDescs[i1].dynamicFriction << endl;
+		out << "    Static Friction:  " << materialDescs[i1].staticFriction << endl;
+		out << "    Restitution:  " << materialDescs[i1].restitution << endl;
+		out << "    Dynamic Friction V:  " << materialDescs[i1].dynamicFrictionV << endl;
+		out << "    Static Friction V:  " << materialDescs[i1].staticFrictionV << endl;
+		out << "    Direction of Anisotropy:  " << materialDescs[i1].directionOfAnisotropy << endl;
+		out << "    Flags:  " << materialDescs[i1].flags << endl;
+		out << "    Friction Combine Mode:  " << materialDescs[i1].frictionCombineMode << endl;
+		out << "    Restitution Combine Mode:  " << materialDescs[i1].restitutionCombineMode << endl;
+		out << "    Has Spring:  " << materialDescs[i1].hasSpring << endl;
+		if ( materialDescs[i1].hasSpring ) {
+			out << "      Spring:  " << materialDescs[i1].spring.spring << endl;
+			out << "      Damper:  " << materialDescs[i1].spring.damper << endl;
+			out << "      Target Value:  " << materialDescs[i1].spring.targetValue << endl;
 		};
-		out << "    Unknown Int[" << i1 << "]:  " << unknownInt[i1] << endl;
-		array_output_count++;
 	};
-	out << "  Unknown Byte 1:  " << unknownByte1 << endl;
-	out << "  Unknown Byte 2:  " << unknownByte2 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

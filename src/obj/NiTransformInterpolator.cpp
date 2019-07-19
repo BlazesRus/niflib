@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,13 +14,14 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiTransformInterpolator.h"
+#include "../../include/gen/NiQuatTransform.h"
 #include "../../include/obj/NiTransformData.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiTransformInterpolator::TYPE("NiTransformInterpolator", &NiKeyBasedInterpolator::TYPE );
 
-NiTransformInterpolator::NiTransformInterpolator() : scale(0.0f), data(NULL) {
+NiTransformInterpolator::NiTransformInterpolator() : data(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -44,12 +45,16 @@ void NiTransformInterpolator::Read( istream& in, list<unsigned int> & link_stack
 
 	unsigned int block_num;
 	NiKeyBasedInterpolator::Read( in, link_stack, info );
-	NifStream( translation, in, info );
-	NifStream( rotation, in, info );
-	NifStream( scale, in, info );
-	if ( ( info.version >= 0x0A01006A ) && ( info.version <= 0x0A01006A ) ) {
+	NifStream( transform.translation, in, info );
+	NifStream( transform.rotation, in, info );
+	NifStream( transform.scale, in, info );
+	if ( info.version <= 0x0A01006D ) {
 		for (unsigned int i2 = 0; i2 < 3; i2++) {
-			NifStream( unknownBytes[i2], in, info );
+			{
+				bool tmp;
+				NifStream( tmp, in, info );
+				transform.trsValid[i2] = tmp;
+			};
 		};
 	};
 	NifStream( block_num, in, info );
@@ -64,31 +69,18 @@ void NiTransformInterpolator::Write( ostream& out, const map<NiObjectRef,unsigne
 	//--END CUSTOM CODE--//
 
 	NiKeyBasedInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( translation, out, info );
-	NifStream( rotation, out, info );
-	NifStream( scale, out, info );
-	if ( ( info.version >= 0x0A01006A ) && ( info.version <= 0x0A01006A ) ) {
+	NifStream( transform.translation, out, info );
+	NifStream( transform.rotation, out, info );
+	NifStream( transform.scale, out, info );
+	if ( info.version <= 0x0A01006D ) {
 		for (unsigned int i2 = 0; i2 < 3; i2++) {
-			NifStream( unknownBytes[i2], out, info );
+			{
+				bool tmp = transform.trsValid[i2];
+				NifStream( tmp, out, info );
+			};
 		};
 	};
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*data), out );
-	} else {
-		if ( data != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(data) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( data );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	WriteRef( StaticCast<NiObject>(data), out, info, link_map, missing_link_stack );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -101,9 +93,9 @@ std::string NiTransformInterpolator::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiKeyBasedInterpolator::asString();
-	out << "  Translation:  " << translation << endl;
-	out << "  Rotation:  " << rotation << endl;
-	out << "  Scale:  " << scale << endl;
+	out << "  Translation:  " << transform.translation << endl;
+	out << "  Rotation:  " << transform.rotation << endl;
+	out << "  Scale:  " << transform.scale << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < 3; i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
@@ -113,7 +105,7 @@ std::string NiTransformInterpolator::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Unknown Bytes[" << i1 << "]:  " << unknownBytes[i1] << endl;
+		out << "    TRS Valid[" << i1 << "]:  " << transform.trsValid[i1] << endl;
 		array_output_count++;
 	};
 	out << "  Data:  " << data << endl;

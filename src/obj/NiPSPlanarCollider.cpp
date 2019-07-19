@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,13 +15,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPSPlanarCollider.h"
-#include "../../include/obj/NiNode.h"
+#include "../../include/obj/NiAVObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPSPlanarCollider::TYPE("NiPSPlanarCollider", &NiObject::TYPE );
+const Type NiPSPlanarCollider::TYPE("NiPSPlanarCollider", &NiPSCollider::TYPE );
 
-NiPSPlanarCollider::NiPSPlanarCollider() : unknownInt1((int)0), unknownInt2((int)0), unknownShort3((short)0), unknownByte4((byte)0), unknownLink6(NULL) {
+NiPSPlanarCollider::NiPSPlanarCollider() : width(0.0f), height(0.0f), colliderObject(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -47,15 +47,11 @@ void NiPSPlanarCollider::Read( istream& in, list<unsigned int> & link_stack, con
 	//--END CUSTOM CODE--//
 
 	unsigned int block_num;
-	NiObject::Read( in, link_stack, info );
-	NifStream( name, in, info );
-	NifStream( unknownInt1, in, info );
-	NifStream( unknownInt2, in, info );
-	NifStream( unknownShort3, in, info );
-	NifStream( unknownByte4, in, info );
-	for (unsigned int i1 = 0; i1 < 8; i1++) {
-		NifStream( unknownFloats5[i1], in, info );
-	};
+	NiPSCollider::Read( in, link_stack, info );
+	NifStream( width, in, info );
+	NifStream( height, in, info );
+	NifStream( xAxis, in, info );
+	NifStream( yAxis, in, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
 
@@ -69,32 +65,12 @@ void NiPSPlanarCollider::Write( ostream& out, const map<NiObjectRef,unsigned int
 
 	//--END CUSTOM CODE--//
 
-	NiObject::Write( out, link_map, missing_link_stack, info );
-	NifStream( name, out, info );
-	NifStream( unknownInt1, out, info );
-	NifStream( unknownInt2, out, info );
-	NifStream( unknownShort3, out, info );
-	NifStream( unknownByte4, out, info );
-	for (unsigned int i1 = 0; i1 < 8; i1++) {
-		NifStream( unknownFloats5[i1], out, info );
-	};
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*unknownLink6), out );
-	} else {
-		if ( unknownLink6 != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(unknownLink6) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( unknownLink6 );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	NiPSCollider::Write( out, link_map, missing_link_stack, info );
+	NifStream( width, out, info );
+	NifStream( height, out, info );
+	NifStream( xAxis, out, info );
+	NifStream( yAxis, out, info );
+	WriteRef( StaticCast<NiObject>(colliderObject), out, info, link_map, missing_link_stack );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -107,26 +83,12 @@ std::string NiPSPlanarCollider::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	unsigned int array_output_count = 0;
-	out << NiObject::asString();
-	out << "  Name:  " << name << endl;
-	out << "  Unknown Int 1:  " << unknownInt1 << endl;
-	out << "  Unknown Int 2:  " << unknownInt2 << endl;
-	out << "  Unknown Short 3:  " << unknownShort3 << endl;
-	out << "  Unknown Byte 4:  " << unknownByte4 << endl;
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < 8; i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
-		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Unknown Floats 5[" << i1 << "]:  " << unknownFloats5[i1] << endl;
-		array_output_count++;
-	};
-	out << "  Unknown Link 6:  " << unknownLink6 << endl;
+	out << NiPSCollider::asString();
+	out << "  Width:  " << width << endl;
+	out << "  Height:  " << height << endl;
+	out << "  X Axis:  " << xAxis << endl;
+	out << "  Y Axis:  " << yAxis << endl;
+	out << "  Collider Object:  " << colliderObject << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -139,8 +101,8 @@ void NiPSPlanarCollider::FixLinks( const map<unsigned int,NiObjectRef> & objects
 
 	//--END CUSTOM CODE--//
 
-	NiObject::FixLinks( objects, link_stack, missing_link_stack, info );
-	unknownLink6 = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
+	NiPSCollider::FixLinks( objects, link_stack, missing_link_stack, info );
+	colliderObject = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -149,15 +111,15 @@ void NiPSPlanarCollider::FixLinks( const map<unsigned int,NiObjectRef> & objects
 
 std::list<NiObjectRef> NiPSPlanarCollider::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiObject::GetRefs();
-	if ( unknownLink6 != NULL )
-		refs.push_back(StaticCast<NiObject>(unknownLink6));
+	refs = NiPSCollider::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> NiPSPlanarCollider::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiObject::GetPtrs();
+	ptrs = NiPSCollider::GetPtrs();
+	if ( colliderObject != NULL )
+		ptrs.push_back((NiObject *)(colliderObject));
 	return ptrs;
 }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,12 +14,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkStiffSpringConstraint.h"
+#include "../../include/gen/StiffSpringDescriptor.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type bhkStiffSpringConstraint::TYPE("bhkStiffSpringConstraint", &bhkConstraint::TYPE );
 
-bhkStiffSpringConstraint::bhkStiffSpringConstraint() : length(0.0f) {
+bhkStiffSpringConstraint::bhkStiffSpringConstraint() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,9 +43,9 @@ void bhkStiffSpringConstraint::Read( istream& in, list<unsigned int> & link_stac
 	//--END CUSTOM CODE--//
 
 	bhkConstraint::Read( in, link_stack, info );
-	NifStream( pivotA, in, info );
-	NifStream( pivotB, in, info );
-	NifStream( length, in, info );
+	NifStream( stiffSpring.pivotA, in, info );
+	NifStream( stiffSpring.pivotB, in, info );
+	NifStream( stiffSpring.length, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -55,9 +56,9 @@ void bhkStiffSpringConstraint::Write( ostream& out, const map<NiObjectRef,unsign
 	//--END CUSTOM CODE--//
 
 	bhkConstraint::Write( out, link_map, missing_link_stack, info );
-	NifStream( pivotA, out, info );
-	NifStream( pivotB, out, info );
-	NifStream( length, out, info );
+	NifStream( stiffSpring.pivotA, out, info );
+	NifStream( stiffSpring.pivotB, out, info );
+	NifStream( stiffSpring.length, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -69,9 +70,9 @@ std::string bhkStiffSpringConstraint::asString( bool verbose ) const {
 
 	stringstream out;
 	out << bhkConstraint::asString();
-	out << "  Pivot A:  " << pivotA << endl;
-	out << "  Pivot B:  " << pivotB << endl;
-	out << "  Length:  " << length << endl;
+	out << "  Pivot A:  " << stiffSpring.pivotA << endl;
+	out << "  Pivot B:  " << stiffSpring.pivotB << endl;
+	out << "  Length:  " << stiffSpring.length << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

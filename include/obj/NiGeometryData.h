@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -29,28 +29,28 @@ class NiGeometryData : public NiObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiGeometryData();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiGeometryData();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -263,8 +263,8 @@ private:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Unknown identifier. Always 0. */
-	int unknownInt;
+	/*! Always zero. */
+	int groupId;
 	/*! Number of vertices. */
 	mutable unsigned short numVertices;
 	/*! Bethesda uses this for max number of particles in NiPSysData. */
@@ -277,16 +277,9 @@ protected:
 	bool hasVertices;
 	/*! The mesh vertices. */
 	vector<Vector3 > vertices;
-	/*! Flag for tangents and bitangents in upper byte. Texture flags in lower byte. */
-	mutable unsigned short numUvSets;
-	/*!
-	 * Bethesda's version of this field for nif versions 20.2.0.7 and up. Only a single
-	 * bit denotes whether uv's are present. For example, see
-	 * meshes/architecture/megaton/megatonrampturn45sml.nif in Fallout 3.
-	 */
-	mutable unsigned short bsNumUvSets;
-	/*! Unknown, seen in Skyrim. */
-	SkyrimHavokMaterial skyrimMaterial;
+	VectorFlags vectorFlags;
+	BSVectorFlags bsVectorFlags;
+	unsigned int materialCrc;
 	/*!
 	 * Do we have lighting normals? These are essential for proper lighting: if not
 	 * present, the model will only be influenced by ambient light.
@@ -309,7 +302,7 @@ protected:
 	 */
 	float radius;
 	/*! Unknown, always 0? */
-	NifArray<13,short > unknown13Shorts;
+	Niflib::NifArray<13,short > unknown13Shorts;
 	/*!
 	 * Do we have vertex colors? These are usually used to fine-tune the lighting of
 	 * the model.
@@ -323,6 +316,12 @@ protected:
 	bool hasVertexColors;
 	/*! The vertex colors. */
 	vector<Color4 > vertexColors;
+	/*!
+	 * The lower 6 (or less?) bits of this field represent the number of UV texture
+	 * sets. The other bits are probably flag bits. For versions 10.1.0.0 and up, if
+	 * bit 12 is set then extra vectors are present after the normals.
+	 */
+	unsigned short numUvSets;
 	/*!
 	 * Do we have UV coordinates?
 	 * 
@@ -355,5 +354,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

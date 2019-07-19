@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,10 +15,13 @@ All rights reserved.  Please see niflib.h for license. */
 //--END CUSTOM CODE--//
 
 #include "bhkSerializable.h"
+
+// Include structures
+#include "../gen/ConstraintInfo.h"
 namespace Niflib {
 
 // Forward define of referenced NIF objects
-class NiObject;
+class bhkRigidBody;
 class bhkBallSocketConstraintChain;
 typedef Ref<bhkBallSocketConstraintChain> bhkBallSocketConstraintChainRef;
 
@@ -27,28 +30,28 @@ class bhkBallSocketConstraintChain : public bhkSerializable {
 public:
 	/*! Constructor */
 	NIFLIB_API bhkBallSocketConstraintChain();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~bhkBallSocketConstraintChain();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -59,28 +62,33 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Unknown */
-	mutable unsigned int numFloats;
-	/*! Unknown */
-	vector<Vector4 > floats1;
-	/*! Unknown */
-	float unknownFloat1;
-	/*! Unknown */
-	float unknownFloat2;
-	/*! Unknown */
-	unsigned int unknownInt1;
-	/*! Unknown */
-	unsigned int unknownInt2;
+	/*! Number of pivot points. Divide by 2 to get the number of constraints. */
+	mutable unsigned int numPivots;
+	/*! Two pivot points A and B for each constraint. */
+	vector<ConstraintInfo > pivots;
+	/*! High values are harder and more reactive, lower values are smoother. */
+	float tau;
+	/*! Defines damping strength for the current velocity. */
+	float damping;
+	/*!
+	 * Restitution (amount of elasticity) of constraints. Added to the diagonal of the
+	 * constraint matrix. A value of 0.0 can result in a division by zero with some
+	 * chain configurations.
+	 */
+	float constraintForceMixing;
+	/*!
+	 * Maximum distance error in constraints allowed before stabilization algorithm
+	 * kicks in. A smaller distance causes more resistance.
+	 */
+	float maxErrorDistance;
 	/*! Number of links in the chain */
-	mutable unsigned int numLinks;
-	/*! Unknown */
-	vector<NiObject * > links;
-	/*! Number of links in the chain */
-	mutable unsigned int numLinks2;
-	/*! Unknown */
-	vector<NiObject * > links2;
-	/*! Unknown */
-	unsigned int unknownInt3;
+	mutable unsigned int numEntitiesA;
+	vector<bhkRigidBody * > entitiesA;
+	/*! Hardcoded to 2. Don't change. */
+	unsigned int numEntities;
+	bhkRigidBody * entityA;
+	bhkRigidBody * entityB;
+	unsigned int priority;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -98,5 +106,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

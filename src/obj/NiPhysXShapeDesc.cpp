@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,13 +15,15 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPhysXShapeDesc.h"
+#include "../../include/gen/NxCapsule.h"
+#include "../../include/gen/NxPlane.h"
 #include "../../include/obj/NiPhysXMeshDesc.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiPhysXShapeDesc::TYPE("NiPhysXShapeDesc", &NiObject::TYPE );
 
-NiPhysXShapeDesc::NiPhysXShapeDesc() : unknownInt1((int)0), unknownShort1((short)0), unknownInt2((int)0), unknownShort2((short)0), unknownFloat1(0.0f), unknownFloat2(0.0f), unknownFloat3(0.0f), unknownInt3((int)0), unknownInt4((int)0), unknownInt5((int)0), unknownInt7((int)0), unknownInt8((int)0), meshDescription(NULL) {
+NiPhysXShapeDesc::NiPhysXShapeDesc() : shapeType((NxShapeType)0), shapeFlags((unsigned int)0), collisionGroup((unsigned short)0), materialIndex((unsigned short)0), density(0.0f), mass(0.0f), skinWidth(0.0f), non_interactingCompartmentTypes((unsigned int)0), sphereRadius(0.0f), mesh(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -48,23 +50,40 @@ void NiPhysXShapeDesc::Read( istream& in, list<unsigned int> & link_stack, const
 
 	unsigned int block_num;
 	NiObject::Read( in, link_stack, info );
-	NifStream( unknownInt1, in, info );
-	NifStream( unknownQuat1, in, info );
-	NifStream( unknownQuat2, in, info );
-	NifStream( unknownQuat3, in, info );
-	NifStream( unknownShort1, in, info );
-	NifStream( unknownInt2, in, info );
-	NifStream( unknownShort2, in, info );
-	NifStream( unknownFloat1, in, info );
-	NifStream( unknownFloat2, in, info );
-	NifStream( unknownFloat3, in, info );
-	NifStream( unknownInt3, in, info );
-	NifStream( unknownInt4, in, info );
-	NifStream( unknownInt5, in, info );
-	NifStream( unknownInt7, in, info );
-	NifStream( unknownInt8, in, info );
-	NifStream( block_num, in, info );
-	link_stack.push_back( block_num );
+	NifStream( shapeType, in, info );
+	NifStream( localPose, in, info );
+	NifStream( shapeFlags, in, info );
+	NifStream( collisionGroup, in, info );
+	NifStream( materialIndex, in, info );
+	NifStream( density, in, info );
+	NifStream( mass, in, info );
+	NifStream( skinWidth, in, info );
+	NifStream( shapeName, in, info );
+	if ( info.version >= 0x14040000 ) {
+		NifStream( non_interactingCompartmentTypes, in, info );
+	};
+	for (unsigned int i1 = 0; i1 < 4; i1++) {
+		NifStream( collisionBits[i1], in, info );
+	};
+	if ( (shapeType == 0) ) {
+		NifStream( plane.val1, in, info );
+		NifStream( plane.point1, in, info );
+	};
+	if ( (shapeType == 1) ) {
+		NifStream( sphereRadius, in, info );
+	};
+	if ( (shapeType == 2) ) {
+		NifStream( boxHalfExtents, in, info );
+	};
+	if ( (shapeType == 3) ) {
+		NifStream( capsule.val1, in, info );
+		NifStream( capsule.val2, in, info );
+		NifStream( capsule.capsuleFlags, in, info );
+	};
+	if ( ((shapeType == 5) || (shapeType == 6)) ) {
+		NifStream( block_num, in, info );
+		link_stack.push_back( block_num );
+	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -77,38 +96,39 @@ void NiPhysXShapeDesc::Write( ostream& out, const map<NiObjectRef,unsigned int> 
 	//--END CUSTOM CODE--//
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
-	NifStream( unknownInt1, out, info );
-	NifStream( unknownQuat1, out, info );
-	NifStream( unknownQuat2, out, info );
-	NifStream( unknownQuat3, out, info );
-	NifStream( unknownShort1, out, info );
-	NifStream( unknownInt2, out, info );
-	NifStream( unknownShort2, out, info );
-	NifStream( unknownFloat1, out, info );
-	NifStream( unknownFloat2, out, info );
-	NifStream( unknownFloat3, out, info );
-	NifStream( unknownInt3, out, info );
-	NifStream( unknownInt4, out, info );
-	NifStream( unknownInt5, out, info );
-	NifStream( unknownInt7, out, info );
-	NifStream( unknownInt8, out, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*meshDescription), out );
-	} else {
-		if ( meshDescription != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(meshDescription) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( meshDescription );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	NifStream( shapeType, out, info );
+	NifStream( localPose, out, info );
+	NifStream( shapeFlags, out, info );
+	NifStream( collisionGroup, out, info );
+	NifStream( materialIndex, out, info );
+	NifStream( density, out, info );
+	NifStream( mass, out, info );
+	NifStream( skinWidth, out, info );
+	NifStream( shapeName, out, info );
+	if ( info.version >= 0x14040000 ) {
+		NifStream( non_interactingCompartmentTypes, out, info );
+	};
+	for (unsigned int i1 = 0; i1 < 4; i1++) {
+		NifStream( collisionBits[i1], out, info );
+	};
+	if ( (shapeType == 0) ) {
+		NifStream( plane.val1, out, info );
+		NifStream( plane.point1, out, info );
+	};
+	if ( (shapeType == 1) ) {
+		NifStream( sphereRadius, out, info );
+	};
+	if ( (shapeType == 2) ) {
+		NifStream( boxHalfExtents, out, info );
+	};
+	if ( (shapeType == 3) ) {
+		NifStream( capsule.val1, out, info );
+		NifStream( capsule.val2, out, info );
+		NifStream( capsule.capsuleFlags, out, info );
+	};
+	if ( ((shapeType == 5) || (shapeType == 6)) ) {
+		WriteRef( StaticCast<NiObject>(mesh), out, info, link_map, missing_link_stack );
+	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -121,23 +141,48 @@ std::string NiPhysXShapeDesc::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
+	unsigned int array_output_count = 0;
 	out << NiObject::asString();
-	out << "  Unknown Int 1:  " << unknownInt1 << endl;
-	out << "  Unknown Quat 1:  " << unknownQuat1 << endl;
-	out << "  Unknown Quat 2:  " << unknownQuat2 << endl;
-	out << "  Unknown Quat 3:  " << unknownQuat3 << endl;
-	out << "  Unknown Short 1:  " << unknownShort1 << endl;
-	out << "  Unknown Int 2:  " << unknownInt2 << endl;
-	out << "  Unknown Short 2:  " << unknownShort2 << endl;
-	out << "  Unknown Float 1:  " << unknownFloat1 << endl;
-	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
-	out << "  Unknown Float 3:  " << unknownFloat3 << endl;
-	out << "  Unknown Int 3:  " << unknownInt3 << endl;
-	out << "  Unknown Int 4:  " << unknownInt4 << endl;
-	out << "  Unknown Int 5:  " << unknownInt5 << endl;
-	out << "  Unknown Int 7:  " << unknownInt7 << endl;
-	out << "  Unknown Int 8:  " << unknownInt8 << endl;
-	out << "  Mesh Description:  " << meshDescription << endl;
+	out << "  Shape Type:  " << shapeType << endl;
+	out << "  Local Pose:  " << localPose << endl;
+	out << "  Shape Flags:  " << shapeFlags << endl;
+	out << "  Collision Group:  " << collisionGroup << endl;
+	out << "  Material Index:  " << materialIndex << endl;
+	out << "  Density:  " << density << endl;
+	out << "  Mass:  " << mass << endl;
+	out << "  Skin Width:  " << skinWidth << endl;
+	out << "  Shape Name:  " << shapeName << endl;
+	out << "  Non-Interacting Compartment Types:  " << non_interactingCompartmentTypes << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < 4; i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Collision Bits[" << i1 << "]:  " << collisionBits[i1] << endl;
+		array_output_count++;
+	};
+	if ( (shapeType == 0) ) {
+		out << "    Val 1:  " << plane.val1 << endl;
+		out << "    Point 1:  " << plane.point1 << endl;
+	};
+	if ( (shapeType == 1) ) {
+		out << "    Sphere Radius:  " << sphereRadius << endl;
+	};
+	if ( (shapeType == 2) ) {
+		out << "    Box Half Extents:  " << boxHalfExtents << endl;
+	};
+	if ( (shapeType == 3) ) {
+		out << "    Val 1:  " << capsule.val1 << endl;
+		out << "    Val 2:  " << capsule.val2 << endl;
+		out << "    Capsule Flags:  " << capsule.capsuleFlags << endl;
+	};
+	if ( ((shapeType == 5) || (shapeType == 6)) ) {
+		out << "    Mesh:  " << mesh << endl;
+	};
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -151,7 +196,9 @@ void NiPhysXShapeDesc::FixLinks( const map<unsigned int,NiObjectRef> & objects, 
 	//--END CUSTOM CODE--//
 
 	NiObject::FixLinks( objects, link_stack, missing_link_stack, info );
-	meshDescription = FixLink<NiPhysXMeshDesc>( objects, link_stack, missing_link_stack, info );
+	if ( ((shapeType == 5) || (shapeType == 6)) ) {
+		mesh = FixLink<NiPhysXMeshDesc>( objects, link_stack, missing_link_stack, info );
+	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -161,8 +208,8 @@ void NiPhysXShapeDesc::FixLinks( const map<unsigned int,NiObjectRef> & objects, 
 std::list<NiObjectRef> NiPhysXShapeDesc::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiObject::GetRefs();
-	if ( meshDescription != NULL )
-		refs.push_back(StaticCast<NiObject>(meshDescription));
+	if ( mesh != NULL )
+		refs.push_back(StaticCast<NiObject>(mesh));
 	return refs;
 }
 

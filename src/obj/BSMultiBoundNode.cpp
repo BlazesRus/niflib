@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,7 +21,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type BSMultiBoundNode::TYPE("BSMultiBoundNode", &NiNode::TYPE );
 
-BSMultiBoundNode::BSMultiBoundNode() : multiBound(NULL), unknownInt((unsigned int)0) {
+BSMultiBoundNode::BSMultiBoundNode() : multiBound(NULL), cullingMode((BSCPCullingType)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -50,8 +50,8 @@ void BSMultiBoundNode::Read( istream& in, list<unsigned int> & link_stack, const
 	NiNode::Read( in, link_stack, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
-	if ( ( info.version >= 0x14020007 ) && ( (info.userVersion >= 12) ) ) {
-		NifStream( unknownInt, in, info );
+	if ( (info.userVersion2 >= 83) ) {
+		NifStream( cullingMode, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -65,25 +65,9 @@ void BSMultiBoundNode::Write( ostream& out, const map<NiObjectRef,unsigned int> 
 	//--END CUSTOM CODE--//
 
 	NiNode::Write( out, link_map, missing_link_stack, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*multiBound), out );
-	} else {
-		if ( multiBound != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(multiBound) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( multiBound );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
-	if ( ( info.version >= 0x14020007 ) && ( (info.userVersion >= 12) ) ) {
-		NifStream( unknownInt, out, info );
+	WriteRef( StaticCast<NiObject>(multiBound), out, info, link_map, missing_link_stack );
+	if ( (info.userVersion2 >= 83) ) {
+		NifStream( cullingMode, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -99,7 +83,7 @@ std::string BSMultiBoundNode::asString( bool verbose ) const {
 	stringstream out;
 	out << NiNode::asString();
 	out << "  Multi Bound:  " << multiBound << endl;
-	out << "  Unknown Int:  " << unknownInt << endl;
+	out << "  Culling Mode:  " << cullingMode << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

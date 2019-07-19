@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,9 +19,9 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type BSLightingShaderProperty::TYPE("BSLightingShaderProperty", &NiProperty::TYPE );
+const Type BSLightingShaderProperty::TYPE("BSLightingShaderProperty", &BSShaderProperty::TYPE );
 
-BSLightingShaderProperty::BSLightingShaderProperty() : shaderFlags1((SkyrimShaderPropertyFlags1)2185233153), shaderFlags2((SkyrimShaderPropertyFlags2)32801), uvScale(1.0, 1.0), textureSet(NULL), emissiveMultiple(0.0f), textureClampMode((TexClampMode)0), alpha(1.0f), unknownFloat2(0.0f), glossiness(0.0f), specularStrength(1.0f), lightingEffect1(0.0f), lightingEffect2(0.0f), environmentMapScale(0.0f), maxPasses(0.0f), scale(0.0f), parallaxInnerLayerThickness(0.0f), parallaxRefractionScale(0.0f), parallaxEnvmapStrength(0.0f), eyeCubemapScale(0.0f) {
+BSLightingShaderProperty::BSLightingShaderProperty() : shaderFlags1_sk((SkyrimShaderPropertyFlags1)2185233153), shaderFlags2_sk((SkyrimShaderPropertyFlags2)32801), shaderFlags1_fo4((Fallout4ShaderPropertyFlags1)2151678465), shaderFlags2_fo4((Fallout4ShaderPropertyFlags2)1), uvScale(1.0, 1.0), textureSet(NULL), emissiveColor(0.0, 0.0, 0.0), emissiveMultiple(0.0f), textureClampMode((TexClampMode)3), alpha(1.0f), refractionStrength(0.0f), glossiness(80.0f), smoothness(1.0f), specularStrength(1.0f), lightingEffect1(0.3f), lightingEffect2(2.0f), subsurfaceRolloff(0.3f), rimlightPower(3.402823466e+38f), backlightPower(0.0f), grayscaleToPaletteScale(0.0f), fresnelPower(5.0f), wetnessSpecScale(-1.0f), wetnessSpecPower(-1.0f), wetnessMinVar(-1.0f), wetnessEnvMapScale(-1.0f), wetnessFresnelPower(-1.0f), wetnessMetalness(-1.0f), environmentMapScale(1.0f), unknownEnvMapShort((unsigned short)0), unknownSkinTintInt((unsigned int)0), maxPasses(0.0f), scale(0.0f), parallaxInnerLayerThickness(0.0f), parallaxRefractionScale(0.0f), parallaxEnvmapStrength(0.0f), eyeCubemapScale(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -47,10 +47,14 @@ void BSLightingShaderProperty::Read( istream& in, list<unsigned int> & link_stac
 	//--END CUSTOM CODE--//
 
 	unsigned int block_num;
-	NiProperty::Read( in, link_stack, info );
-	if ( (info.userVersion == 12) ) {
-		NifStream( shaderFlags1, in, info );
-		NifStream( shaderFlags2, in, info );
+	BSShaderProperty::Read( in, link_stack, info );
+	if ( (info.userVersion2 != 130) ) {
+		NifStream( shaderFlags1_sk, in, info );
+		NifStream( shaderFlags2_sk, in, info );
+	};
+	if ( (info.userVersion2 == 130) ) {
+		NifStream( shaderFlags1_fo4, in, info );
+		NifStream( shaderFlags2_fo4, in, info );
 	};
 	NifStream( uvOffset, in, info );
 	NifStream( uvScale, in, info );
@@ -58,19 +62,54 @@ void BSLightingShaderProperty::Read( istream& in, list<unsigned int> & link_stac
 	link_stack.push_back( block_num );
 	NifStream( emissiveColor, in, info );
 	NifStream( emissiveMultiple, in, info );
+	if ( (info.userVersion2 == 130) ) {
+		NifStream( wetMaterial, in, info );
+	};
 	NifStream( textureClampMode, in, info );
 	NifStream( alpha, in, info );
-	NifStream( unknownFloat2, in, info );
-	NifStream( glossiness, in, info );
+	NifStream( refractionStrength, in, info );
+	if ( (info.userVersion2 < 130) ) {
+		NifStream( glossiness, in, info );
+	};
+	if ( (info.userVersion2 == 130) ) {
+		NifStream( smoothness, in, info );
+	};
 	NifStream( specularColor, in, info );
 	NifStream( specularStrength, in, info );
-	NifStream( lightingEffect1, in, info );
-	NifStream( lightingEffect2, in, info );
+	if ( (info.userVersion2 < 130) ) {
+		NifStream( lightingEffect1, in, info );
+		NifStream( lightingEffect2, in, info );
+	};
+	if ( (info.userVersion2 == 130) ) {
+		NifStream( subsurfaceRolloff, in, info );
+		NifStream( rimlightPower, in, info );
+		if ( (rimlightPower == 0x7F7FFFFF) ) {
+			NifStream( backlightPower, in, info );
+		};
+		NifStream( grayscaleToPaletteScale, in, info );
+		NifStream( fresnelPower, in, info );
+		NifStream( wetnessSpecScale, in, info );
+		NifStream( wetnessSpecPower, in, info );
+		NifStream( wetnessMinVar, in, info );
+		NifStream( wetnessEnvMapScale, in, info );
+		NifStream( wetnessFresnelPower, in, info );
+		NifStream( wetnessMetalness, in, info );
+	};
 	if ( (skyrimShaderType == 1) ) {
 		NifStream( environmentMapScale, in, info );
 	};
+	if ( (info.userVersion2 == 130) ) {
+		if ( (skyrimShaderType == 1) ) {
+			NifStream( unknownEnvMapShort, in, info );
+		};
+	};
 	if ( (skyrimShaderType == 5) ) {
 		NifStream( skinTintColor, in, info );
+	};
+	if ( (info.userVersion2 == 130) ) {
+		if ( (skyrimShaderType == 5) ) {
+			NifStream( unknownSkinTintInt, in, info );
+		};
 	};
 	if ( (skyrimShaderType == 6) ) {
 		NifStream( hairTintColor, in, info );
@@ -104,45 +143,68 @@ void BSLightingShaderProperty::Write( ostream& out, const map<NiObjectRef,unsign
 
 	//--END CUSTOM CODE--//
 
-	NiProperty::Write( out, link_map, missing_link_stack, info );
-	if ( (info.userVersion == 12) ) {
-		NifStream( shaderFlags1, out, info );
-		NifStream( shaderFlags2, out, info );
+	BSShaderProperty::Write( out, link_map, missing_link_stack, info );
+	if ( (info.userVersion2 != 130) ) {
+		NifStream( shaderFlags1_sk, out, info );
+		NifStream( shaderFlags2_sk, out, info );
+	};
+	if ( (info.userVersion2 == 130) ) {
+		NifStream( shaderFlags1_fo4, out, info );
+		NifStream( shaderFlags2_fo4, out, info );
 	};
 	NifStream( uvOffset, out, info );
 	NifStream( uvScale, out, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*textureSet), out );
-	} else {
-		if ( textureSet != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(textureSet) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( textureSet );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	WriteRef( StaticCast<NiObject>(textureSet), out, info, link_map, missing_link_stack );
 	NifStream( emissiveColor, out, info );
 	NifStream( emissiveMultiple, out, info );
+	if ( (info.userVersion2 == 130) ) {
+		NifStream( wetMaterial, out, info );
+	};
 	NifStream( textureClampMode, out, info );
 	NifStream( alpha, out, info );
-	NifStream( unknownFloat2, out, info );
-	NifStream( glossiness, out, info );
+	NifStream( refractionStrength, out, info );
+	if ( (info.userVersion2 < 130) ) {
+		NifStream( glossiness, out, info );
+	};
+	if ( (info.userVersion2 == 130) ) {
+		NifStream( smoothness, out, info );
+	};
 	NifStream( specularColor, out, info );
 	NifStream( specularStrength, out, info );
-	NifStream( lightingEffect1, out, info );
-	NifStream( lightingEffect2, out, info );
+	if ( (info.userVersion2 < 130) ) {
+		NifStream( lightingEffect1, out, info );
+		NifStream( lightingEffect2, out, info );
+	};
+	if ( (info.userVersion2 == 130) ) {
+		NifStream( subsurfaceRolloff, out, info );
+		NifStream( rimlightPower, out, info );
+		if ( (rimlightPower == 0x7F7FFFFF) ) {
+			NifStream( backlightPower, out, info );
+		};
+		NifStream( grayscaleToPaletteScale, out, info );
+		NifStream( fresnelPower, out, info );
+		NifStream( wetnessSpecScale, out, info );
+		NifStream( wetnessSpecPower, out, info );
+		NifStream( wetnessMinVar, out, info );
+		NifStream( wetnessEnvMapScale, out, info );
+		NifStream( wetnessFresnelPower, out, info );
+		NifStream( wetnessMetalness, out, info );
+	};
 	if ( (skyrimShaderType == 1) ) {
 		NifStream( environmentMapScale, out, info );
 	};
+	if ( (info.userVersion2 == 130) ) {
+		if ( (skyrimShaderType == 1) ) {
+			NifStream( unknownEnvMapShort, out, info );
+		};
+	};
 	if ( (skyrimShaderType == 5) ) {
 		NifStream( skinTintColor, out, info );
+	};
+	if ( (info.userVersion2 == 130) ) {
+		if ( (skyrimShaderType == 5) ) {
+			NifStream( unknownSkinTintInt, out, info );
+		};
 	};
 	if ( (skyrimShaderType == 6) ) {
 		NifStream( hairTintColor, out, info );
@@ -177,27 +239,47 @@ std::string BSLightingShaderProperty::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiProperty::asString();
-	out << "  Shader Flags 1:  " << shaderFlags1 << endl;
-	out << "  Shader Flags 2:  " << shaderFlags2 << endl;
+	unsigned int array_output_count = 0;
+	out << BSShaderProperty::asString();
+	out << "  Shader Flags 1:  " << shaderFlags1_sk << endl;
+	out << "  Shader Flags 2:  " << shaderFlags2_sk << endl;
+	out << "  Shader Flags 1:  " << shaderFlags1_fo4 << endl;
+	out << "  Shader Flags 2:  " << shaderFlags2_fo4 << endl;
 	out << "  UV Offset:  " << uvOffset << endl;
 	out << "  UV Scale:  " << uvScale << endl;
 	out << "  Texture Set:  " << textureSet << endl;
 	out << "  Emissive Color:  " << emissiveColor << endl;
 	out << "  Emissive Multiple:  " << emissiveMultiple << endl;
+	out << "  Wet Material:  " << wetMaterial << endl;
 	out << "  Texture Clamp Mode:  " << textureClampMode << endl;
 	out << "  Alpha:  " << alpha << endl;
-	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
+	out << "  Refraction Strength:  " << refractionStrength << endl;
 	out << "  Glossiness:  " << glossiness << endl;
+	out << "  Smoothness:  " << smoothness << endl;
 	out << "  Specular Color:  " << specularColor << endl;
 	out << "  Specular Strength:  " << specularStrength << endl;
 	out << "  Lighting Effect 1:  " << lightingEffect1 << endl;
 	out << "  Lighting Effect 2:  " << lightingEffect2 << endl;
+	out << "  Subsurface Rolloff:  " << subsurfaceRolloff << endl;
+	out << "  Rimlight Power:  " << rimlightPower << endl;
+	if ( (rimlightPower == 0x7F7FFFFF) ) {
+		out << "    Backlight Power:  " << backlightPower << endl;
+	};
+	out << "  Grayscale to Palette Scale:  " << grayscaleToPaletteScale << endl;
+	out << "  Fresnel Power:  " << fresnelPower << endl;
+	out << "  Wetness Spec Scale:  " << wetnessSpecScale << endl;
+	out << "  Wetness Spec Power:  " << wetnessSpecPower << endl;
+	out << "  Wetness Min Var:  " << wetnessMinVar << endl;
+	out << "  Wetness Env Map Scale:  " << wetnessEnvMapScale << endl;
+	out << "  Wetness Fresnel Power:  " << wetnessFresnelPower << endl;
+	out << "  Wetness Metalness:  " << wetnessMetalness << endl;
 	if ( (skyrimShaderType == 1) ) {
 		out << "    Environment Map Scale:  " << environmentMapScale << endl;
+		out << "    Unknown Env Map Short:  " << unknownEnvMapShort << endl;
 	};
 	if ( (skyrimShaderType == 5) ) {
 		out << "    Skin Tint Color:  " << skinTintColor << endl;
+		out << "    Unknown Skin Tint Int:  " << unknownSkinTintInt << endl;
 	};
 	if ( (skyrimShaderType == 6) ) {
 		out << "    Hair Tint Color:  " << hairTintColor << endl;
@@ -232,7 +314,7 @@ void BSLightingShaderProperty::FixLinks( const map<unsigned int,NiObjectRef> & o
 
 	//--END CUSTOM CODE--//
 
-	NiProperty::FixLinks( objects, link_stack, missing_link_stack, info );
+	BSShaderProperty::FixLinks( objects, link_stack, missing_link_stack, info );
 	textureSet = FixLink<BSShaderTextureSet>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
@@ -242,7 +324,7 @@ void BSLightingShaderProperty::FixLinks( const map<unsigned int,NiObjectRef> & o
 
 std::list<NiObjectRef> BSLightingShaderProperty::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiProperty::GetRefs();
+	refs = BSShaderProperty::GetRefs();
 	if ( textureSet != NULL )
 		refs.push_back(StaticCast<NiObject>(textureSet));
 	return refs;
@@ -250,7 +332,7 @@ std::list<NiObjectRef> BSLightingShaderProperty::GetRefs() const {
 
 std::list<NiObject *> BSLightingShaderProperty::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiProperty::GetPtrs();
+	ptrs = BSShaderProperty::GetPtrs();
 	return ptrs;
 }
 

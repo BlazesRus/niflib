@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type bhkBoxShape::TYPE("bhkBoxShape", &bhkConvexShape::TYPE );
 
-bhkBoxShape::bhkBoxShape() : minimumSize(0.0f) {
+bhkBoxShape::bhkBoxShape() : unusedFloat(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -44,10 +44,10 @@ void bhkBoxShape::Read( istream& in, list<unsigned int> & link_stack, const NifI
 
 	bhkConvexShape::Read( in, link_stack, info );
 	for (unsigned int i1 = 0; i1 < 8; i1++) {
-		NifStream( unknown8Bytes[i1], in, info );
+		NifStream( unused[i1], in, info );
 	};
 	NifStream( dimensions, in, info );
-	NifStream( minimumSize, in, info );
+	NifStream( unusedFloat, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -59,10 +59,10 @@ void bhkBoxShape::Write( ostream& out, const map<NiObjectRef,unsigned int> & lin
 
 	bhkConvexShape::Write( out, link_map, missing_link_stack, info );
 	for (unsigned int i1 = 0; i1 < 8; i1++) {
-		NifStream( unknown8Bytes[i1], out, info );
+		NifStream( unused[i1], out, info );
 	};
 	NifStream( dimensions, out, info );
-	NifStream( minimumSize, out, info );
+	NifStream( unusedFloat, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -84,11 +84,11 @@ std::string bhkBoxShape::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Unknown 8 Bytes[" << i1 << "]:  " << unknown8Bytes[i1] << endl;
+		out << "    Unused[" << i1 << "]:  " << unused[i1] << endl;
 		array_output_count++;
 	};
 	out << "  Dimensions:  " << dimensions << endl;
-	out << "  Minimum Size:  " << minimumSize << endl;
+	out << "  Unused Float:  " << unusedFloat << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

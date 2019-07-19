@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -16,6 +16,9 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/obj/bhkLimitedHingeConstraint.h"
 #include "../../include/gen/LimitedHingeDescriptor.h"
 #include "../../include/gen/MotorDescriptor.h"
+#include "../../include/gen/bhkPositionConstraintMotor.h"
+#include "../../include/gen/bhkSpringDamperConstraintMotor.h"
+#include "../../include/gen/bhkVelocityConstraintMotor.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
@@ -44,7 +47,7 @@ void bhkLimitedHingeConstraint::Read( istream& in, list<unsigned int> & link_sta
 	//--END CUSTOM CODE--//
 
 	bhkConstraint::Read( in, link_stack, info );
-	if ( info.version <= 0x14000005 ) {
+	if ( (info.userVersion2 <= 16) ) {
 		NifStream( limitedHinge.pivotA, in, info );
 		NifStream( limitedHinge.axleA, in, info );
 		NifStream( limitedHinge.perp2AxleInA1, in, info );
@@ -53,29 +56,44 @@ void bhkLimitedHingeConstraint::Read( istream& in, list<unsigned int> & link_sta
 		NifStream( limitedHinge.axleB, in, info );
 		NifStream( limitedHinge.perp2AxleInB2, in, info );
 	};
-	if ( info.version >= 0x14020007 ) {
-		NifStream( limitedHinge.axleA, in, info );
-		NifStream( limitedHinge.perp2AxleInA1, in, info );
-		NifStream( limitedHinge.perp2AxleInA2, in, info );
-		NifStream( limitedHinge.pivotA, in, info );
-		NifStream( limitedHinge.axleB, in, info );
+	if ( (info.userVersion2 > 16) ) {
+		NifStream( (Vector4&)limitedHinge.axleA, in, info );
+		NifStream( (Vector4&)limitedHinge.perp2AxleInA1, in, info );
+		NifStream( (Vector4&)limitedHinge.perp2AxleInA2, in, info );
+		NifStream( (Vector4&)limitedHinge.pivotA, in, info );
+		NifStream( (Vector4&)limitedHinge.axleB, in, info );
 		NifStream( limitedHinge.perp2AxleInB1, in, info );
-		NifStream( limitedHinge.perp2AxleInB2, in, info );
-		NifStream( limitedHinge.pivotB, in, info );
+		NifStream( (Vector4&)limitedHinge.perp2AxleInB2, in, info );
+		NifStream( (Vector4&)limitedHinge.pivotB, in, info );
 	};
 	NifStream( limitedHinge.minAngle, in, info );
 	NifStream( limitedHinge.maxAngle, in, info );
 	NifStream( limitedHinge.maxFriction, in, info );
-	if ( info.version >= 0x14020007 ) {
-		NifStream( limitedHinge.enableMotor, in, info );
-		if ( limitedHinge.enableMotor ) {
-			NifStream( limitedHinge.motor.unknownFloat1, in, info );
-			NifStream( limitedHinge.motor.unknownFloat2, in, info );
-			NifStream( limitedHinge.motor.unknownFloat3, in, info );
-			NifStream( limitedHinge.motor.unknownFloat4, in, info );
-			NifStream( limitedHinge.motor.unknownFloat5, in, info );
-			NifStream( limitedHinge.motor.unknownFloat6, in, info );
-			NifStream( limitedHinge.motor.unknownByte1, in, info );
+	if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 16) ) ) {
+		NifStream( limitedHinge.motor.type, in, info );
+		if ( (limitedHinge.motor.type == 1) ) {
+			NifStream( limitedHinge.motor.positionMotor.minForce, in, info );
+			NifStream( limitedHinge.motor.positionMotor.maxForce, in, info );
+			NifStream( limitedHinge.motor.positionMotor.tau, in, info );
+			NifStream( limitedHinge.motor.positionMotor.damping, in, info );
+			NifStream( limitedHinge.motor.positionMotor.proportionalRecoveryVelocity, in, info );
+			NifStream( limitedHinge.motor.positionMotor.constantRecoveryVelocity, in, info );
+			NifStream( limitedHinge.motor.positionMotor.motorEnabled, in, info );
+		};
+		if ( (limitedHinge.motor.type == 2) ) {
+			NifStream( limitedHinge.motor.velocityMotor.minForce, in, info );
+			NifStream( limitedHinge.motor.velocityMotor.maxForce, in, info );
+			NifStream( limitedHinge.motor.velocityMotor.tau, in, info );
+			NifStream( limitedHinge.motor.velocityMotor.targetVelocity, in, info );
+			NifStream( limitedHinge.motor.velocityMotor.useVelocityTarget, in, info );
+			NifStream( limitedHinge.motor.velocityMotor.motorEnabled, in, info );
+		};
+		if ( (limitedHinge.motor.type == 3) ) {
+			NifStream( limitedHinge.motor.springDamperMotor.minForce, in, info );
+			NifStream( limitedHinge.motor.springDamperMotor.maxForce, in, info );
+			NifStream( limitedHinge.motor.springDamperMotor.springConstant, in, info );
+			NifStream( limitedHinge.motor.springDamperMotor.springDamping, in, info );
+			NifStream( limitedHinge.motor.springDamperMotor.motorEnabled, in, info );
 		};
 	};
 
@@ -88,7 +106,7 @@ void bhkLimitedHingeConstraint::Write( ostream& out, const map<NiObjectRef,unsig
 	//--END CUSTOM CODE--//
 
 	bhkConstraint::Write( out, link_map, missing_link_stack, info );
-	if ( info.version <= 0x14000005 ) {
+	if ( (info.userVersion2 <= 16) ) {
 		NifStream( limitedHinge.pivotA, out, info );
 		NifStream( limitedHinge.axleA, out, info );
 		NifStream( limitedHinge.perp2AxleInA1, out, info );
@@ -97,29 +115,44 @@ void bhkLimitedHingeConstraint::Write( ostream& out, const map<NiObjectRef,unsig
 		NifStream( limitedHinge.axleB, out, info );
 		NifStream( limitedHinge.perp2AxleInB2, out, info );
 	};
-	if ( info.version >= 0x14020007 ) {
-		NifStream( limitedHinge.axleA, out, info );
-		NifStream( limitedHinge.perp2AxleInA1, out, info );
-		NifStream( limitedHinge.perp2AxleInA2, out, info );
-		NifStream( limitedHinge.pivotA, out, info );
-		NifStream( limitedHinge.axleB, out, info );
+	if ( (info.userVersion2 > 16) ) {
+		NifStream( (Vector4&)limitedHinge.axleA, out, info );
+		NifStream( (Vector4&)limitedHinge.perp2AxleInA1, out, info );
+		NifStream( (Vector4&)limitedHinge.perp2AxleInA2, out, info );
+		NifStream( (Vector4&)limitedHinge.pivotA, out, info );
+		NifStream( (Vector4&)limitedHinge.axleB, out, info );
 		NifStream( limitedHinge.perp2AxleInB1, out, info );
-		NifStream( limitedHinge.perp2AxleInB2, out, info );
-		NifStream( limitedHinge.pivotB, out, info );
+		NifStream( (Vector4&)limitedHinge.perp2AxleInB2, out, info );
+		NifStream( (Vector4&)limitedHinge.pivotB, out, info );
 	};
 	NifStream( limitedHinge.minAngle, out, info );
 	NifStream( limitedHinge.maxAngle, out, info );
 	NifStream( limitedHinge.maxFriction, out, info );
-	if ( info.version >= 0x14020007 ) {
-		NifStream( limitedHinge.enableMotor, out, info );
-		if ( limitedHinge.enableMotor ) {
-			NifStream( limitedHinge.motor.unknownFloat1, out, info );
-			NifStream( limitedHinge.motor.unknownFloat2, out, info );
-			NifStream( limitedHinge.motor.unknownFloat3, out, info );
-			NifStream( limitedHinge.motor.unknownFloat4, out, info );
-			NifStream( limitedHinge.motor.unknownFloat5, out, info );
-			NifStream( limitedHinge.motor.unknownFloat6, out, info );
-			NifStream( limitedHinge.motor.unknownByte1, out, info );
+	if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 16) ) ) {
+		NifStream( limitedHinge.motor.type, out, info );
+		if ( (limitedHinge.motor.type == 1) ) {
+			NifStream( limitedHinge.motor.positionMotor.minForce, out, info );
+			NifStream( limitedHinge.motor.positionMotor.maxForce, out, info );
+			NifStream( limitedHinge.motor.positionMotor.tau, out, info );
+			NifStream( limitedHinge.motor.positionMotor.damping, out, info );
+			NifStream( limitedHinge.motor.positionMotor.proportionalRecoveryVelocity, out, info );
+			NifStream( limitedHinge.motor.positionMotor.constantRecoveryVelocity, out, info );
+			NifStream( limitedHinge.motor.positionMotor.motorEnabled, out, info );
+		};
+		if ( (limitedHinge.motor.type == 2) ) {
+			NifStream( limitedHinge.motor.velocityMotor.minForce, out, info );
+			NifStream( limitedHinge.motor.velocityMotor.maxForce, out, info );
+			NifStream( limitedHinge.motor.velocityMotor.tau, out, info );
+			NifStream( limitedHinge.motor.velocityMotor.targetVelocity, out, info );
+			NifStream( limitedHinge.motor.velocityMotor.useVelocityTarget, out, info );
+			NifStream( limitedHinge.motor.velocityMotor.motorEnabled, out, info );
+		};
+		if ( (limitedHinge.motor.type == 3) ) {
+			NifStream( limitedHinge.motor.springDamperMotor.minForce, out, info );
+			NifStream( limitedHinge.motor.springDamperMotor.maxForce, out, info );
+			NifStream( limitedHinge.motor.springDamperMotor.springConstant, out, info );
+			NifStream( limitedHinge.motor.springDamperMotor.springDamping, out, info );
+			NifStream( limitedHinge.motor.springDamperMotor.motorEnabled, out, info );
 		};
 	};
 
@@ -144,15 +177,30 @@ std::string bhkLimitedHingeConstraint::asString( bool verbose ) const {
 	out << "  Min Angle:  " << limitedHinge.minAngle << endl;
 	out << "  Max Angle:  " << limitedHinge.maxAngle << endl;
 	out << "  Max Friction:  " << limitedHinge.maxFriction << endl;
-	out << "  Enable Motor:  " << limitedHinge.enableMotor << endl;
-	if ( limitedHinge.enableMotor ) {
-		out << "    Unknown Float 1:  " << limitedHinge.motor.unknownFloat1 << endl;
-		out << "    Unknown Float 2:  " << limitedHinge.motor.unknownFloat2 << endl;
-		out << "    Unknown Float 3:  " << limitedHinge.motor.unknownFloat3 << endl;
-		out << "    Unknown Float 4:  " << limitedHinge.motor.unknownFloat4 << endl;
-		out << "    Unknown Float 5:  " << limitedHinge.motor.unknownFloat5 << endl;
-		out << "    Unknown Float 6:  " << limitedHinge.motor.unknownFloat6 << endl;
-		out << "    Unknown Byte 1:  " << limitedHinge.motor.unknownByte1 << endl;
+	out << "  Type:  " << limitedHinge.motor.type << endl;
+	if ( (limitedHinge.motor.type == 1) ) {
+		out << "    Min Force:  " << limitedHinge.motor.positionMotor.minForce << endl;
+		out << "    Max Force:  " << limitedHinge.motor.positionMotor.maxForce << endl;
+		out << "    Tau:  " << limitedHinge.motor.positionMotor.tau << endl;
+		out << "    Damping:  " << limitedHinge.motor.positionMotor.damping << endl;
+		out << "    Proportional Recovery Velocity:  " << limitedHinge.motor.positionMotor.proportionalRecoveryVelocity << endl;
+		out << "    Constant Recovery Velocity:  " << limitedHinge.motor.positionMotor.constantRecoveryVelocity << endl;
+		out << "    Motor Enabled:  " << limitedHinge.motor.positionMotor.motorEnabled << endl;
+	};
+	if ( (limitedHinge.motor.type == 2) ) {
+		out << "    Min Force:  " << limitedHinge.motor.velocityMotor.minForce << endl;
+		out << "    Max Force:  " << limitedHinge.motor.velocityMotor.maxForce << endl;
+		out << "    Tau:  " << limitedHinge.motor.velocityMotor.tau << endl;
+		out << "    Target Velocity:  " << limitedHinge.motor.velocityMotor.targetVelocity << endl;
+		out << "    Use Velocity Target:  " << limitedHinge.motor.velocityMotor.useVelocityTarget << endl;
+		out << "    Motor Enabled:  " << limitedHinge.motor.velocityMotor.motorEnabled << endl;
+	};
+	if ( (limitedHinge.motor.type == 3) ) {
+		out << "    Min Force:  " << limitedHinge.motor.springDamperMotor.minForce << endl;
+		out << "    Max Force:  " << limitedHinge.motor.springDamperMotor.maxForce << endl;
+		out << "    Spring Constant:  " << limitedHinge.motor.springDamperMotor.springConstant << endl;
+		out << "    Spring Damping:  " << limitedHinge.motor.springDamperMotor.springDamping << endl;
+		out << "    Motor Enabled:  " << limitedHinge.motor.springDamperMotor.motorEnabled << endl;
 	};
 	return out.str();
 

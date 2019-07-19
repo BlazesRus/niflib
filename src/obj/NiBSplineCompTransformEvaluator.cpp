@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,9 +18,9 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiBSplineCompTransformEvaluator::TYPE("NiBSplineCompTransformEvaluator", &NiObject::TYPE );
+const Type NiBSplineCompTransformEvaluator::TYPE("NiBSplineCompTransformEvaluator", &NiBSplineTransformEvaluator::TYPE );
 
-NiBSplineCompTransformEvaluator::NiBSplineCompTransformEvaluator() {
+NiBSplineCompTransformEvaluator::NiBSplineCompTransformEvaluator() : translationOffset(3.402823466e+38f), translationHalfRange(3.402823466e+38f), rotationOffset(3.402823466e+38f), rotationHalfRange(3.402823466e+38f), scaleOffset(3.402823466e+38f), scaleHalfRange(3.402823466e+38f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,7 +45,13 @@ void NiBSplineCompTransformEvaluator::Read( istream& in, list<unsigned int> & li
 
 	//--END CUSTOM CODE--//
 
-	NiObject::Read( in, link_stack, info );
+	NiBSplineTransformEvaluator::Read( in, link_stack, info );
+	NifStream( translationOffset, in, info );
+	NifStream( translationHalfRange, in, info );
+	NifStream( rotationOffset, in, info );
+	NifStream( rotationHalfRange, in, info );
+	NifStream( scaleOffset, in, info );
+	NifStream( scaleHalfRange, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -57,7 +63,13 @@ void NiBSplineCompTransformEvaluator::Write( ostream& out, const map<NiObjectRef
 
 	//--END CUSTOM CODE--//
 
-	NiObject::Write( out, link_map, missing_link_stack, info );
+	NiBSplineTransformEvaluator::Write( out, link_map, missing_link_stack, info );
+	NifStream( translationOffset, out, info );
+	NifStream( translationHalfRange, out, info );
+	NifStream( rotationOffset, out, info );
+	NifStream( rotationHalfRange, out, info );
+	NifStream( scaleOffset, out, info );
+	NifStream( scaleHalfRange, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -70,7 +82,13 @@ std::string NiBSplineCompTransformEvaluator::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiObject::asString();
+	out << NiBSplineTransformEvaluator::asString();
+	out << "  Translation Offset:  " << translationOffset << endl;
+	out << "  Translation Half Range:  " << translationHalfRange << endl;
+	out << "  Rotation Offset:  " << rotationOffset << endl;
+	out << "  Rotation Half Range:  " << rotationHalfRange << endl;
+	out << "  Scale Offset:  " << scaleOffset << endl;
+	out << "  Scale Half Range:  " << scaleHalfRange << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -83,7 +101,7 @@ void NiBSplineCompTransformEvaluator::FixLinks( const map<unsigned int,NiObjectR
 
 	//--END CUSTOM CODE--//
 
-	NiObject::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiBSplineTransformEvaluator::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -92,13 +110,13 @@ void NiBSplineCompTransformEvaluator::FixLinks( const map<unsigned int,NiObjectR
 
 std::list<NiObjectRef> NiBSplineCompTransformEvaluator::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiObject::GetRefs();
+	refs = NiBSplineTransformEvaluator::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> NiBSplineCompTransformEvaluator::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiObject::GetPtrs();
+	ptrs = NiBSplineTransformEvaluator::GetPtrs();
 	return ptrs;
 }
 

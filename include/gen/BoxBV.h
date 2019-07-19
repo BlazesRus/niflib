@@ -1,9 +1,9 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
 
-//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
+// To change this file, alter the gen_niflib.py script.
 
 #ifndef _BOXBV_H_
 #define _BOXBV_H_
@@ -23,12 +23,9 @@ struct BoxBV {
 	NIFLIB_API BoxBV( const BoxBV & src );
 	/*! Copy Operator */
 	NIFLIB_API BoxBV & operator=( const BoxBV & src );
-	/*! Center */
 	Vector3 center;
-	/*! Axis */
-	NifArray<3,Vector3 > axis;
-	/*! Extent */
-	NifArray<3,float > extent;
+	Niflib::NifArray<3,Vector3 > axis;
+	Vector3 extent;
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 };

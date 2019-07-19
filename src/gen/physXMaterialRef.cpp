@@ -1,32 +1,33 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
-//---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
+//-----------------------------------NOTICE----------------------------------//
+// Some of this file is automatically filled in by a Python script.  Only    //
+// add custom code in the designated areas or it will be overwritten during  //
+// the next update.                                                          //
+//-----------------------------------NOTICE----------------------------------//
 
-//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
-
-#include "../../include/gen/physXMaterialRef.h"
+#include "../../include/gen/PhysXMaterialRef.h"
 #include "../../include/obj/NiPhysXMaterialDesc.h"
 using namespace Niflib;
 
 //Constructor
-physXMaterialRef::physXMaterialRef() : number((byte)0), unknownByte1((byte)0), materialDesc(NULL) {};
+PhysXMaterialRef::PhysXMaterialRef() : key((unsigned short)0), materialDesc(NULL) {};
 
 //Copy Constructor
-physXMaterialRef::physXMaterialRef( const physXMaterialRef & src ) {
+PhysXMaterialRef::PhysXMaterialRef( const PhysXMaterialRef & src ) {
 	*this = src;
 };
 
 //Copy Operator
-physXMaterialRef & physXMaterialRef::operator=( const physXMaterialRef & src ) {
-	this->number = src.number;
-	this->unknownByte1 = src.unknownByte1;
+PhysXMaterialRef & PhysXMaterialRef::operator=( const PhysXMaterialRef & src ) {
+	this->key = src.key;
 	this->materialDesc = src.materialDesc;
 	return *this;
 };
 
 //Destructor
-physXMaterialRef::~physXMaterialRef() {};
+PhysXMaterialRef::~PhysXMaterialRef() {};
 
 //--BEGIN MISC CUSTOM CODE--//
 //--END CUSTOM CODE--//

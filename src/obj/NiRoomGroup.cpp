@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -22,7 +22,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiRoomGroup::TYPE("NiRoomGroup", &NiNode::TYPE );
 
-NiRoomGroup::NiRoomGroup() : shellLink(NULL), numRooms((int)0) {
+NiRoomGroup::NiRoomGroup() : shell(NULL), numRooms((int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -70,42 +70,10 @@ void NiRoomGroup::Write( ostream& out, const map<NiObjectRef,unsigned int> & lin
 
 	NiNode::Write( out, link_map, missing_link_stack, info );
 	numRooms = (int)(rooms.size());
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*shellLink), out );
-	} else {
-		if ( shellLink != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(shellLink) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( shellLink );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	WriteRef( StaticCast<NiObject>(shell), out, info, link_map, missing_link_stack );
 	NifStream( numRooms, out, info );
 	for (unsigned int i1 = 0; i1 < rooms.size(); i1++) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*rooms[i1]), out );
-		} else {
-			if ( rooms[i1] != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(rooms[i1]) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( rooms[i1] );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(rooms[i1]), out, info, link_map, missing_link_stack );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -122,7 +90,7 @@ std::string NiRoomGroup::asString( bool verbose ) const {
 	unsigned int array_output_count = 0;
 	out << NiNode::asString();
 	numRooms = (int)(rooms.size());
-	out << "  Shell Link:  " << shellLink << endl;
+	out << "  Shell:  " << shell << endl;
 	out << "  Num Rooms:  " << numRooms << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < rooms.size(); i1++) {
@@ -149,7 +117,7 @@ void NiRoomGroup::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<
 	//--END CUSTOM CODE--//
 
 	NiNode::FixLinks( objects, link_stack, missing_link_stack, info );
-	shellLink = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
+	shell = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
 	for (unsigned int i1 = 0; i1 < rooms.size(); i1++) {
 		rooms[i1] = FixLink<NiRoom>( objects, link_stack, missing_link_stack, info );
 	};
@@ -170,8 +138,8 @@ std::list<NiObjectRef> NiRoomGroup::GetRefs() const {
 std::list<NiObject *> NiRoomGroup::GetPtrs() const {
 	list<NiObject *> ptrs;
 	ptrs = NiNode::GetPtrs();
-	if ( shellLink != NULL )
-		ptrs.push_back((NiObject *)(shellLink));
+	if ( shell != NULL )
+		ptrs.push_back((NiObject *)(shell));
 	for (unsigned int i1 = 0; i1 < rooms.size(); i1++) {
 		if ( rooms[i1] != NULL )
 			ptrs.push_back((NiObject *)(rooms[i1]));

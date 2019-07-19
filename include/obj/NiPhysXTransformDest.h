@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,41 +14,41 @@ All rights reserved.  Please see niflib.h for license. */
 
 //--END CUSTOM CODE--//
 
-#include "NiObject.h"
+#include "NiPhysXRigidBodyDest.h"
 namespace Niflib {
 
 // Forward define of referenced NIF objects
-class NiNode;
+class NiAVObject;
 class NiPhysXTransformDest;
 typedef Ref<NiPhysXTransformDest> NiPhysXTransformDestRef;
 
-/*! Unknown PhysX node. */
-class NiPhysXTransformDest : public NiObject {
+/*! Connects PhysX rigid body actors to a scene node. */
+class NiPhysXTransformDest : public NiPhysXRigidBodyDest {
 public:
 	/*! Constructor */
 	NIFLIB_API NiPhysXTransformDest();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiPhysXTransformDest();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -59,12 +59,7 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Unknown. =1? */
-	byte unknownByte1;
-	/*! Unknown. =0 */
-	byte unknownByte2;
-	/*! Affected node? */
-	NiNode * node;
+	NiAVObject * target;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -82,5 +77,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

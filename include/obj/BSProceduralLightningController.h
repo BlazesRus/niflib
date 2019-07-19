@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,7 +14,7 @@ All rights reserved.  Please see niflib.h for license. */
 
 //--END CUSTOM CODE--//
 
-#include "NiFloatInterpController.h"
+#include "NiTimeController.h"
 
 // Include structures
 #include "../Ref.h"
@@ -22,6 +22,7 @@ namespace Niflib {
 
 // Forward define of referenced NIF objects
 class NiInterpolator;
+class BSShaderProperty;
 class BSProceduralLightningController;
 typedef Ref<BSProceduralLightningController> BSProceduralLightningControllerRef;
 
@@ -30,32 +31,32 @@ typedef Ref<BSProceduralLightningController> BSProceduralLightningControllerRef;
  * for special effects.
  *     First interpolator controls Generation.
  */
-class BSProceduralLightningController : public NiFloatInterpController {
+class BSProceduralLightningController : public NiTimeController {
 public:
 	/*! Constructor */
 	NIFLIB_API BSProceduralLightningController();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~BSProceduralLightningController();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -66,46 +67,41 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
+	/*! References generation interpolator. */
+	Ref<NiInterpolator > interpolator1_Generation;
 	/*! References interpolator for Mutation of strips */
 	Ref<NiInterpolator > interpolator2_Mutation;
-	/*! Unknown */
-	Ref<NiInterpolator > interpolator3;
-	/*! Unknown */
-	Ref<NiInterpolator > interpolator4;
-	/*! Unknown */
-	Ref<NiInterpolator > interpolator5;
-	/*! Unknown */
-	Ref<NiInterpolator > interpolator6;
-	/*! Unknown */
-	Ref<NiInterpolator > interpolator7;
-	/*! Unknown */
-	Ref<NiInterpolator > interpolator8;
-	/*! References interpolator for Amplitutde control. 0=straight, 50=wide */
+	/*! References subdivision interpolator. */
+	Ref<NiInterpolator > interpolator3_Subdivision;
+	/*! References branches interpolator. */
+	Ref<NiInterpolator > interpolator4_NumBranches;
+	/*! References branches variation interpolator. */
+	Ref<NiInterpolator > interpolator5_NumBranchesVar;
+	/*! References length interpolator. */
+	Ref<NiInterpolator > interpolator6_Length;
+	/*! References length variation interpolator. */
+	Ref<NiInterpolator > interpolator7_LengthVar;
+	/*! References width interpolator. */
+	Ref<NiInterpolator > interpolator8_Width;
+	/*! References interpolator for amplitude control. 0=straight, 50=wide */
 	Ref<NiInterpolator > interpolator9_ArcOffset;
-	/*! Unknown */
-	unsigned short unknownShort1;
-	/*! Unknown */
-	unsigned short unknownShort2;
-	/*! Unknown */
-	unsigned short unknownShort3;
+	unsigned short subdivisions;
+	unsigned short numBranches;
+	unsigned short numBranchesVariation;
 	/*! How far lightning will stretch to. */
-	float distanceWeight;
-	/*! Unknown */
-	float float2;
-	/*! How wide the bolt will be */
-	float stripWidth;
-	/*! Influences forking behavior */
-	float fork;
-	/*! Unknown */
-	float float5;
-	/*! Unknown */
-	byte byte1;
-	/*! Unknown */
-	byte byte2;
-	/*! Unknown */
-	byte byte3;
-	/*! Unknown, unsure if this is actually another interpolator link. */
-	Ref<NiInterpolator > interpolator10_;
+	float length;
+	/*! How far lightning variation will stretch to. */
+	float lengthVariation;
+	/*! How wide the bolt will be. */
+	float width;
+	/*! Influences forking behavior with a multiplier. */
+	float childWidthMult;
+	float arcOffset;
+	bool fadeMainBolt;
+	bool fadeChildBolts;
+	bool animateArcOffset;
+	/*! Reference to a shader property. */
+	Ref<BSShaderProperty > shaderProperty;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -123,5 +119,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

@@ -1,9 +1,9 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
 
-//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
+// To change this file, alter the gen_niflib.py script.
 
 #ifndef _POLYGON_H_
 #define _POLYGON_H_
@@ -23,13 +23,11 @@ struct Polygon {
 	NIFLIB_API Polygon( const Polygon & src );
 	/*! Copy Operator */
 	NIFLIB_API Polygon & operator=( const Polygon & src );
-	/*! Number of vertices in this polygon */
 	unsigned short numVertices;
-	/*! Vertex Offset */
+	/*! Offset in vertex array. */
 	unsigned short vertexOffset;
-	/*! Number of faces in this polygon */
 	unsigned short numTriangles;
-	/*! Triangle offset in shape */
+	/*! Offset in indices array. */
 	unsigned short triangleOffset;
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//

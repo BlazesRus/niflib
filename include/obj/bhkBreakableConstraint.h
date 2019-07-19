@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,40 +15,41 @@ All rights reserved.  Please see niflib.h for license. */
 //--END CUSTOM CODE--//
 
 #include "bhkConstraint.h"
+
+// Include structures
+#include "../gen/ConstraintData.h"
 namespace Niflib {
 
-// Forward define of referenced NIF objects
-class bhkEntity;
 class bhkBreakableConstraint;
 typedef Ref<bhkBreakableConstraint> bhkBreakableConstraintRef;
 
-/*! Bethesda-Specific node. */
+/*! A breakable constraint. */
 class bhkBreakableConstraint : public bhkConstraint {
 public:
 	/*! Constructor */
 	NIFLIB_API bhkBreakableConstraint();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~bhkBreakableConstraint();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -59,32 +60,15 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*!  */
-	NifArray<41,int > unknownInts1;
-	/*! Unknown */
-	short unknownShort1;
-	/*! A count or flag? */
-	unsigned int unknownInt1;
-	/*! Number of bodies affected by this constraint. */
-	mutable unsigned int numEntities2;
-	/*! The entities affected by this constraint. */
-	vector<bhkEntity * > entities2;
-	/*! Usually 1. Higher values indicate higher priority of this constraint? */
-	unsigned int priority2;
-	/*! Unknown */
-	unsigned int unknownInt2;
-	/*! Unknown */
-	Vector3 position;
-	/*! Unknown */
-	Vector3 rotation;
-	/*! Unknown */
-	unsigned int unknownInt3;
-	/*! Unknown */
+	/*! Constraint within constraint. */
+	ConstraintData constraintData;
+	/*! Amount of force to break the rigid bodies apart? */
 	float threshold;
-	/*! Unknown */
-	float unknownFloat1;
-	/*! Unknown */
-	byte removeIfBroken;
+	/*!
+	 * No: Constraint stays active. Yes: Constraint gets removed when breaking
+	 * threshold is exceeded.
+	 */
+	bool removeWhenBroken;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -102,5 +86,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

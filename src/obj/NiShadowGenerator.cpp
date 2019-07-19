@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,14 +15,14 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiShadowGenerator.h"
-#include "../../include/obj/NiLight.h"
+#include "../../include/obj/NiDynamicEffect.h"
 #include "../../include/obj/NiNode.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiShadowGenerator::TYPE("NiShadowGenerator", &NiObject::TYPE );
 
-NiShadowGenerator::NiShadowGenerator() : unknownFlags((unsigned short)0), numUnknownLinks1((unsigned int)0), unkownInt2((int)0), target(NULL), unkownFloat4(0.98f), unkownByte5((byte)0), unkownInt6((int)2), unkownInt7((int)0), unkownInt8((int)0), unkownByte9((byte)0) {
+NiShadowGenerator::NiShadowGenerator() : flags((unsigned short)0), numShadowCasters((unsigned int)0), numShadowReceivers((unsigned int)0), target(NULL), depthBias(0.98f), sizeHint((unsigned short)0), nearClippingDistance(0.0f), farClippingDistance(0.0f), directionalLightFrustumWidth(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -50,22 +50,28 @@ void NiShadowGenerator::Read( istream& in, list<unsigned int> & link_stack, cons
 	unsigned int block_num;
 	NiObject::Read( in, link_stack, info );
 	NifStream( name, in, info );
-	NifStream( unknownFlags, in, info );
-	NifStream( numUnknownLinks1, in, info );
-	unknownLinks1.resize(numUnknownLinks1);
-	for (unsigned int i1 = 0; i1 < unknownLinks1.size(); i1++) {
+	NifStream( flags, in, info );
+	NifStream( numShadowCasters, in, info );
+	shadowCasters.resize(numShadowCasters);
+	for (unsigned int i1 = 0; i1 < shadowCasters.size(); i1++) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	NifStream( unkownInt2, in, info );
+	NifStream( numShadowReceivers, in, info );
+	shadowReceivers.resize(numShadowReceivers);
+	for (unsigned int i1 = 0; i1 < shadowReceivers.size(); i1++) {
+		NifStream( block_num, in, info );
+		link_stack.push_back( block_num );
+	};
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
-	NifStream( unkownFloat4, in, info );
-	NifStream( unkownByte5, in, info );
-	NifStream( unkownInt6, in, info );
-	NifStream( unkownInt7, in, info );
-	NifStream( unkownInt8, in, info );
-	NifStream( unkownByte9, in, info );
+	NifStream( depthBias, in, info );
+	NifStream( sizeHint, in, info );
+	if ( info.version >= 0x14030007 ) {
+		NifStream( nearClippingDistance, in, info );
+		NifStream( farClippingDistance, in, info );
+		NifStream( directionalLightFrustumWidth, in, info );
+	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -78,53 +84,26 @@ void NiShadowGenerator::Write( ostream& out, const map<NiObjectRef,unsigned int>
 	//--END CUSTOM CODE--//
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
-	numUnknownLinks1 = (unsigned int)(unknownLinks1.size());
+	numShadowReceivers = (unsigned int)(shadowReceivers.size());
+	numShadowCasters = (unsigned int)(shadowCasters.size());
 	NifStream( name, out, info );
-	NifStream( unknownFlags, out, info );
-	NifStream( numUnknownLinks1, out, info );
-	for (unsigned int i1 = 0; i1 < unknownLinks1.size(); i1++) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*unknownLinks1[i1]), out );
-		} else {
-			if ( unknownLinks1[i1] != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(unknownLinks1[i1]) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( unknownLinks1[i1] );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+	NifStream( flags, out, info );
+	NifStream( numShadowCasters, out, info );
+	for (unsigned int i1 = 0; i1 < shadowCasters.size(); i1++) {
+		WriteRef( StaticCast<NiObject>(shadowCasters[i1]), out, info, link_map, missing_link_stack );
 	};
-	NifStream( unkownInt2, out, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*target), out );
-	} else {
-		if ( target != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(target) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( target );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
-	NifStream( unkownFloat4, out, info );
-	NifStream( unkownByte5, out, info );
-	NifStream( unkownInt6, out, info );
-	NifStream( unkownInt7, out, info );
-	NifStream( unkownInt8, out, info );
-	NifStream( unkownByte9, out, info );
+	NifStream( numShadowReceivers, out, info );
+	for (unsigned int i1 = 0; i1 < shadowReceivers.size(); i1++) {
+		WriteRef( StaticCast<NiObject>(shadowReceivers[i1]), out, info, link_map, missing_link_stack );
+	};
+	WriteRef( StaticCast<NiObject>(target), out, info, link_map, missing_link_stack );
+	NifStream( depthBias, out, info );
+	NifStream( sizeHint, out, info );
+	if ( info.version >= 0x14030007 ) {
+		NifStream( nearClippingDistance, out, info );
+		NifStream( farClippingDistance, out, info );
+		NifStream( directionalLightFrustumWidth, out, info );
+	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -139,12 +118,13 @@ std::string NiShadowGenerator::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiObject::asString();
-	numUnknownLinks1 = (unsigned int)(unknownLinks1.size());
+	numShadowReceivers = (unsigned int)(shadowReceivers.size());
+	numShadowCasters = (unsigned int)(shadowCasters.size());
 	out << "  Name:  " << name << endl;
-	out << "  Unknown Flags:  " << unknownFlags << endl;
-	out << "  Num Unknown Links 1:  " << numUnknownLinks1 << endl;
+	out << "  Flags:  " << flags << endl;
+	out << "  Num Shadow Casters:  " << numShadowCasters << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < unknownLinks1.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < shadowCasters.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -152,17 +132,28 @@ std::string NiShadowGenerator::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Unknown Links 1[" << i1 << "]:  " << unknownLinks1[i1] << endl;
+		out << "    Shadow Casters[" << i1 << "]:  " << shadowCasters[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Unkown Int 2:  " << unkownInt2 << endl;
+	out << "  Num Shadow Receivers:  " << numShadowReceivers << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < shadowReceivers.size(); i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Shadow Receivers[" << i1 << "]:  " << shadowReceivers[i1] << endl;
+		array_output_count++;
+	};
 	out << "  Target:  " << target << endl;
-	out << "  Unkown Float 4:  " << unkownFloat4 << endl;
-	out << "  Unkown Byte 5:  " << unkownByte5 << endl;
-	out << "  Unkown Int 6:  " << unkownInt6 << endl;
-	out << "  Unkown Int 7:  " << unkownInt7 << endl;
-	out << "  Unkown Int 8:  " << unkownInt8 << endl;
-	out << "  Unkown Byte 9:  " << unkownByte9 << endl;
+	out << "  Depth Bias:  " << depthBias << endl;
+	out << "  Size Hint:  " << sizeHint << endl;
+	out << "  Near Clipping Distance:  " << nearClippingDistance << endl;
+	out << "  Far Clipping Distance:  " << farClippingDistance << endl;
+	out << "  Directional Light Frustum Width:  " << directionalLightFrustumWidth << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -176,10 +167,13 @@ void NiShadowGenerator::FixLinks( const map<unsigned int,NiObjectRef> & objects,
 	//--END CUSTOM CODE--//
 
 	NiObject::FixLinks( objects, link_stack, missing_link_stack, info );
-	for (unsigned int i1 = 0; i1 < unknownLinks1.size(); i1++) {
-		unknownLinks1[i1] = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
+	for (unsigned int i1 = 0; i1 < shadowCasters.size(); i1++) {
+		shadowCasters[i1] = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
 	};
-	target = FixLink<NiLight>( objects, link_stack, missing_link_stack, info );
+	for (unsigned int i1 = 0; i1 < shadowReceivers.size(); i1++) {
+		shadowReceivers[i1] = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
+	};
+	target = FixLink<NiDynamicEffect>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -189,9 +183,13 @@ void NiShadowGenerator::FixLinks( const map<unsigned int,NiObjectRef> & objects,
 std::list<NiObjectRef> NiShadowGenerator::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiObject::GetRefs();
-	for (unsigned int i1 = 0; i1 < unknownLinks1.size(); i1++) {
-		if ( unknownLinks1[i1] != NULL )
-			refs.push_back(StaticCast<NiObject>(unknownLinks1[i1]));
+	for (unsigned int i1 = 0; i1 < shadowCasters.size(); i1++) {
+		if ( shadowCasters[i1] != NULL )
+			refs.push_back(StaticCast<NiObject>(shadowCasters[i1]));
+	};
+	for (unsigned int i1 = 0; i1 < shadowReceivers.size(); i1++) {
+		if ( shadowReceivers[i1] != NULL )
+			refs.push_back(StaticCast<NiObject>(shadowReceivers[i1]));
 	};
 	return refs;
 }
@@ -199,7 +197,9 @@ std::list<NiObjectRef> NiShadowGenerator::GetRefs() const {
 std::list<NiObject *> NiShadowGenerator::GetPtrs() const {
 	list<NiObject *> ptrs;
 	ptrs = NiObject::GetPtrs();
-	for (unsigned int i1 = 0; i1 < unknownLinks1.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < shadowCasters.size(); i1++) {
+	};
+	for (unsigned int i1 = 0; i1 < shadowReceivers.size(); i1++) {
 	};
 	if ( target != NULL )
 		ptrs.push_back((NiObject *)(target));

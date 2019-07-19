@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type bhkSimpleShapePhantom::TYPE("bhkSimpleShapePhantom", &bhkShapePhantom::TYPE );
 
-bhkSimpleShapePhantom::bhkSimpleShapePhantom() : unknownFloat(0.0f) {
+bhkSimpleShapePhantom::bhkSimpleShapePhantom() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,15 +42,10 @@ void bhkSimpleShapePhantom::Read( istream& in, list<unsigned int> & link_stack, 
 	//--END CUSTOM CODE--//
 
 	bhkShapePhantom::Read( in, link_stack, info );
-	for (unsigned int i1 = 0; i1 < 7; i1++) {
-		NifStream( unkownFloats[i1], in, info );
+	for (unsigned int i1 = 0; i1 < 8; i1++) {
+		NifStream( unused2[i1], in, info );
 	};
-	for (unsigned int i1 = 0; i1 < 3; i1++) {
-		for (unsigned int i2 = 0; i2 < 5; i2++) {
-			NifStream( unknownFloats2[i1][i2], in, info );
-		};
-	};
-	NifStream( unknownFloat, in, info );
+	NifStream( transform, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -61,15 +56,10 @@ void bhkSimpleShapePhantom::Write( ostream& out, const map<NiObjectRef,unsigned 
 	//--END CUSTOM CODE--//
 
 	bhkShapePhantom::Write( out, link_map, missing_link_stack, info );
-	for (unsigned int i1 = 0; i1 < 7; i1++) {
-		NifStream( unkownFloats[i1], out, info );
+	for (unsigned int i1 = 0; i1 < 8; i1++) {
+		NifStream( unused2[i1], out, info );
 	};
-	for (unsigned int i1 = 0; i1 < 3; i1++) {
-		for (unsigned int i2 = 0; i2 < 5; i2++) {
-			NifStream( unknownFloats2[i1][i2], out, info );
-		};
-	};
-	NifStream( unknownFloat, out, info );
+	NifStream( transform, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -83,7 +73,7 @@ std::string bhkSimpleShapePhantom::asString( bool verbose ) const {
 	unsigned int array_output_count = 0;
 	out << bhkShapePhantom::asString();
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < 7; i1++) {
+	for (unsigned int i1 = 0; i1 < 8; i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -91,24 +81,10 @@ std::string bhkSimpleShapePhantom::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Unkown Floats[" << i1 << "]:  " << unkownFloats[i1] << endl;
+		out << "    Unused 2[" << i1 << "]:  " << unused2[i1] << endl;
 		array_output_count++;
 	};
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < 3; i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
-		};
-		for (unsigned int i2 = 0; i2 < 5; i2++) {
-			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-				break;
-			};
-			out << "      Unknown Floats 2[" << i2 << "]:  " << unknownFloats2[i1][i2] << endl;
-			array_output_count++;
-		};
-	};
-	out << "  Unknown Float:  " << unknownFloat << endl;
+	out << "  Transform:  " << transform << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

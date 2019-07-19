@@ -1,16 +1,21 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
-//---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
-
-//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
+//-----------------------------------NOTICE----------------------------------//
+// Some of this file is automatically filled in by a Python script.  Only    //
+// add custom code in the designated areas or it will be overwritten during  //
+// the next update.                                                          //
+//-----------------------------------NOTICE----------------------------------//
 
 #include "../../include/gen/RagdollDescriptor.h"
 #include "../../include/gen/MotorDescriptor.h"
+#include "../../include/gen/bhkPositionConstraintMotor.h"
+#include "../../include/gen/bhkSpringDamperConstraintMotor.h"
+#include "../../include/gen/bhkVelocityConstraintMotor.h"
 using namespace Niflib;
 
 //Constructor
-RagdollDescriptor::RagdollDescriptor() : coneMaxAngle(0.0f), planeMinAngle(0.0f), planeMaxAngle(0.0f), twistMinAngle(0.0f), twistMaxAngle(0.0f), maxFriction(0.0f), enableMotor(false) {};
+RagdollDescriptor::RagdollDescriptor() : coneMaxAngle(0.0f), planeMinAngle(0.0f), planeMaxAngle(0.0f), twistMinAngle(0.0f), twistMaxAngle(0.0f), maxFriction(0.0f) {};
 
 //Copy Constructor
 RagdollDescriptor::RagdollDescriptor( const RagdollDescriptor & src ) {
@@ -33,7 +38,6 @@ RagdollDescriptor & RagdollDescriptor::operator=( const RagdollDescriptor & src 
 	this->twistMinAngle = src.twistMinAngle;
 	this->twistMaxAngle = src.twistMaxAngle;
 	this->maxFriction = src.maxFriction;
-	this->enableMotor = src.enableMotor;
 	this->motor = src.motor;
 	return *this;
 };

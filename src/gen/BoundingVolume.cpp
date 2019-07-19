@@ -1,15 +1,18 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
-//---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
-
-//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
+//-----------------------------------NOTICE----------------------------------//
+// Some of this file is automatically filled in by a Python script.  Only    //
+// add custom code in the designated areas or it will be overwritten during  //
+// the next update.                                                          //
+//-----------------------------------NOTICE----------------------------------//
 
 #include "../../include/gen/BoundingVolume.h"
-#include "../../include/gen/SphereBV.h"
 #include "../../include/gen/BoxBV.h"
 #include "../../include/gen/CapsuleBV.h"
 #include "../../include/gen/HalfSpaceBV.h"
+#include "../../include/gen/NiBound.h"
+#include "../../include/gen/NiPlane.h"
 using namespace Niflib;
 
 //Constructor
@@ -26,7 +29,7 @@ BoundingVolume & BoundingVolume::operator=( const BoundingVolume & src ) {
 	this->sphere = src.sphere;
 	this->box = src.box;
 	this->capsule = src.capsule;
-	this->halfspace = src.halfspace;
+	this->halfSpace = src.halfSpace;
 	return *this;
 };
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,7 +21,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiPSysEmitterCtlr::TYPE("NiPSysEmitterCtlr", &NiPSysModifierCtlr::TYPE );
 
-NiPSysEmitterCtlr::NiPSysEmitterCtlr() : data(NULL), visibilityInterpolator(NULL) {
+NiPSysEmitterCtlr::NiPSysEmitterCtlr() : visibilityInterpolator(NULL), data(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -45,11 +45,11 @@ void NiPSysEmitterCtlr::Read( istream& in, list<unsigned int> & link_stack, cons
 
 	unsigned int block_num;
 	NiPSysModifierCtlr::Read( in, link_stack, info );
-	if ( info.version <= 0x0A010000 ) {
+	if ( info.version >= 0x0A020000 ) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	if ( info.version >= 0x0A020000 ) {
+	if ( info.version <= 0x0A010067 ) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
@@ -63,43 +63,11 @@ void NiPSysEmitterCtlr::Write( ostream& out, const map<NiObjectRef,unsigned int>
 	//--END CUSTOM CODE--//
 
 	NiPSysModifierCtlr::Write( out, link_map, missing_link_stack, info );
-	if ( info.version <= 0x0A010000 ) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*data), out );
-		} else {
-			if ( data != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(data) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( data );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
-	};
 	if ( info.version >= 0x0A020000 ) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*visibilityInterpolator), out );
-		} else {
-			if ( visibilityInterpolator != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(visibilityInterpolator) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( visibilityInterpolator );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(visibilityInterpolator), out, info, link_map, missing_link_stack );
+	};
+	if ( info.version <= 0x0A010067 ) {
+		WriteRef( StaticCast<NiObject>(data), out, info, link_map, missing_link_stack );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -112,8 +80,8 @@ std::string NiPSysEmitterCtlr::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiPSysModifierCtlr::asString();
-	out << "  Data:  " << data << endl;
 	out << "  Visibility Interpolator:  " << visibilityInterpolator << endl;
+	out << "  Data:  " << data << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -125,11 +93,11 @@ void NiPSysEmitterCtlr::FixLinks( const map<unsigned int,NiObjectRef> & objects,
 	//--END CUSTOM CODE--//
 
 	NiPSysModifierCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
-	if ( info.version <= 0x0A010000 ) {
-		data = FixLink<NiPSysEmitterCtlrData>( objects, link_stack, missing_link_stack, info );
-	};
 	if ( info.version >= 0x0A020000 ) {
 		visibilityInterpolator = FixLink<NiInterpolator>( objects, link_stack, missing_link_stack, info );
+	};
+	if ( info.version <= 0x0A010067 ) {
+		data = FixLink<NiPSysEmitterCtlrData>( objects, link_stack, missing_link_stack, info );
 	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
@@ -139,10 +107,10 @@ void NiPSysEmitterCtlr::FixLinks( const map<unsigned int,NiObjectRef> & objects,
 std::list<NiObjectRef> NiPSysEmitterCtlr::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiPSysModifierCtlr::GetRefs();
-	if ( data != NULL )
-		refs.push_back(StaticCast<NiObject>(data));
 	if ( visibilityInterpolator != NULL )
 		refs.push_back(StaticCast<NiObject>(visibilityInterpolator));
+	if ( data != NULL )
+		refs.push_back(StaticCast<NiObject>(data));
 	return refs;
 }
 

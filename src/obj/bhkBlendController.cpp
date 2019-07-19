@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type bhkBlendController::TYPE("bhkBlendController", &NiTimeController::TYPE );
 
-bhkBlendController::bhkBlendController() : unknownInt((unsigned int)0) {
+bhkBlendController::bhkBlendController() : keys((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,7 +42,7 @@ void bhkBlendController::Read( istream& in, list<unsigned int> & link_stack, con
 	//--END CUSTOM CODE--//
 
 	NiTimeController::Read( in, link_stack, info );
-	NifStream( unknownInt, in, info );
+	NifStream( keys, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -53,7 +53,7 @@ void bhkBlendController::Write( ostream& out, const map<NiObjectRef,unsigned int
 	//--END CUSTOM CODE--//
 
 	NiTimeController::Write( out, link_map, missing_link_stack, info );
-	NifStream( unknownInt, out, info );
+	NifStream( keys, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -65,7 +65,7 @@ std::string bhkBlendController::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiTimeController::asString();
-	out << "  Unknown Int:  " << unknownInt << endl;
+	out << "  Keys:  " << keys << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

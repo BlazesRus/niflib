@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type BSMultiBoundSphere::TYPE("BSMultiBoundSphere", &BSMultiBoundData::TYPE );
 
-BSMultiBoundSphere::BSMultiBoundSphere() : unknownInt1((int)0), unknownInt2((int)0), unknownInt3((int)0), radius(0.0f) {
+BSMultiBoundSphere::BSMultiBoundSphere() : radius(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,9 +46,7 @@ void BSMultiBoundSphere::Read( istream& in, list<unsigned int> & link_stack, con
 	//--END CUSTOM CODE--//
 
 	BSMultiBoundData::Read( in, link_stack, info );
-	NifStream( unknownInt1, in, info );
-	NifStream( unknownInt2, in, info );
-	NifStream( unknownInt3, in, info );
+	NifStream( center, in, info );
 	NifStream( radius, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -62,9 +60,7 @@ void BSMultiBoundSphere::Write( ostream& out, const map<NiObjectRef,unsigned int
 	//--END CUSTOM CODE--//
 
 	BSMultiBoundData::Write( out, link_map, missing_link_stack, info );
-	NifStream( unknownInt1, out, info );
-	NifStream( unknownInt2, out, info );
-	NifStream( unknownInt3, out, info );
+	NifStream( center, out, info );
 	NifStream( radius, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -79,9 +75,7 @@ std::string BSMultiBoundSphere::asString( bool verbose ) const {
 
 	stringstream out;
 	out << BSMultiBoundData::asString();
-	out << "  Unknown Int 1:  " << unknownInt1 << endl;
-	out << "  Unknown Int 2:  " << unknownInt2 << endl;
-	out << "  Unknown Int 3:  " << unknownInt3 << endl;
+	out << "  Center:  " << center << endl;
 	out << "  Radius:  " << radius << endl;
 	return out.str();
 

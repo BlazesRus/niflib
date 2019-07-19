@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,14 +15,15 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkNiTriStripsShape.h"
-#include "../../include/gen/OblivionColFilter.h"
+#include "../../include/gen/HavokFilter.h"
+#include "../../include/gen/HavokMaterial.h"
 #include "../../include/obj/NiTriStripsData.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type bhkNiTriStripsShape::TYPE("bhkNiTriStripsShape", &bhkShapeCollection::TYPE );
 
-bhkNiTriStripsShape::bhkNiTriStripsShape() : material((HavokMaterial)0), skyrimMaterial((SkyrimHavokMaterial)0), unknownFloat1(0.1f), unknownInt1((unsigned int)0x004ABE60), unknownInt2((unsigned int)1), scale(1.0, 1.0, 1.0), unknownInt3((unsigned int)0), numStripsData((unsigned int)0), numDataLayers((unsigned int)0) {
+bhkNiTriStripsShape::bhkNiTriStripsShape() : radius(0.1f), growBy((unsigned int)1), scale(1.0, 1.0, 1.0, 0.0), numStripsData((unsigned int)0), numDataLayers((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -46,20 +47,21 @@ void bhkNiTriStripsShape::Read( istream& in, list<unsigned int> & link_stack, co
 
 	unsigned int block_num;
 	bhkShapeCollection::Read( in, link_stack, info );
-	if ( (info.userVersion < 12) ) {
-		NifStream( material, in, info );
+	if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
+		NifStream( material.material_ob, in, info );
 	};
-	if ( (info.userVersion >= 12) ) {
-		NifStream( skyrimMaterial, in, info );
+	if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
+		NifStream( material.material_fo, in, info );
 	};
-	NifStream( unknownFloat1, in, info );
-	NifStream( unknownInt1, in, info );
-	for (unsigned int i1 = 0; i1 < 4; i1++) {
-		NifStream( unknownInts1[i1], in, info );
+	if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
+		NifStream( material.material_sk, in, info );
 	};
-	NifStream( unknownInt2, in, info );
+	NifStream( radius, in, info );
+	for (unsigned int i1 = 0; i1 < 5; i1++) {
+		NifStream( unused[i1], in, info );
+	};
+	NifStream( growBy, in, info );
 	NifStream( scale, in, info );
-	NifStream( unknownInt3, in, info );
 	NifStream( numStripsData, in, info );
 	stripsData.resize(numStripsData);
 	for (unsigned int i1 = 0; i1 < stripsData.size(); i1++) {
@@ -69,9 +71,17 @@ void bhkNiTriStripsShape::Read( istream& in, list<unsigned int> & link_stack, co
 	NifStream( numDataLayers, in, info );
 	dataLayers.resize(numDataLayers);
 	for (unsigned int i1 = 0; i1 < dataLayers.size(); i1++) {
-		NifStream( dataLayers[i1].layer, in, info );
-		NifStream( dataLayers[i1].colFilter, in, info );
-		NifStream( dataLayers[i1].unknownShort, in, info );
+		if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
+			NifStream( dataLayers[i1].layer_ob, in, info );
+		};
+		if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
+			NifStream( dataLayers[i1].layer_fo, in, info );
+		};
+		if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
+			NifStream( dataLayers[i1].layer_sk, in, info );
+		};
+		NifStream( dataLayers[i1].flagsAndPartNumber, in, info );
+		NifStream( dataLayers[i1].group, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -85,45 +95,38 @@ void bhkNiTriStripsShape::Write( ostream& out, const map<NiObjectRef,unsigned in
 	bhkShapeCollection::Write( out, link_map, missing_link_stack, info );
 	numDataLayers = (unsigned int)(dataLayers.size());
 	numStripsData = (unsigned int)(stripsData.size());
-	if ( (info.userVersion < 12) ) {
-		NifStream( material, out, info );
+	if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
+		NifStream( material.material_ob, out, info );
 	};
-	if ( (info.userVersion >= 12) ) {
-		NifStream( skyrimMaterial, out, info );
+	if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
+		NifStream( material.material_fo, out, info );
 	};
-	NifStream( unknownFloat1, out, info );
-	NifStream( unknownInt1, out, info );
-	for (unsigned int i1 = 0; i1 < 4; i1++) {
-		NifStream( unknownInts1[i1], out, info );
+	if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
+		NifStream( material.material_sk, out, info );
 	};
-	NifStream( unknownInt2, out, info );
+	NifStream( radius, out, info );
+	for (unsigned int i1 = 0; i1 < 5; i1++) {
+		NifStream( unused[i1], out, info );
+	};
+	NifStream( growBy, out, info );
 	NifStream( scale, out, info );
-	NifStream( unknownInt3, out, info );
 	NifStream( numStripsData, out, info );
 	for (unsigned int i1 = 0; i1 < stripsData.size(); i1++) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*stripsData[i1]), out );
-		} else {
-			if ( stripsData[i1] != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(stripsData[i1]) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( stripsData[i1] );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(stripsData[i1]), out, info, link_map, missing_link_stack );
 	};
 	NifStream( numDataLayers, out, info );
 	for (unsigned int i1 = 0; i1 < dataLayers.size(); i1++) {
-		NifStream( dataLayers[i1].layer, out, info );
-		NifStream( dataLayers[i1].colFilter, out, info );
-		NifStream( dataLayers[i1].unknownShort, out, info );
+		if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
+			NifStream( dataLayers[i1].layer_ob, out, info );
+		};
+		if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
+			NifStream( dataLayers[i1].layer_fo, out, info );
+		};
+		if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
+			NifStream( dataLayers[i1].layer_sk, out, info );
+		};
+		NifStream( dataLayers[i1].flagsAndPartNumber, out, info );
+		NifStream( dataLayers[i1].group, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -139,12 +142,12 @@ std::string bhkNiTriStripsShape::asString( bool verbose ) const {
 	out << bhkShapeCollection::asString();
 	numDataLayers = (unsigned int)(dataLayers.size());
 	numStripsData = (unsigned int)(stripsData.size());
-	out << "  Material:  " << material << endl;
-	out << "  Skyrim Material:  " << skyrimMaterial << endl;
-	out << "  Unknown Float 1:  " << unknownFloat1 << endl;
-	out << "  Unknown Int 1:  " << unknownInt1 << endl;
+	out << "  Material:  " << material.material_ob << endl;
+	out << "  Material:  " << material.material_fo << endl;
+	out << "  Material:  " << material.material_sk << endl;
+	out << "  Radius:  " << radius << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < 4; i1++) {
+	for (unsigned int i1 = 0; i1 < 5; i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -152,12 +155,11 @@ std::string bhkNiTriStripsShape::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Unknown Ints 1[" << i1 << "]:  " << unknownInts1[i1] << endl;
+		out << "    Unused[" << i1 << "]:  " << unused[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Unknown Int 2:  " << unknownInt2 << endl;
+	out << "  Grow By:  " << growBy << endl;
 	out << "  Scale:  " << scale << endl;
-	out << "  Unknown Int 3:  " << unknownInt3 << endl;
 	out << "  Num Strips Data:  " << numStripsData << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < stripsData.size(); i1++) {
@@ -178,9 +180,11 @@ std::string bhkNiTriStripsShape::asString( bool verbose ) const {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
 		};
-		out << "    Layer:  " << dataLayers[i1].layer << endl;
-		out << "    Col Filter:  " << dataLayers[i1].colFilter << endl;
-		out << "    Unknown Short:  " << dataLayers[i1].unknownShort << endl;
+		out << "    Layer:  " << dataLayers[i1].layer_ob << endl;
+		out << "    Layer:  " << dataLayers[i1].layer_fo << endl;
+		out << "    Layer:  " << dataLayers[i1].layer_sk << endl;
+		out << "    Flags and Part Number:  " << dataLayers[i1].flagsAndPartNumber << endl;
+		out << "    Group:  " << dataLayers[i1].group << endl;
 	};
 	return out.str();
 

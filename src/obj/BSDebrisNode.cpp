@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,9 +18,9 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type BSDebrisNode::TYPE("BSDebrisNode", &NiNode::TYPE );
+const Type BSDebrisNode::TYPE("BSDebrisNode", &BSRangeNode::TYPE );
 
-BSDebrisNode::BSDebrisNode() : unknownByte1((byte)0), unknownShort2((short)0) {
+BSDebrisNode::BSDebrisNode() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,9 +45,7 @@ void BSDebrisNode::Read( istream& in, list<unsigned int> & link_stack, const Nif
 
 	//--END CUSTOM CODE--//
 
-	NiNode::Read( in, link_stack, info );
-	NifStream( unknownByte1, in, info );
-	NifStream( unknownShort2, in, info );
+	BSRangeNode::Read( in, link_stack, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -59,9 +57,7 @@ void BSDebrisNode::Write( ostream& out, const map<NiObjectRef,unsigned int> & li
 
 	//--END CUSTOM CODE--//
 
-	NiNode::Write( out, link_map, missing_link_stack, info );
-	NifStream( unknownByte1, out, info );
-	NifStream( unknownShort2, out, info );
+	BSRangeNode::Write( out, link_map, missing_link_stack, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -74,9 +70,7 @@ std::string BSDebrisNode::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiNode::asString();
-	out << "  Unknown byte 1:  " << unknownByte1 << endl;
-	out << "  Unknown Short 2:  " << unknownShort2 << endl;
+	out << BSRangeNode::asString();
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -89,7 +83,7 @@ void BSDebrisNode::FixLinks( const map<unsigned int,NiObjectRef> & objects, list
 
 	//--END CUSTOM CODE--//
 
-	NiNode::FixLinks( objects, link_stack, missing_link_stack, info );
+	BSRangeNode::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -98,13 +92,13 @@ void BSDebrisNode::FixLinks( const map<unsigned int,NiObjectRef> & objects, list
 
 std::list<NiObjectRef> BSDebrisNode::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiNode::GetRefs();
+	refs = BSRangeNode::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> BSDebrisNode::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiNode::GetPtrs();
+	ptrs = BSRangeNode::GetPtrs();
 	return ptrs;
 }
 

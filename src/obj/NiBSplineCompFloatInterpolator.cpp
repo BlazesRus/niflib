@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -22,7 +22,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiBSplineCompFloatInterpolator::TYPE("NiBSplineCompFloatInterpolator", &NiBSplineFloatInterpolator::TYPE );
 
-NiBSplineCompFloatInterpolator::NiBSplineCompFloatInterpolator() : base(0.0f), offset((unsigned int)0), bias(0.0f), multiplier(0.0f) {
+NiBSplineCompFloatInterpolator::NiBSplineCompFloatInterpolator() : floatOffset(3.402823466e+38f), floatHalfRange(3.402823466e+38f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -45,10 +45,8 @@ void NiBSplineCompFloatInterpolator::Read( istream& in, list<unsigned int> & lin
 	//--END CUSTOM CODE--//
 
 	NiBSplineFloatInterpolator::Read( in, link_stack, info );
-	NifStream( base, in, info );
-	NifStream( offset, in, info );
-	NifStream( bias, in, info );
-	NifStream( multiplier, in, info );
+	NifStream( floatOffset, in, info );
+	NifStream( floatHalfRange, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -59,10 +57,8 @@ void NiBSplineCompFloatInterpolator::Write( ostream& out, const map<NiObjectRef,
 	//--END CUSTOM CODE--//
 
 	NiBSplineFloatInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( base, out, info );
-	NifStream( offset, out, info );
-	NifStream( bias, out, info );
-	NifStream( multiplier, out, info );
+	NifStream( floatOffset, out, info );
+	NifStream( floatHalfRange, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -74,10 +70,8 @@ std::string NiBSplineCompFloatInterpolator::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiBSplineFloatInterpolator::asString();
-	out << "  Base:  " << base << endl;
-	out << "  Offset:  " << offset << endl;
-	out << "  Bias:  " << bias << endl;
-	out << "  Multiplier:  " << multiplier << endl;
+	out << "  Float Offset:  " << floatOffset << endl;
+	out << "  Float Half Range:  " << floatHalfRange << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

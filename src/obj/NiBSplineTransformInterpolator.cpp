@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,12 +20,13 @@ static const int SizeofScale = 1;
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiBSplineTransformInterpolator.h"
+#include "../../include/gen/NiQuatTransform.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiBSplineTransformInterpolator::TYPE("NiBSplineTransformInterpolator", &NiBSplineInterpolator::TYPE );
 
-NiBSplineTransformInterpolator::NiBSplineTransformInterpolator() : scale(0.0f), translationOffset((unsigned int)0), rotationOffset((unsigned int)0), scaleOffset((unsigned int)0) {
+NiBSplineTransformInterpolator::NiBSplineTransformInterpolator() : translationHandle((unsigned int)0xFFFF), rotationHandle((unsigned int)0xFFFF), scaleHandle((unsigned int)0xFFFF) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -48,12 +49,21 @@ void NiBSplineTransformInterpolator::Read( istream& in, list<unsigned int> & lin
 	//--END CUSTOM CODE--//
 
 	NiBSplineInterpolator::Read( in, link_stack, info );
-	NifStream( translation, in, info );
-	NifStream( rotation, in, info );
-	NifStream( scale, in, info );
-	NifStream( translationOffset, in, info );
-	NifStream( rotationOffset, in, info );
-	NifStream( scaleOffset, in, info );
+	NifStream( transform.translation, in, info );
+	NifStream( transform.rotation, in, info );
+	NifStream( transform.scale, in, info );
+	if ( info.version <= 0x0A01006D ) {
+		for (unsigned int i2 = 0; i2 < 3; i2++) {
+			{
+				bool tmp;
+				NifStream( tmp, in, info );
+				transform.trsValid[i2] = tmp;
+			};
+		};
+	};
+	NifStream( translationHandle, in, info );
+	NifStream( rotationHandle, in, info );
+	NifStream( scaleHandle, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -64,12 +74,20 @@ void NiBSplineTransformInterpolator::Write( ostream& out, const map<NiObjectRef,
 	//--END CUSTOM CODE--//
 
 	NiBSplineInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( translation, out, info );
-	NifStream( rotation, out, info );
-	NifStream( scale, out, info );
-	NifStream( translationOffset, out, info );
-	NifStream( rotationOffset, out, info );
-	NifStream( scaleOffset, out, info );
+	NifStream( transform.translation, out, info );
+	NifStream( transform.rotation, out, info );
+	NifStream( transform.scale, out, info );
+	if ( info.version <= 0x0A01006D ) {
+		for (unsigned int i2 = 0; i2 < 3; i2++) {
+			{
+				bool tmp = transform.trsValid[i2];
+				NifStream( tmp, out, info );
+			};
+		};
+	};
+	NifStream( translationHandle, out, info );
+	NifStream( rotationHandle, out, info );
+	NifStream( scaleHandle, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -80,13 +98,26 @@ std::string NiBSplineTransformInterpolator::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
+	unsigned int array_output_count = 0;
 	out << NiBSplineInterpolator::asString();
-	out << "  Translation:  " << translation << endl;
-	out << "  Rotation:  " << rotation << endl;
-	out << "  Scale:  " << scale << endl;
-	out << "  Translation Offset:  " << translationOffset << endl;
-	out << "  Rotation Offset:  " << rotationOffset << endl;
-	out << "  Scale Offset:  " << scaleOffset << endl;
+	out << "  Translation:  " << transform.translation << endl;
+	out << "  Rotation:  " << transform.rotation << endl;
+	out << "  Scale:  " << transform.scale << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < 3; i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    TRS Valid[" << i1 << "]:  " << transform.trsValid[i1] << endl;
+		array_output_count++;
+	};
+	out << "  Translation Handle:  " << translationHandle << endl;
+	out << "  Rotation Handle:  " << rotationHandle << endl;
+	out << "  Scale Handle:  " << scaleHandle << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

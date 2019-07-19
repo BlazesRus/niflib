@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,13 +15,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPhysXTransformDest.h"
-#include "../../include/obj/NiNode.h"
+#include "../../include/obj/NiAVObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPhysXTransformDest::TYPE("NiPhysXTransformDest", &NiObject::TYPE );
+const Type NiPhysXTransformDest::TYPE("NiPhysXTransformDest", &NiPhysXRigidBodyDest::TYPE );
 
-NiPhysXTransformDest::NiPhysXTransformDest() : unknownByte1((byte)0), unknownByte2((byte)0), node(NULL) {
+NiPhysXTransformDest::NiPhysXTransformDest() : target(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -47,9 +47,7 @@ void NiPhysXTransformDest::Read( istream& in, list<unsigned int> & link_stack, c
 	//--END CUSTOM CODE--//
 
 	unsigned int block_num;
-	NiObject::Read( in, link_stack, info );
-	NifStream( unknownByte1, in, info );
-	NifStream( unknownByte2, in, info );
+	NiPhysXRigidBodyDest::Read( in, link_stack, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
 
@@ -63,26 +61,8 @@ void NiPhysXTransformDest::Write( ostream& out, const map<NiObjectRef,unsigned i
 
 	//--END CUSTOM CODE--//
 
-	NiObject::Write( out, link_map, missing_link_stack, info );
-	NifStream( unknownByte1, out, info );
-	NifStream( unknownByte2, out, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*node), out );
-	} else {
-		if ( node != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(node) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( node );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	NiPhysXRigidBodyDest::Write( out, link_map, missing_link_stack, info );
+	WriteRef( StaticCast<NiObject>(target), out, info, link_map, missing_link_stack );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -95,10 +75,8 @@ std::string NiPhysXTransformDest::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiObject::asString();
-	out << "  Unknown Byte 1:  " << unknownByte1 << endl;
-	out << "  Unknown Byte 2:  " << unknownByte2 << endl;
-	out << "  Node:  " << node << endl;
+	out << NiPhysXRigidBodyDest::asString();
+	out << "  Target:  " << target << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -111,8 +89,8 @@ void NiPhysXTransformDest::FixLinks( const map<unsigned int,NiObjectRef> & objec
 
 	//--END CUSTOM CODE--//
 
-	NiObject::FixLinks( objects, link_stack, missing_link_stack, info );
-	node = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
+	NiPhysXRigidBodyDest::FixLinks( objects, link_stack, missing_link_stack, info );
+	target = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -121,15 +99,15 @@ void NiPhysXTransformDest::FixLinks( const map<unsigned int,NiObjectRef> & objec
 
 std::list<NiObjectRef> NiPhysXTransformDest::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiObject::GetRefs();
+	refs = NiPhysXRigidBodyDest::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> NiPhysXTransformDest::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiObject::GetPtrs();
-	if ( node != NULL )
-		ptrs.push_back((NiObject *)(node));
+	ptrs = NiPhysXRigidBodyDest::GetPtrs();
+	if ( target != NULL )
+		ptrs.push_back((NiObject *)(target));
 	return ptrs;
 }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ namespace Niflib {
 
 // Include structures
 #include "../Ref.h"
-#include "../gen/BoundingBox.h"
+#include "../gen/BoundingVolume.h"
 namespace Niflib {
 
 // Forward define of referenced NIF objects
@@ -29,33 +29,36 @@ class NiCollisionObject;
 class NiAVObject;
 typedef Ref<NiAVObject> NiAVObjectRef;
 
-/*! Generic node object. */
+/*!
+ * Abstract audio-visual base class from which all of Gamebryo's scene graph
+ * objects inherit.
+ */
 class NiAVObject : public NiObjectNET {
 public:
 	/*! Constructor */
 	NIFLIB_API NiAVObject();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiAVObject();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -267,10 +270,8 @@ protected:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Some flags; commonly 0x000C or 0x000A. */
-	unsigned short flags;
-	/*! Unknown Flag */
-	unsigned short unknownShort1;
+	/*! Basic flags for AV objects. For Bethesda streams above 26 only. */
+	unsigned int flags;
 	/*! The translation vector. */
 	Vector3 translation;
 	/*! The rotation part of the transformation matrix. */
@@ -279,22 +280,15 @@ protected:
 	float scale;
 	/*! Unknown function. Always seems to be (0, 0, 0) */
 	Vector3 velocity;
-	/*! The number of property objects referenced. */
 	mutable unsigned int numProperties;
-	/*! List of node properties. */
+	/*! All rendering properties attached to this object. */
 	vector<Ref<NiProperty > > properties;
 	/*! Always 2,0,2,0. */
-	NifArray<4,unsigned int > unknown1;
+	Niflib::NifArray<4,unsigned int > unknown1;
 	/*! 0 or 1. */
 	byte unknown2;
-	/*! Do we have a bounding box? */
-	bool hasBoundingBox;
-	/*! The bounding box. */
-	BoundingBox boundingBox;
-	/*!
-	 * Refers to NiCollisionObject, which is usually a bounding box or other simple
-	 * collision shape.  In Oblivion this links the Havok objects.
-	 */
+	bool hasBoundingVolume;
+	BoundingVolume boundingVolume;
 	Ref<NiCollisionObject > collisionObject;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -312,5 +306,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,8 +14,11 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkRagdollConstraint.h"
-#include "../../include/gen/RagdollDescriptor.h"
 #include "../../include/gen/MotorDescriptor.h"
+#include "../../include/gen/RagdollDescriptor.h"
+#include "../../include/gen/bhkPositionConstraintMotor.h"
+#include "../../include/gen/bhkSpringDamperConstraintMotor.h"
+#include "../../include/gen/bhkVelocityConstraintMotor.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
@@ -44,7 +47,7 @@ void bhkRagdollConstraint::Read( istream& in, list<unsigned int> & link_stack, c
 	//--END CUSTOM CODE--//
 
 	bhkConstraint::Read( in, link_stack, info );
-	if ( info.version <= 0x14000005 ) {
+	if ( (info.userVersion2 <= 16) ) {
 		NifStream( ragdoll.pivotA, in, info );
 		NifStream( ragdoll.planeA, in, info );
 		NifStream( ragdoll.twistA, in, info );
@@ -52,15 +55,15 @@ void bhkRagdollConstraint::Read( istream& in, list<unsigned int> & link_stack, c
 		NifStream( ragdoll.planeB, in, info );
 		NifStream( ragdoll.twistB, in, info );
 	};
-	if ( info.version >= 0x14020007 ) {
-		NifStream( ragdoll.twistA, in, info );
-		NifStream( ragdoll.planeA, in, info );
+	if ( (info.userVersion2 > 16) ) {
+		NifStream( (Vector4&)ragdoll.twistA, in, info );
+		NifStream( (Vector4&)ragdoll.planeA, in, info );
 		NifStream( ragdoll.motorA, in, info );
-		NifStream( ragdoll.pivotA, in, info );
-		NifStream( ragdoll.twistB, in, info );
-		NifStream( ragdoll.planeB, in, info );
+		NifStream( (Vector4&)ragdoll.pivotA, in, info );
+		NifStream( (Vector4&)ragdoll.twistB, in, info );
+		NifStream( (Vector4&)ragdoll.planeB, in, info );
 		NifStream( ragdoll.motorB, in, info );
-		NifStream( ragdoll.pivotB, in, info );
+		NifStream( (Vector4&)ragdoll.pivotB, in, info );
 	};
 	NifStream( ragdoll.coneMaxAngle, in, info );
 	NifStream( ragdoll.planeMinAngle, in, info );
@@ -68,16 +71,31 @@ void bhkRagdollConstraint::Read( istream& in, list<unsigned int> & link_stack, c
 	NifStream( ragdoll.twistMinAngle, in, info );
 	NifStream( ragdoll.twistMaxAngle, in, info );
 	NifStream( ragdoll.maxFriction, in, info );
-	if ( info.version >= 0x14020007 ) {
-		NifStream( ragdoll.enableMotor, in, info );
-		if ( ragdoll.enableMotor ) {
-			NifStream( ragdoll.motor.unknownFloat1, in, info );
-			NifStream( ragdoll.motor.unknownFloat2, in, info );
-			NifStream( ragdoll.motor.unknownFloat3, in, info );
-			NifStream( ragdoll.motor.unknownFloat4, in, info );
-			NifStream( ragdoll.motor.unknownFloat5, in, info );
-			NifStream( ragdoll.motor.unknownFloat6, in, info );
-			NifStream( ragdoll.motor.unknownByte1, in, info );
+	if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 16) ) ) {
+		NifStream( ragdoll.motor.type, in, info );
+		if ( (ragdoll.motor.type == 1) ) {
+			NifStream( ragdoll.motor.positionMotor.minForce, in, info );
+			NifStream( ragdoll.motor.positionMotor.maxForce, in, info );
+			NifStream( ragdoll.motor.positionMotor.tau, in, info );
+			NifStream( ragdoll.motor.positionMotor.damping, in, info );
+			NifStream( ragdoll.motor.positionMotor.proportionalRecoveryVelocity, in, info );
+			NifStream( ragdoll.motor.positionMotor.constantRecoveryVelocity, in, info );
+			NifStream( ragdoll.motor.positionMotor.motorEnabled, in, info );
+		};
+		if ( (ragdoll.motor.type == 2) ) {
+			NifStream( ragdoll.motor.velocityMotor.minForce, in, info );
+			NifStream( ragdoll.motor.velocityMotor.maxForce, in, info );
+			NifStream( ragdoll.motor.velocityMotor.tau, in, info );
+			NifStream( ragdoll.motor.velocityMotor.targetVelocity, in, info );
+			NifStream( ragdoll.motor.velocityMotor.useVelocityTarget, in, info );
+			NifStream( ragdoll.motor.velocityMotor.motorEnabled, in, info );
+		};
+		if ( (ragdoll.motor.type == 3) ) {
+			NifStream( ragdoll.motor.springDamperMotor.minForce, in, info );
+			NifStream( ragdoll.motor.springDamperMotor.maxForce, in, info );
+			NifStream( ragdoll.motor.springDamperMotor.springConstant, in, info );
+			NifStream( ragdoll.motor.springDamperMotor.springDamping, in, info );
+			NifStream( ragdoll.motor.springDamperMotor.motorEnabled, in, info );
 		};
 	};
 
@@ -90,7 +108,7 @@ void bhkRagdollConstraint::Write( ostream& out, const map<NiObjectRef,unsigned i
 	//--END CUSTOM CODE--//
 
 	bhkConstraint::Write( out, link_map, missing_link_stack, info );
-	if ( info.version <= 0x14000005 ) {
+	if ( (info.userVersion2 <= 16) ) {
 		NifStream( ragdoll.pivotA, out, info );
 		NifStream( ragdoll.planeA, out, info );
 		NifStream( ragdoll.twistA, out, info );
@@ -98,15 +116,15 @@ void bhkRagdollConstraint::Write( ostream& out, const map<NiObjectRef,unsigned i
 		NifStream( ragdoll.planeB, out, info );
 		NifStream( ragdoll.twistB, out, info );
 	};
-	if ( info.version >= 0x14020007 ) {
-		NifStream( ragdoll.twistA, out, info );
-		NifStream( ragdoll.planeA, out, info );
+	if ( (info.userVersion2 > 16) ) {
+		NifStream( (Vector4&)ragdoll.twistA, out, info );
+		NifStream( (Vector4&)ragdoll.planeA, out, info );
 		NifStream( ragdoll.motorA, out, info );
-		NifStream( ragdoll.pivotA, out, info );
-		NifStream( ragdoll.twistB, out, info );
-		NifStream( ragdoll.planeB, out, info );
+		NifStream( (Vector4&)ragdoll.pivotA, out, info );
+		NifStream( (Vector4&)ragdoll.twistB, out, info );
+		NifStream( (Vector4&)ragdoll.planeB, out, info );
 		NifStream( ragdoll.motorB, out, info );
-		NifStream( ragdoll.pivotB, out, info );
+		NifStream( (Vector4&)ragdoll.pivotB, out, info );
 	};
 	NifStream( ragdoll.coneMaxAngle, out, info );
 	NifStream( ragdoll.planeMinAngle, out, info );
@@ -114,16 +132,31 @@ void bhkRagdollConstraint::Write( ostream& out, const map<NiObjectRef,unsigned i
 	NifStream( ragdoll.twistMinAngle, out, info );
 	NifStream( ragdoll.twistMaxAngle, out, info );
 	NifStream( ragdoll.maxFriction, out, info );
-	if ( info.version >= 0x14020007 ) {
-		NifStream( ragdoll.enableMotor, out, info );
-		if ( ragdoll.enableMotor ) {
-			NifStream( ragdoll.motor.unknownFloat1, out, info );
-			NifStream( ragdoll.motor.unknownFloat2, out, info );
-			NifStream( ragdoll.motor.unknownFloat3, out, info );
-			NifStream( ragdoll.motor.unknownFloat4, out, info );
-			NifStream( ragdoll.motor.unknownFloat5, out, info );
-			NifStream( ragdoll.motor.unknownFloat6, out, info );
-			NifStream( ragdoll.motor.unknownByte1, out, info );
+	if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 16) ) ) {
+		NifStream( ragdoll.motor.type, out, info );
+		if ( (ragdoll.motor.type == 1) ) {
+			NifStream( ragdoll.motor.positionMotor.minForce, out, info );
+			NifStream( ragdoll.motor.positionMotor.maxForce, out, info );
+			NifStream( ragdoll.motor.positionMotor.tau, out, info );
+			NifStream( ragdoll.motor.positionMotor.damping, out, info );
+			NifStream( ragdoll.motor.positionMotor.proportionalRecoveryVelocity, out, info );
+			NifStream( ragdoll.motor.positionMotor.constantRecoveryVelocity, out, info );
+			NifStream( ragdoll.motor.positionMotor.motorEnabled, out, info );
+		};
+		if ( (ragdoll.motor.type == 2) ) {
+			NifStream( ragdoll.motor.velocityMotor.minForce, out, info );
+			NifStream( ragdoll.motor.velocityMotor.maxForce, out, info );
+			NifStream( ragdoll.motor.velocityMotor.tau, out, info );
+			NifStream( ragdoll.motor.velocityMotor.targetVelocity, out, info );
+			NifStream( ragdoll.motor.velocityMotor.useVelocityTarget, out, info );
+			NifStream( ragdoll.motor.velocityMotor.motorEnabled, out, info );
+		};
+		if ( (ragdoll.motor.type == 3) ) {
+			NifStream( ragdoll.motor.springDamperMotor.minForce, out, info );
+			NifStream( ragdoll.motor.springDamperMotor.maxForce, out, info );
+			NifStream( ragdoll.motor.springDamperMotor.springConstant, out, info );
+			NifStream( ragdoll.motor.springDamperMotor.springDamping, out, info );
+			NifStream( ragdoll.motor.springDamperMotor.motorEnabled, out, info );
 		};
 	};
 
@@ -151,15 +184,30 @@ std::string bhkRagdollConstraint::asString( bool verbose ) const {
 	out << "  Twist Min Angle:  " << ragdoll.twistMinAngle << endl;
 	out << "  Twist Max Angle:  " << ragdoll.twistMaxAngle << endl;
 	out << "  Max Friction:  " << ragdoll.maxFriction << endl;
-	out << "  Enable Motor:  " << ragdoll.enableMotor << endl;
-	if ( ragdoll.enableMotor ) {
-		out << "    Unknown Float 1:  " << ragdoll.motor.unknownFloat1 << endl;
-		out << "    Unknown Float 2:  " << ragdoll.motor.unknownFloat2 << endl;
-		out << "    Unknown Float 3:  " << ragdoll.motor.unknownFloat3 << endl;
-		out << "    Unknown Float 4:  " << ragdoll.motor.unknownFloat4 << endl;
-		out << "    Unknown Float 5:  " << ragdoll.motor.unknownFloat5 << endl;
-		out << "    Unknown Float 6:  " << ragdoll.motor.unknownFloat6 << endl;
-		out << "    Unknown Byte 1:  " << ragdoll.motor.unknownByte1 << endl;
+	out << "  Type:  " << ragdoll.motor.type << endl;
+	if ( (ragdoll.motor.type == 1) ) {
+		out << "    Min Force:  " << ragdoll.motor.positionMotor.minForce << endl;
+		out << "    Max Force:  " << ragdoll.motor.positionMotor.maxForce << endl;
+		out << "    Tau:  " << ragdoll.motor.positionMotor.tau << endl;
+		out << "    Damping:  " << ragdoll.motor.positionMotor.damping << endl;
+		out << "    Proportional Recovery Velocity:  " << ragdoll.motor.positionMotor.proportionalRecoveryVelocity << endl;
+		out << "    Constant Recovery Velocity:  " << ragdoll.motor.positionMotor.constantRecoveryVelocity << endl;
+		out << "    Motor Enabled:  " << ragdoll.motor.positionMotor.motorEnabled << endl;
+	};
+	if ( (ragdoll.motor.type == 2) ) {
+		out << "    Min Force:  " << ragdoll.motor.velocityMotor.minForce << endl;
+		out << "    Max Force:  " << ragdoll.motor.velocityMotor.maxForce << endl;
+		out << "    Tau:  " << ragdoll.motor.velocityMotor.tau << endl;
+		out << "    Target Velocity:  " << ragdoll.motor.velocityMotor.targetVelocity << endl;
+		out << "    Use Velocity Target:  " << ragdoll.motor.velocityMotor.useVelocityTarget << endl;
+		out << "    Motor Enabled:  " << ragdoll.motor.velocityMotor.motorEnabled << endl;
+	};
+	if ( (ragdoll.motor.type == 3) ) {
+		out << "    Min Force:  " << ragdoll.motor.springDamperMotor.minForce << endl;
+		out << "    Max Force:  " << ragdoll.motor.springDamperMotor.maxForce << endl;
+		out << "    Spring Constant:  " << ragdoll.motor.springDamperMotor.springConstant << endl;
+		out << "    Spring Damping:  " << ragdoll.motor.springDamperMotor.springDamping << endl;
+		out << "    Motor Enabled:  " << ragdoll.motor.springDamperMotor.motorEnabled << endl;
 	};
 	return out.str();
 

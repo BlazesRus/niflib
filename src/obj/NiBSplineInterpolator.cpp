@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,7 +21,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiBSplineInterpolator::TYPE("NiBSplineInterpolator", &NiInterpolator::TYPE );
 
-NiBSplineInterpolator::NiBSplineInterpolator() : startTime(0.0f), stopTime(0.0f), splineData(NULL), basisData(NULL) {
+NiBSplineInterpolator::NiBSplineInterpolator() : startTime(3.402823466e+38f), stopTime(-3.402823466e+38f), splineData(NULL), basisData(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -63,40 +63,8 @@ void NiBSplineInterpolator::Write( ostream& out, const map<NiObjectRef,unsigned 
 	NiInterpolator::Write( out, link_map, missing_link_stack, info );
 	NifStream( startTime, out, info );
 	NifStream( stopTime, out, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*splineData), out );
-	} else {
-		if ( splineData != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(splineData) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( splineData );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*basisData), out );
-	} else {
-		if ( basisData != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(basisData) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( basisData );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
+	WriteRef( StaticCast<NiObject>(splineData), out, info, link_map, missing_link_stack );
+	WriteRef( StaticCast<NiObject>(basisData), out, info, link_map, missing_link_stack );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//

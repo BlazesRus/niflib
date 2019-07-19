@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,13 +14,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiCamera.h"
-#include "../../include/obj/NiObject.h"
+#include "../../include/obj/NiAVObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiCamera::TYPE("NiCamera", &NiAVObject::TYPE );
 
-NiCamera::NiCamera() : unknownShort((unsigned short)0), frustumLeft(0.0f), frustumRight(0.0f), frustumTop(0.0f), frustumBottom(0.0f), frustumNear(0.0f), frustumFar(0.0f), useOrthographicProjection(false), viewportLeft(0.0f), viewportRight(0.0f), viewportTop(0.0f), viewportBottom(0.0f), lodAdjust(0.0f), unknownLink(NULL), unknownInt((unsigned int)0), unknownInt2((unsigned int)0), unknownInt3((unsigned int)0) {
+NiCamera::NiCamera() : cameraFlags((unsigned short)0), frustumLeft(0.0f), frustumRight(0.0f), frustumTop(0.0f), frustumBottom(0.0f), frustumNear(0.0f), frustumFar(0.0f), useOrthographicProjection(false), viewportLeft(0.0f), viewportRight(0.0f), viewportTop(0.0f), viewportBottom(0.0f), lodAdjust(0.0f), scene(NULL), numScreenPolygons((unsigned int)0), numScreenTextures((unsigned int)0), unknownInt3((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -45,7 +45,7 @@ void NiCamera::Read( istream& in, list<unsigned int> & link_stack, const NifInfo
 	unsigned int block_num;
 	NiAVObject::Read( in, link_stack, info );
 	if ( info.version >= 0x0A010000 ) {
-		NifStream( unknownShort, in, info );
+		NifStream( cameraFlags, in, info );
 	};
 	NifStream( frustumLeft, in, info );
 	NifStream( frustumRight, in, info );
@@ -63,9 +63,9 @@ void NiCamera::Read( istream& in, list<unsigned int> & link_stack, const NifInfo
 	NifStream( lodAdjust, in, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
-	NifStream( unknownInt, in, info );
+	NifStream( numScreenPolygons, in, info );
 	if ( info.version >= 0x04020100 ) {
-		NifStream( unknownInt2, in, info );
+		NifStream( numScreenTextures, in, info );
 	};
 	if ( info.version <= 0x03010000 ) {
 		NifStream( unknownInt3, in, info );
@@ -81,7 +81,7 @@ void NiCamera::Write( ostream& out, const map<NiObjectRef,unsigned int> & link_m
 
 	NiAVObject::Write( out, link_map, missing_link_stack, info );
 	if ( info.version >= 0x0A010000 ) {
-		NifStream( unknownShort, out, info );
+		NifStream( cameraFlags, out, info );
 	};
 	NifStream( frustumLeft, out, info );
 	NifStream( frustumRight, out, info );
@@ -97,26 +97,10 @@ void NiCamera::Write( ostream& out, const map<NiObjectRef,unsigned int> & link_m
 	NifStream( viewportTop, out, info );
 	NifStream( viewportBottom, out, info );
 	NifStream( lodAdjust, out, info );
-	if ( info.version < VER_3_3_0_13 ) {
-		WritePtr32( &(*unknownLink), out );
-	} else {
-		if ( unknownLink != NULL ) {
-			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(unknownLink) );
-			if (it != link_map.end()) {
-				NifStream( it->second, out, info );
-				missing_link_stack.push_back( NULL );
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( unknownLink );
-			}
-		} else {
-			NifStream( 0xFFFFFFFF, out, info );
-			missing_link_stack.push_back( NULL );
-		}
-	}
-	NifStream( unknownInt, out, info );
+	WriteRef( StaticCast<NiObject>(scene), out, info, link_map, missing_link_stack );
+	NifStream( numScreenPolygons, out, info );
 	if ( info.version >= 0x04020100 ) {
-		NifStream( unknownInt2, out, info );
+		NifStream( numScreenTextures, out, info );
 	};
 	if ( info.version <= 0x03010000 ) {
 		NifStream( unknownInt3, out, info );
@@ -132,7 +116,7 @@ std::string NiCamera::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiAVObject::asString();
-	out << "  Unknown Short:  " << unknownShort << endl;
+	out << "  Camera Flags:  " << cameraFlags << endl;
 	out << "  Frustum Left:  " << frustumLeft << endl;
 	out << "  Frustum Right:  " << frustumRight << endl;
 	out << "  Frustum Top:  " << frustumTop << endl;
@@ -145,9 +129,9 @@ std::string NiCamera::asString( bool verbose ) const {
 	out << "  Viewport Top:  " << viewportTop << endl;
 	out << "  Viewport Bottom:  " << viewportBottom << endl;
 	out << "  LOD Adjust:  " << lodAdjust << endl;
-	out << "  Unknown Link:  " << unknownLink << endl;
-	out << "  Unknown Int:  " << unknownInt << endl;
-	out << "  Unknown Int 2:  " << unknownInt2 << endl;
+	out << "  Scene:  " << scene << endl;
+	out << "  Num Screen Polygons:  " << numScreenPolygons << endl;
+	out << "  Num Screen Textures:  " << numScreenTextures << endl;
 	out << "  Unknown Int 3:  " << unknownInt3 << endl;
 	return out.str();
 
@@ -160,7 +144,7 @@ void NiCamera::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<uns
 	//--END CUSTOM CODE--//
 
 	NiAVObject::FixLinks( objects, link_stack, missing_link_stack, info );
-	unknownLink = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
+	scene = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -169,8 +153,8 @@ void NiCamera::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<uns
 std::list<NiObjectRef> NiCamera::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiAVObject::GetRefs();
-	if ( unknownLink != NULL )
-		refs.push_back(StaticCast<NiObject>(unknownLink));
+	if ( scene != NULL )
+		refs.push_back(StaticCast<NiObject>(scene));
 	return refs;
 }
 

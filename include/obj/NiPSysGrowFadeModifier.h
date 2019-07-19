@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,37 +19,33 @@ namespace Niflib {
 class NiPSysGrowFadeModifier;
 typedef Ref<NiPSysGrowFadeModifier> NiPSysGrowFadeModifierRef;
 
-/*!
- * Particle modifier that controls the time it takes to grow a particle from Size=0
- * to the specified Size in the emitter, and then back to 0.  This modifer has no
- * control over alpha settings.
- */
+/*! Particle modifier that controls the time it takes to grow and shrink a particle. */
 class NiPSysGrowFadeModifier : public NiPSysModifier {
 public:
 	/*! Constructor */
 	NIFLIB_API NiPSysGrowFadeModifier();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiPSysGrowFadeModifier();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -59,15 +55,21 @@ public:
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 protected:
-	/*! Time in seconds to fade in. */
+	/*! The time taken to grow from 0 to their specified size. */
 	float growTime;
-	/*! Unknown. */
+	/*!
+	 * Specifies the particle generation to which the grow effect should be applied.
+	 * This is usually generation 0, so that newly created particles will grow.
+	 */
 	unsigned short growGeneration;
-	/*! Time in seconds to fade out. */
+	/*! The time taken to shrink from their specified size to 0. */
 	float fadeTime;
-	/*! Unknown. */
+	/*!
+	 * Specifies the particle generation to which the shrink effect should be applied.
+	 * This is usually the highest supported generation for the particle system.
+	 */
 	unsigned short fadeGeneration;
-	/*! Unknown */
+	/*! A multiplier on the base particle scale. */
 	float baseScale;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -85,5 +87,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

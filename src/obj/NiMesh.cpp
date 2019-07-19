@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,19 +15,19 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiMesh.h"
-#include "../../include/gen/SphereBV.h"
-#include "../../include/gen/MeshData.h"
-#include "../../include/gen/SemanticData.h"
-#include "../../include/obj/NiDataStream.h"
+#include "../../include/gen/DataStreamRef.h"
 #include "../../include/gen/ExtraMeshDataEpicMickey.h"
 #include "../../include/gen/ExtraMeshDataEpicMickey2.h"
+#include "../../include/gen/NiBound.h"
+#include "../../include/gen/SemanticData.h"
+#include "../../include/obj/NiDataStream.h"
 #include "../../include/obj/NiMeshModifier.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiMesh::TYPE("NiMesh", &NiRenderObject::TYPE );
 
-NiMesh::NiMesh() : primitiveType((MeshPrimitiveType)0), unknown51((int)0), unknown52((int)0), unknown53((int)0), unknown54((int)0), unknown55(0.0f), unknown56((int)0), numSubmeshes((unsigned short)0), instancingEnabled(false), numDatas((unsigned int)0), numModifiers((unsigned int)0), unknown100((byte)0), unknown101((int)0), unknown102((unsigned int)0), unknown200((int)0), unknown250((int)0), unknown300((int)0), unknown301((short)0), unknown302((int)0), unknown350((int)0), unknown400((int)0) {
+NiMesh::NiMesh() : primitiveType((MeshPrimitiveType)0), unknown51((int)0), unknown52((int)0), unknown53((int)0), unknown54((int)0), unknown55(0.0f), unknown56((int)0), numSubmeshes((unsigned short)0), instancingEnabled(false), numDatastreams((unsigned int)0), numModifiers((unsigned int)0), unknown100((byte)0), unknown101((int)0), unknown102((unsigned int)0), unknown200((int)0), unknown250((int)0), unknown300((int)0), unknown301((short)0), unknown302((int)0), unknown350((int)0), unknown400((int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -67,22 +67,22 @@ void NiMesh::Read( istream& in, list<unsigned int> & link_stack, const NifInfo &
 	NifStream( instancingEnabled, in, info );
 	NifStream( bound.center, in, info );
 	NifStream( bound.radius, in, info );
-	NifStream( numDatas, in, info );
-	datas.resize(numDatas);
-	for (unsigned int i1 = 0; i1 < datas.size(); i1++) {
+	NifStream( numDatastreams, in, info );
+	datastreams.resize(numDatastreams);
+	for (unsigned int i1 = 0; i1 < datastreams.size(); i1++) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
-		NifStream( datas[i1].isPerInstance, in, info );
-		NifStream( datas[i1].numSubmeshes, in, info );
-		datas[i1].submeshToRegionMap.resize(datas[i1].numSubmeshes);
-		for (unsigned int i2 = 0; i2 < datas[i1].submeshToRegionMap.size(); i2++) {
-			NifStream( datas[i1].submeshToRegionMap[i2], in, info );
+		NifStream( datastreams[i1].isPerInstance, in, info );
+		NifStream( datastreams[i1].numSubmeshes, in, info );
+		datastreams[i1].submeshToRegionMap.resize(datastreams[i1].numSubmeshes);
+		for (unsigned int i2 = 0; i2 < datastreams[i1].submeshToRegionMap.size(); i2++) {
+			NifStream( datastreams[i1].submeshToRegionMap[i2], in, info );
 		};
-		NifStream( datas[i1].numComponents, in, info );
-		datas[i1].componentSemantics.resize(datas[i1].numComponents);
-		for (unsigned int i2 = 0; i2 < datas[i1].componentSemantics.size(); i2++) {
-			NifStream( datas[i1].componentSemantics[i2].name, in, info );
-			NifStream( datas[i1].componentSemantics[i2].index, in, info );
+		NifStream( datastreams[i1].numComponents, in, info );
+		datastreams[i1].componentSemantics.resize(datastreams[i1].numComponents);
+		for (unsigned int i2 = 0; i2 < datastreams[i1].componentSemantics.size(); i2++) {
+			NifStream( datastreams[i1].componentSemantics[i2].name, in, info );
+			NifStream( datastreams[i1].componentSemantics[i2].index, in, info );
 		};
 	};
 	NifStream( numModifiers, in, info );
@@ -150,7 +150,7 @@ void NiMesh::Write( ostream& out, const map<NiObjectRef,unsigned int> & link_map
 	unknown200 = (int)(unknown201.size());
 	unknown102 = (unsigned int)(unknown103.size());
 	numModifiers = (unsigned int)(modifiers.size());
-	numDatas = (unsigned int)(datas.size());
+	numDatastreams = (unsigned int)(datastreams.size());
 	NifStream( primitiveType, out, info );
 	if ( info.userVersion == 15 ) {
 		NifStream( unknown51, out, info );
@@ -164,57 +164,25 @@ void NiMesh::Write( ostream& out, const map<NiObjectRef,unsigned int> & link_map
 	NifStream( instancingEnabled, out, info );
 	NifStream( bound.center, out, info );
 	NifStream( bound.radius, out, info );
-	NifStream( numDatas, out, info );
-	for (unsigned int i1 = 0; i1 < datas.size(); i1++) {
-		datas[i1].numComponents = (int)(datas[i1].componentSemantics.size());
-		datas[i1].numSubmeshes = (unsigned short)(datas[i1].submeshToRegionMap.size());
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*datas[i1].stream), out );
-		} else {
-			if ( datas[i1].stream != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(datas[i1].stream) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( datas[i1].stream );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
-		NifStream( datas[i1].isPerInstance, out, info );
-		NifStream( datas[i1].numSubmeshes, out, info );
-		for (unsigned int i2 = 0; i2 < datas[i1].submeshToRegionMap.size(); i2++) {
-			NifStream( datas[i1].submeshToRegionMap[i2], out, info );
+	NifStream( numDatastreams, out, info );
+	for (unsigned int i1 = 0; i1 < datastreams.size(); i1++) {
+		datastreams[i1].numComponents = (unsigned int)(datastreams[i1].componentSemantics.size());
+		datastreams[i1].numSubmeshes = (unsigned short)(datastreams[i1].submeshToRegionMap.size());
+		WriteRef( StaticCast<NiObject>(datastreams[i1].stream), out, info, link_map, missing_link_stack );
+		NifStream( datastreams[i1].isPerInstance, out, info );
+		NifStream( datastreams[i1].numSubmeshes, out, info );
+		for (unsigned int i2 = 0; i2 < datastreams[i1].submeshToRegionMap.size(); i2++) {
+			NifStream( datastreams[i1].submeshToRegionMap[i2], out, info );
 		};
-		NifStream( datas[i1].numComponents, out, info );
-		for (unsigned int i2 = 0; i2 < datas[i1].componentSemantics.size(); i2++) {
-			NifStream( datas[i1].componentSemantics[i2].name, out, info );
-			NifStream( datas[i1].componentSemantics[i2].index, out, info );
+		NifStream( datastreams[i1].numComponents, out, info );
+		for (unsigned int i2 = 0; i2 < datastreams[i1].componentSemantics.size(); i2++) {
+			NifStream( datastreams[i1].componentSemantics[i2].name, out, info );
+			NifStream( datastreams[i1].componentSemantics[i2].index, out, info );
 		};
 	};
 	NifStream( numModifiers, out, info );
 	for (unsigned int i1 = 0; i1 < modifiers.size(); i1++) {
-		if ( info.version < VER_3_3_0_13 ) {
-			WritePtr32( &(*modifiers[i1]), out );
-		} else {
-			if ( modifiers[i1] != NULL ) {
-				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(modifiers[i1]) );
-				if (it != link_map.end()) {
-					NifStream( it->second, out, info );
-					missing_link_stack.push_back( NULL );
-				} else {
-					NifStream( 0xFFFFFFFF, out, info );
-					missing_link_stack.push_back( modifiers[i1] );
-				}
-			} else {
-				NifStream( 0xFFFFFFFF, out, info );
-				missing_link_stack.push_back( NULL );
-			}
-		}
+		WriteRef( StaticCast<NiObject>(modifiers[i1]), out, info, link_map, missing_link_stack );
 	};
 	if ( info.userVersion == 15 ) {
 		NifStream( unknown100, out, info );
@@ -272,7 +240,7 @@ std::string NiMesh::asString( bool verbose ) const {
 	unknown200 = (int)(unknown201.size());
 	unknown102 = (unsigned int)(unknown103.size());
 	numModifiers = (unsigned int)(modifiers.size());
-	numDatas = (unsigned int)(datas.size());
+	numDatastreams = (unsigned int)(datastreams.size());
 	out << "  Primitive Type:  " << primitiveType << endl;
 	out << "  Unknown 51:  " << unknown51 << endl;
 	out << "  Unknown 52:  " << unknown52 << endl;
@@ -284,20 +252,20 @@ std::string NiMesh::asString( bool verbose ) const {
 	out << "  Instancing Enabled:  " << instancingEnabled << endl;
 	out << "  Center:  " << bound.center << endl;
 	out << "  Radius:  " << bound.radius << endl;
-	out << "  Num Datas:  " << numDatas << endl;
+	out << "  Num Datastreams:  " << numDatastreams << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < datas.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < datastreams.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
 		};
-		datas[i1].numComponents = (int)(datas[i1].componentSemantics.size());
-		datas[i1].numSubmeshes = (unsigned short)(datas[i1].submeshToRegionMap.size());
-		out << "    Stream:  " << datas[i1].stream << endl;
-		out << "    Is Per Instance:  " << datas[i1].isPerInstance << endl;
-		out << "    Num Submeshes:  " << datas[i1].numSubmeshes << endl;
+		datastreams[i1].numComponents = (unsigned int)(datastreams[i1].componentSemantics.size());
+		datastreams[i1].numSubmeshes = (unsigned short)(datastreams[i1].submeshToRegionMap.size());
+		out << "    Stream:  " << datastreams[i1].stream << endl;
+		out << "    Is Per Instance:  " << datastreams[i1].isPerInstance << endl;
+		out << "    Num Submeshes:  " << datastreams[i1].numSubmeshes << endl;
 		array_output_count = 0;
-		for (unsigned int i2 = 0; i2 < datas[i1].submeshToRegionMap.size(); i2++) {
+		for (unsigned int i2 = 0; i2 < datastreams[i1].submeshToRegionMap.size(); i2++) {
 			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 				out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 				break;
@@ -305,18 +273,18 @@ std::string NiMesh::asString( bool verbose ) const {
 			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 				break;
 			};
-			out << "      Submesh To Region Map[" << i2 << "]:  " << datas[i1].submeshToRegionMap[i2] << endl;
+			out << "      Submesh To Region Map[" << i2 << "]:  " << datastreams[i1].submeshToRegionMap[i2] << endl;
 			array_output_count++;
 		};
-		out << "    Num Components:  " << datas[i1].numComponents << endl;
+		out << "    Num Components:  " << datastreams[i1].numComponents << endl;
 		array_output_count = 0;
-		for (unsigned int i2 = 0; i2 < datas[i1].componentSemantics.size(); i2++) {
+		for (unsigned int i2 = 0; i2 < datastreams[i1].componentSemantics.size(); i2++) {
 			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 				out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 				break;
 			};
-			out << "      Name:  " << datas[i1].componentSemantics[i2].name << endl;
-			out << "      Index:  " << datas[i1].componentSemantics[i2].index << endl;
+			out << "      Name:  " << datastreams[i1].componentSemantics[i2].name << endl;
+			out << "      Index:  " << datastreams[i1].componentSemantics[i2].index << endl;
 		};
 	};
 	out << "  Num Modifiers:  " << numModifiers << endl;
@@ -425,8 +393,8 @@ void NiMesh::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<unsig
 	//--END CUSTOM CODE--//
 
 	NiRenderObject::FixLinks( objects, link_stack, missing_link_stack, info );
-	for (unsigned int i1 = 0; i1 < datas.size(); i1++) {
-		datas[i1].stream = FixLink<NiDataStream>( objects, link_stack, missing_link_stack, info );
+	for (unsigned int i1 = 0; i1 < datastreams.size(); i1++) {
+		datastreams[i1].stream = FixLink<NiDataStream>( objects, link_stack, missing_link_stack, info );
 	};
 	for (unsigned int i1 = 0; i1 < modifiers.size(); i1++) {
 		modifiers[i1] = FixLink<NiMeshModifier>( objects, link_stack, missing_link_stack, info );
@@ -440,9 +408,9 @@ void NiMesh::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<unsig
 std::list<NiObjectRef> NiMesh::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiRenderObject::GetRefs();
-	for (unsigned int i1 = 0; i1 < datas.size(); i1++) {
-		if ( datas[i1].stream != NULL )
-			refs.push_back(StaticCast<NiObject>(datas[i1].stream));
+	for (unsigned int i1 = 0; i1 < datastreams.size(); i1++) {
+		if ( datastreams[i1].stream != NULL )
+			refs.push_back(StaticCast<NiObject>(datastreams[i1].stream));
 	};
 	for (unsigned int i1 = 0; i1 < modifiers.size(); i1++) {
 		if ( modifiers[i1] != NULL )
@@ -454,7 +422,7 @@ std::list<NiObjectRef> NiMesh::GetRefs() const {
 std::list<NiObject *> NiMesh::GetPtrs() const {
 	list<NiObject *> ptrs;
 	ptrs = NiRenderObject::GetPtrs();
-	for (unsigned int i1 = 0; i1 < datas.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < datastreams.size(); i1++) {
 	};
 	for (unsigned int i1 = 0; i1 < modifiers.size(); i1++) {
 	};

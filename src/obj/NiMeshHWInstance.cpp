@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,12 +15,14 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiMeshHWInstance.h"
+#include "../../include/obj/NiInstancingMeshModifier.h"
+#include "../../include/obj/NiMesh.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiMeshHWInstance::TYPE("NiMeshHWInstance", &NiObject::TYPE );
+const Type NiMeshHWInstance::TYPE("NiMeshHWInstance", &NiAVObject::TYPE );
 
-NiMeshHWInstance::NiMeshHWInstance() {
+NiMeshHWInstance::NiMeshHWInstance() : masterMesh(NULL), meshModifier(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,7 +47,12 @@ void NiMeshHWInstance::Read( istream& in, list<unsigned int> & link_stack, const
 
 	//--END CUSTOM CODE--//
 
-	NiObject::Read( in, link_stack, info );
+	unsigned int block_num;
+	NiAVObject::Read( in, link_stack, info );
+	NifStream( block_num, in, info );
+	link_stack.push_back( block_num );
+	NifStream( block_num, in, info );
+	link_stack.push_back( block_num );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -57,7 +64,9 @@ void NiMeshHWInstance::Write( ostream& out, const map<NiObjectRef,unsigned int> 
 
 	//--END CUSTOM CODE--//
 
-	NiObject::Write( out, link_map, missing_link_stack, info );
+	NiAVObject::Write( out, link_map, missing_link_stack, info );
+	WriteRef( StaticCast<NiObject>(masterMesh), out, info, link_map, missing_link_stack );
+	WriteRef( StaticCast<NiObject>(meshModifier), out, info, link_map, missing_link_stack );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -70,7 +79,9 @@ std::string NiMeshHWInstance::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiObject::asString();
+	out << NiAVObject::asString();
+	out << "  Master Mesh:  " << masterMesh << endl;
+	out << "  Mesh Modifier:  " << meshModifier << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -83,7 +94,9 @@ void NiMeshHWInstance::FixLinks( const map<unsigned int,NiObjectRef> & objects, 
 
 	//--END CUSTOM CODE--//
 
-	NiObject::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiAVObject::FixLinks( objects, link_stack, missing_link_stack, info );
+	masterMesh = FixLink<NiMesh>( objects, link_stack, missing_link_stack, info );
+	meshModifier = FixLink<NiInstancingMeshModifier>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -92,13 +105,17 @@ void NiMeshHWInstance::FixLinks( const map<unsigned int,NiObjectRef> & objects, 
 
 std::list<NiObjectRef> NiMeshHWInstance::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiObject::GetRefs();
+	refs = NiAVObject::GetRefs();
+	if ( masterMesh != NULL )
+		refs.push_back(StaticCast<NiObject>(masterMesh));
+	if ( meshModifier != NULL )
+		refs.push_back(StaticCast<NiObject>(meshModifier));
 	return refs;
 }
 
 std::list<NiObject *> NiMeshHWInstance::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiObject::GetPtrs();
+	ptrs = NiAVObject::GetPtrs();
 	return ptrs;
 }
 

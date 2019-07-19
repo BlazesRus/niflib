@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -16,7 +16,8 @@ All rights reserved.  Please see niflib.h for license. */
 #include "bhkEntity.h"
 
 // Include structures
-#include "../gen/QuaternionXYZW.h"
+#include "../gen/HavokFilter.h"
+#include "../gen/hkQuaternion.h"
 #include "../Ref.h"
 namespace Niflib {
 
@@ -31,35 +32,34 @@ typedef Ref<bhkRigidBody> bhkRigidBodyRef;
  *         marks this body as active for translation and rotation, a normal
  * bhkRigidBody ignores those
  *         properties. Because the properties are equal, a bhkRigidBody may be
- * renamed
- *         into a bhkRigidBodyT and vice-versa.
+ * renamed into a bhkRigidBodyT and vice-versa.
  */
 class bhkRigidBody : public bhkEntity {
 public:
 	/*! Constructor */
 	NIFLIB_API bhkRigidBody();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~bhkRigidBody();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -336,38 +336,30 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Unknown. Could be 2 shorts corresponding to Unknown 7 Shorts[1] and [2]. */
-	int unknownInt1;
-	/*! Unknown. */
-	int unknownInt2;
-	/*! Unknown. Could be 3 floats. */
-	NifArray<3,int > unknown3Ints;
-	/*! The collision response. See hkResponseType for hkpWorld default implementations. */
-	hkResponseType collisionResponse_;
-	/*! Unknown */
-	byte unknownByte;
+	/*!
+	 * How the body reacts to collisions. See hkResponseType for hkpWorld default
+	 * implementations.
+	 */
+	hkResponseType collisionResponse;
+	/*! Skipped over when writing Collision Response and Callback Delay. */
+	byte unusedByte1;
 	/*!
 	 * Lowers the frequency for processContactCallbacks. A value of 5 means that a
-	 * callback is raised every 5th frame.
+	 * callback is raised every 5th frame. The default is once every 65535 frames.
 	 */
-	unsigned short processContactCallbackDelay_;
+	unsigned short processContactCallbackDelay;
 	/*! Unknown. */
-	NifArray<2,unsigned short > unknown2Shorts;
-	/*! Copy of Layer value? */
-	OblivionLayer layerCopy;
-	/*! Copy of Col Filter value? */
-	byte colFilterCopy;
-	/*! Copy of Layer value? */
-	SkyrimLayer skyrimLayerCopy;
-	/*! Copy of  value? */
-	byte flagsAndPartNumberCopy;
-	/*!
-	 * Unknown.
-	 *             Oblivion defaults: 0 21280 2481 62977 65535 44 0
-	 *             Skyrim defaults: 0 56896 1343 0 0 1 65535 (fourth and fifth element
-	 * *must* be zero)
-	 */
-	NifArray<7,unsigned short > unknown7Shorts;
+	unsigned int unknownInt1;
+	/*! Copy of Havok Filter */
+	HavokFilter havokFilterCopy;
+	/*! Garbage data from memory. Matches previous Unused value. */
+	Niflib::NifArray<4,byte > unused2;
+	/*! Unknown. */
+	unsigned int unknownInt2;
+	hkResponseType collisionResponse2;
+	/*! Skipped over when writing Collision Response and Callback Delay. */
+	byte unusedByte2;
+	unsigned short processContactCallbackDelay2;
 	/*!
 	 * A vector that moves the body by the specified amount. Only enabled in
 	 * bhkRigidBodyT objects.
@@ -377,46 +369,45 @@ protected:
 	 * The rotation Yaw/Pitch/Roll to apply to the body. Only enabled in bhkRigidBodyT
 	 * objects.
 	 */
-	QuaternionXYZW rotation;
+	hkQuaternion rotation;
 	/*! Linear velocity. */
 	Vector4 linearVelocity;
 	/*! Angular velocity. */
 	Vector4 angularVelocity;
-	/*! Defines how the mass is distributed among the body. */
-	InertiaMatrix inertia;
 	/*!
-	 * This seems to be used to relocate the object's center of mass. Useful for
-	 * balancing objects in contraints.
+	 * Defines how the mass is distributed among the body, i.e. how difficult it is to
+	 * rotate around any given axis.
 	 */
+	InertiaMatrix inertiaTensor;
+	/*! The body's center of mass. */
 	Vector4 center;
 	/*! The body's mass in kg. A mass of zero represents an immovable object. */
 	float mass;
 	/*!
-	 * Damping value for linear movement. A value that is too small fixes the object in
-	 * place.
+	 * Reduces the movement of the body over time. A value of 0.1 will remove 10% of
+	 * the linear velocity every second.
 	 */
 	float linearDamping;
-	/*! Damping value for angular movement. */
-	float angularDamping;
-	/*! Unknown. */
-	float unknownTimefactorOrGravityfactor1;
-	/*! Unknown. */
-	float unknownTimefactorOrGravityfactor2;
-	/*! The body's friction. */
-	float friction;
-	/*! Unknown. */
-	float rollingfrictionmultiplier_;
 	/*!
-	 * The body's restitution (elasticity).
+	 * Reduces the movement of the body over time. A value of 0.05 will remove 5% of
+	 * the angular velocity every second.
+	 */
+	float angularDamping;
+	float timeFactor;
+	float gravityFactor;
+	/*! How smooth its surfaces is and how easily it will slide along other bodies. */
+	float friction;
+	float rollingFrictionMultiplier;
+	/*!
+	 * How "bouncy" the body is, i.e. how much energy it has after colliding. Less than
+	 * 1.0 loses energy, greater than 1.0 gains energy.
 	 *             If the restitution is not 0.0 the object will need extra CPU for all
 	 * new collisions.
-	 *             Try to set restitution to 0 for maximum performance (e.g. collapsing
-	 * buildings)
 	 */
 	float restitution;
 	/*! Maximal linear velocity. */
 	float maxLinearVelocity;
-	/*! Maximal angular velocity. Pi x 10? */
+	/*! Maximal angular velocity. */
 	float maxAngularVelocity;
 	/*!
 	 * The maximum allowed penetration for this object.
@@ -426,32 +417,25 @@ protected:
 	 */
 	float penetrationDepth;
 	/*! Motion system? Overrides Quality when on Keyframed? */
-	MotionSystem motionSystem;
+	hkMotionType motionSystem;
 	/*! The initial deactivator type of the body. */
-	DeactivatorType deactivatorType;
+	hkDeactivatorType deactivatorType;
+	bool enableDeactivation;
 	/*!
-	 * Usually set to 1 for fixed objects, or set to 2 for moving ones.  Seems to
-	 * always be same as Unknown Byte 1.
+	 * How aggressively the engine will try to zero the velocity for slow objects. This
+	 * does not save CPU.
 	 */
-	SolverDeactivation solverDeactivation;
-	/*! The motion type. Determines quality of motion? */
-	MotionQuality qualityType;
+	hkSolverDeactivation solverDeactivation;
+	/*! The type of interaction with other objects. */
+	hkQualityType qualityType;
 	/*! Unknown. */
-	unsigned int unknownInt6;
-	/*! Unknown. */
-	unsigned int unknownInt7;
-	/*! Unknown. */
-	unsigned int unknownInt8;
+	Niflib::NifArray<12,byte > unknownBytes1;
 	/*! Unknown. Skyrim only. */
-	unsigned int unknownInt81;
-	/*! The number of constraints this object is bound to. */
+	Niflib::NifArray<4,byte > unknownBytes2;
 	mutable unsigned int numConstraints;
-	/*! Unknown. */
 	vector<Ref<bhkSerializable > > constraints;
-	/*! 0 = do not respond to wind, 1 = respond to wind (?) */
-	unsigned int unknownInt9;
-	/*! Unknown. */
-	unsigned short unknownInt91;
+	/*! 1 = respond to wind */
+	unsigned int bodyFlags;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -468,5 +452,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

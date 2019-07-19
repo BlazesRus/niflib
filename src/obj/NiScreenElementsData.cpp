@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,7 +21,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiScreenElementsData::TYPE("NiScreenElementsData", &NiTriShapeData::TYPE );
 
-NiScreenElementsData::NiScreenElementsData() : maxPolygons((unsigned short)0), unknownUshort1((unsigned short)1), numPolygons((unsigned short)0), usedVertices((unsigned short)0), unknownUshort2((unsigned short)1), usedTrianglePoints((unsigned short)0), unknownUshort3((unsigned short)1) {
+NiScreenElementsData::NiScreenElementsData() : maxPolygons((unsigned short)0), polygonGrowBy((unsigned short)1), numPolygons((unsigned short)0), maxVertices((unsigned short)0), verticesGrowBy((unsigned short)1), maxIndices((unsigned short)0), indicesGrowBy((unsigned short)1) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -59,12 +59,12 @@ void NiScreenElementsData::Read( istream& in, list<unsigned int> & link_stack, c
 	for (unsigned int i1 = 0; i1 < polygonIndices.size(); i1++) {
 		NifStream( polygonIndices[i1], in, info );
 	};
-	NifStream( unknownUshort1, in, info );
+	NifStream( polygonGrowBy, in, info );
 	NifStream( numPolygons, in, info );
-	NifStream( usedVertices, in, info );
-	NifStream( unknownUshort2, in, info );
-	NifStream( usedTrianglePoints, in, info );
-	NifStream( unknownUshort3, in, info );
+	NifStream( maxVertices, in, info );
+	NifStream( verticesGrowBy, in, info );
+	NifStream( maxIndices, in, info );
+	NifStream( indicesGrowBy, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -88,12 +88,12 @@ void NiScreenElementsData::Write( ostream& out, const map<NiObjectRef,unsigned i
 	for (unsigned int i1 = 0; i1 < polygonIndices.size(); i1++) {
 		NifStream( polygonIndices[i1], out, info );
 	};
-	NifStream( unknownUshort1, out, info );
+	NifStream( polygonGrowBy, out, info );
 	NifStream( numPolygons, out, info );
-	NifStream( usedVertices, out, info );
-	NifStream( unknownUshort2, out, info );
-	NifStream( usedTrianglePoints, out, info );
-	NifStream( unknownUshort3, out, info );
+	NifStream( maxVertices, out, info );
+	NifStream( verticesGrowBy, out, info );
+	NifStream( maxIndices, out, info );
+	NifStream( indicesGrowBy, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -133,12 +133,12 @@ std::string NiScreenElementsData::asString( bool verbose ) const {
 		out << "    Polygon Indices[" << i1 << "]:  " << polygonIndices[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Unknown UShort 1:  " << unknownUshort1 << endl;
+	out << "  Polygon Grow By:  " << polygonGrowBy << endl;
 	out << "  Num Polygons:  " << numPolygons << endl;
-	out << "  Used Vertices:  " << usedVertices << endl;
-	out << "  Unknown UShort 2:  " << unknownUshort2 << endl;
-	out << "  Used Triangle Points:  " << usedTrianglePoints << endl;
-	out << "  Unknown UShort 3:  " << unknownUshort3 << endl;
+	out << "  Max Vertices:  " << maxVertices << endl;
+	out << "  Vertices Grow By:  " << verticesGrowBy << endl;
+	out << "  Max Indices:  " << maxIndices << endl;
+	out << "  Indices Grow By:  " << indicesGrowBy << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

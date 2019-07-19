@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -30,28 +30,28 @@ class NiPSysFieldModifier : public NiPSysModifier {
 public:
 	/*! Constructor */
 	NIFLIB_API NiPSysFieldModifier();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiPSysFieldModifier();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -62,15 +62,18 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Force Field Object */
+	/*! The object whose position and orientation are the basis of the field. */
 	Ref<NiAVObject > fieldObject;
-	/*! Magnitude of the force */
+	/*! Magnitude of the force. */
 	float magnitude;
-	/*! Controls how quick the field diminishes */
+	/*! How the magnitude diminishes with distance from the Field Object. */
 	float attenuation;
-	/*! Use maximum distance */
+	/*!
+	 * Whether or not to use a distance from the Field Object after which there is no
+	 * effect.
+	 */
 	bool useMaxDistance;
-	/*! Maximum distance */
+	/*! Maximum distance after which there is no effect. */
 	float maxDistance;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -89,5 +92,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

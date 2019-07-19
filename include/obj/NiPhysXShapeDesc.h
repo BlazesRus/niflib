@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -17,6 +17,8 @@ All rights reserved.  Please see niflib.h for license. */
 #include "NiObject.h"
 
 // Include structures
+#include "../gen/NxPlane.h"
+#include "../gen/NxCapsule.h"
 #include "../Ref.h"
 namespace Niflib {
 
@@ -25,33 +27,33 @@ class NiPhysXMeshDesc;
 class NiPhysXShapeDesc;
 typedef Ref<NiPhysXShapeDesc> NiPhysXShapeDescRef;
 
-/*! Unknown PhysX node. */
+/*! For serializing NxShapeDesc objects */
 class NiPhysXShapeDesc : public NiObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiPhysXShapeDesc();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiPhysXShapeDesc();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -62,38 +64,22 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Unknown */
-	int unknownInt1;
-	/*! Unknown */
-	Quaternion unknownQuat1;
-	/*! Unknown */
-	Quaternion unknownQuat2;
-	/*! Unknown */
-	Quaternion unknownQuat3;
-	/*! Unknown */
-	short unknownShort1;
-	/*! Unknown */
-	int unknownInt2;
-	/*! Unknown */
-	short unknownShort2;
-	/*! Unknown */
-	float unknownFloat1;
-	/*! Unknown */
-	float unknownFloat2;
-	/*! Unknown */
-	float unknownFloat3;
-	/*! Unknown */
-	int unknownInt3;
-	/*! Unknown */
-	int unknownInt4;
-	/*! Unknown */
-	int unknownInt5;
-	/*! Unknown */
-	int unknownInt7;
-	/*! Unknown */
-	int unknownInt8;
-	/*! PhysX Mesh Description */
-	Ref<NiPhysXMeshDesc > meshDescription;
+	NxShapeType shapeType;
+	Matrix34 localPose;
+	unsigned int shapeFlags;
+	unsigned short collisionGroup;
+	unsigned short materialIndex;
+	float density;
+	float mass;
+	float skinWidth;
+	IndexString shapeName;
+	unsigned int non_interactingCompartmentTypes;
+	Niflib::NifArray<4,unsigned int > collisionBits;
+	NxPlane plane;
+	float sphereRadius;
+	Vector3 boxHalfExtents;
+	NxCapsule capsule;
+	Ref<NiPhysXMeshDesc > mesh;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -111,5 +97,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif

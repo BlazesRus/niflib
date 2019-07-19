@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, NIF File Format Library and Tools
+/* Copyright (c) 2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,39 +14,39 @@ All rights reserved.  Please see niflib.h for license. */
 
 //--END CUSTOM CODE--//
 
-#include "NiObject.h"
+#include "NiPSVolumeEmitter.h"
 namespace Niflib {
 
 class NiPSSphereEmitter;
 typedef Ref<NiPSSphereEmitter> NiPSSphereEmitterRef;
 
-/*!  */
-class NiPSSphereEmitter : public NiObject {
+/*! A particle emitter that emits particles from a spherical volume. */
+class NiPSSphereEmitter : public NiPSVolumeEmitter {
 public:
 	/*! Constructor */
 	NIFLIB_API NiPSSphereEmitter();
-
+	
 	/*! Destructor */
 	NIFLIB_API virtual ~NiPSSphereEmitter();
-
+	
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-
+	
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-
+	
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-
+	
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -57,50 +57,7 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Unknown. */
-	IndexString name;
-	/*! Unknown. */
-	int unknown2;
-	/*! Unknown. */
-	int unknown3;
-	/*! Unknown. */
-	int unknown4;
-	/*! Unknown. */
-	int unknown5;
-	/*! Unknown. */
-	float unknown6;
-	/*! Unknown. */
-	int unknown7;
-	/*! Unknown. */
-	float unknown8;
-	/*! Unknown. */
-	float unknown9;
-	/*! Unknown. */
-	int unknown10;
-	/*! Unknown. */
-	float unknown11;
-	/*! Unknown. */
-	int unknown12;
-	/*! Unknown. */
-	int unknown13;
-	/*! Unknown. */
-	int unknown14;
-	/*! Unknown. */
-	int unknown15;
-	/*! Unknown. */
-	int unknown16;
-	/*! Unknown. */
-	float unknown17;
-	/*! Unknown. */
-	int unknown18;
-	/*! Unknown. */
-	int unknown19;
-	/*! Unknown. */
-	short unknown20;
-	/*! Target node? */
-	int unknown21;
-	/*! Unknown. */
-	float unknown22;
+	float emitterRadius;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -118,5 +75,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-} //End Niflib namespace
+}
 #endif
