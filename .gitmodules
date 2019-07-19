@@ -3,4 +3,5 @@
 	url = https://github.com/qhull/qhull
 [submodule "docsys"]
 	path = docsys
-	url = https://github.com/niftools/nifdocsys
+	url = https://github.com/jonwd7/nifdocsys
+	branch = develop
