@@ -3,7 +3,7 @@ All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
 
-//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
+// To change this file, alter the gen_niflib.py script.
 
 #ifndef _BYTECOLOR4_H_
 #define _BYTECOLOR4_H_
@@ -13,7 +13,7 @@ All rights reserved.  Please see niflib.h for license. */
 namespace Niflib {
 
 
-/*! Unknown. */
+/*! A color with alpha (red, green, blue, alpha). */
 struct ByteColor4 {
 	/*! Default Constructor */
 	NIFLIB_API ByteColor4();

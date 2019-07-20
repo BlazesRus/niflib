@@ -8,6 +8,7 @@ All rights reserved.  Please see niflib.h for license. */
 //-----------------------------------NOTICE----------------------------------//
 
 #include "../../include/gen/BSVertexDataSSE.h"
+#include "../../include/gen/ByteColor4.h"
 #include "../../include/gen/ByteVector3.h"
 #include "../../include/gen/HalfTexCoord.h"
 using namespace Niflib;
