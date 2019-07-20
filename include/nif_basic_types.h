@@ -50,6 +50,13 @@ struct Char8String : public std::string {
 typedef unsigned char	byte;
 #endif
 
+#if defined(_MSC_VER) || defined(NIFLIB_NO_FP16_EXTENSION)
+typedef uint16_t hfloat;
+#else
+// Half-presision float (Require GCC or CLang extension)
+typedef __fp16 hfloat;
+#endif
+
 //--Structures--//
 
 /*! 
