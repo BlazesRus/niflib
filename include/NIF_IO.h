@@ -12,6 +12,10 @@ All rights reserved.  Please see niflib.h for license. */
 #include "gen/enums_intl.h"
 #include "nif_math.h"
 #include "nif_versions.h"
+#include "obj/NiObject.h"
+
+#include <list>
+#include <map>
 
 namespace Niflib {
 using namespace std;
@@ -44,6 +48,8 @@ void WriteByte( byte val, ostream& out );
 void WriteFloat( float val, ostream& out );
 void WriteString( string const & val, ostream& out );
 void WriteBool( bool val, ostream& out, unsigned int version );
+void WriteRef( const Ref<NiObject>& ref, ostream & out, const NifInfo & info,
+			   const map<Ref<NiObject>, unsigned int> & link_map, list<NiObject *> & missing_link_stack );
 
 //-- BitField Helper functions --//
 

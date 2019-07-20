@@ -261,6 +261,29 @@ void WriteBool( bool val, ostream& out, unsigned int version ) {
 	}
 }
 
+void WriteRef( const Ref<NiObject>& ref, ostream & out, const NifInfo & info,
+			   const map<Ref<NiObject>, unsigned int> & link_map, list<NiObject *> & missing_link_stack )
+{
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*ref), out );
+	} else {
+		if ( ref != NULL ) {
+			map<NiObjectRef, unsigned int>::const_iterator it = link_map.find( ref );
+			if ( it != link_map.end() ) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( ref );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+}
+
+
 //-- NifStream And ostream Functions --//
 
 // The NifStream functions allow each built-in type to be streamed to and from a file.
