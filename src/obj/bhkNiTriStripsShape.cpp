@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -246,13 +246,11 @@ void bhkNiTriStripsShape::SetStripsData( int index, NiTriStripsData * strips )
 	stripsData[index] = strips;
 }
 
-
-
-Vector3 bhkNiTriStripsShape::GetScale() const {
+Vector4 bhkNiTriStripsShape::GetScale() const {
 	return scale;
 }
 
-void bhkNiTriStripsShape::SetScale( const Vector3 & n ) {
+void bhkNiTriStripsShape::SetScale( const Vector4 & n ) {
 	scale = n;	
 }
 
@@ -274,19 +272,35 @@ void bhkNiTriStripsShape::SetNumDataLayers( unsigned int i ) {
 }
 
 OblivionLayer bhkNiTriStripsShape::GetOblivionLayer( unsigned int index ) const {
-	return dataLayers[index].layer;
+	return dataLayers[index].layer_ob;
 }
 
 void bhkNiTriStripsShape::SetOblivionLayer( unsigned int index, OblivionLayer layer ){
-	dataLayers[index].layer = layer;
+	dataLayers[index].layer_ob = layer;
 }
 
-unsigned char bhkNiTriStripsShape::GetOblivionFilter( unsigned int index ) const {
-	return dataLayers[index].colFilter;
+SkyrimLayer bhkNiTriStripsShape::GetSkyrimLayer( unsigned int index ) const {
+	return dataLayers[index].layer_sk;
 }
 
-void bhkNiTriStripsShape::SetOblivionFilter( unsigned int index, unsigned char filter ) {
-	dataLayers[index].colFilter = filter;
+void bhkNiTriStripsShape::SetSkyrimLayer( unsigned int index, SkyrimLayer layer ){
+	dataLayers[index].layer_sk = layer;
+}
+
+Fallout3Layer bhkNiTriStripsShape::GetFalloutLayer( unsigned int index ) const {
+	return dataLayers[index].layer_fo;
+}
+
+void bhkNiTriStripsShape::SetFalloutLayer( unsigned int index, Fallout3Layer layer ){
+	dataLayers[index].layer_fo = layer;
+}
+
+Niflib::byte bhkNiTriStripsShape::GetFlagsAndPartNumber( unsigned int index ) const {
+	return dataLayers[index].flagsAndPartNumber;
+}
+
+void bhkNiTriStripsShape::SetFlagsAndPartNumber( unsigned int index, Niflib::byte filter ) {
+	dataLayers[index].flagsAndPartNumber = filter;
 }
 
 void bhkNiTriStripsShape::CalcMassProperties(float density, bool solid, float &mass, float &volume, Vector3 &center, InertiaMatrix& inertia)

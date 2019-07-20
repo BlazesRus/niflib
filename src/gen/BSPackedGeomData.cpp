@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -9,7 +9,11 @@ All rights reserved.  Please see niflib.h for license. */
 
 #include "../../include/gen/BSPackedGeomData.h"
 #include "../../include/gen/BSPackedGeomDataCombined.h"
+#include "../../include/gen/BSVertexData.h"
 #include "../../include/gen/BSVertexDesc.h"
+#include "../../include/gen/ByteVector3.h"
+#include "../../include/gen/HalfTexCoord.h"
+#include "../../include/gen/HalfVector3.h"
 #include "../../include/gen/NiBound.h"
 #include "../../include/gen/NiTransform.h"
 #include "../../include/obj/BSPackedCombinedSharedGeomDataExtra.h"

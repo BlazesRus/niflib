@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -62,13 +62,13 @@ public:
    * Gets the rigid body that this collision object uses, if any.
    * \return The rigid body that this object references, or a NULL reference if it does not reference any.
    */
-   NIFLIB_API Ref<NiObject> GetBody() const;
+   NIFLIB_API Ref<bhkWorldObject> GetBody() const;
 
    /*!
    * Sets the new rigid body that this collision object uses.
    * \param[in] value The new rigid body for this collision object to use, or NULL to clear the current reference.
    */
-   NIFLIB_API void SetBody( NiObject * value );
+   NIFLIB_API void SetBody( bhkWorldObject * value );
 
    /*!
    * Gets the flags field

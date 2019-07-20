@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -73,23 +73,23 @@ public:
 	NIFLIB_API void ClearBoundingBox();
 
 	/*!
-	 * Returns any embedded bounding box information.  NiAVObject::HasBoundingBox should be called first, as this function will throw an exception if there is no bounding box information in this object.  Older NIF files can have a bounding box specified in them which will be used for collision detection instead of evaluating the triangles.
-	 * \return The embedded bounding box dimentions.
-	 * \sa NiAVObject::HasBoundingBox
+	 * Returns any embedded bounding volume information.  NiAVObject::HasBoundingVolume should be called first, as this function will throw an exception if there is no bounding volume information in this object.  Older NIF files can have a bounding volume specified in them which will be used for collision detection instead of evaluating the triangles.
+	 * \return The embedded bounding volume dimentions.
+	 * \sa NiAVObject::HasBoundingVolume
 	 */
-	NIFLIB_API BoundingBox GetBoundingBox() const;
+	NIFLIB_API BoundingVolume GetBoundingVolume() const;
 
 	/*!
-	 * Sets new embedded bounding box information.  Older NIF files can have a bounding box specified in them which will be used for collision detection instead of evaluating the triangles.
-	 * \param[in] n The new bounding box dimentions.
+	 * Sets new embedded bounding volume information.  Older NIF files can have a bounding volume specified in them which will be used for collision detection instead of evaluating the triangles.
+	 * \param[in] n The new bounding volume dimentions.
 	 */
-	NIFLIB_API void SetBoundingBox( const BoundingBox & n );
+	NIFLIB_API void SetBoundingVolume( const BoundingVolume & n );
 
 	/*!
-	 * Determines whether this object has embedded bounding box information.  Older NIF files can have a bounding box specified in them which will be used for collision detection instead of evaluating the triangles.
-	 * \return True if this object has an embedded bounding box, false otherwise.
+	 * Determines whether this object has embedded bounding volume information.  Older NIF files can have a bounding volume specified in them which will be used for collision detection instead of evaluating the triangles.
+	 * \return True if this object has an embedded bounding volume, false otherwise.
 	 */
-	NIFLIB_API bool HasBoundingBox() const;
+	NIFLIB_API bool HasBoundingVolume() const;
 	
 	/*! 
 	 * This is a conveniance function that allows you to retrieve the full 4x4 matrix transform of a node.  It accesses the "Rotation," "Translation," and "Scale" attributes and builds a complete 4x4 transformation matrix from them.

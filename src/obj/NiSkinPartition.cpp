@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -43,7 +43,10 @@ typedef vector<SkinPartition> PartitionList;
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiSkinPartition.h"
+#include "../../include/gen/BSVertexDataSSE.h"
 #include "../../include/gen/BSVertexDesc.h"
+#include "../../include/gen/ByteVector3.h"
+#include "../../include/gen/HalfTexCoord.h"
 #include "../../include/gen/SkinPartition.h"
 using namespace Niflib;
 
@@ -210,7 +213,45 @@ void NiSkinPartition::Read( istream& in, list<unsigned int> & link_stack, const 
 		if ( (dataSize > 0) ) {
 			vertexData.resize((dataSize / vertexSize));
 			for (unsigned int i3 = 0; i3 < vertexData.size(); i3++) {
-				NifStream( vertexData[i3], in, info, vertexDesc.vertexAttributes );
+				if ( ((ARG & 16) != 0) ) {
+					NifStream( vertexData[i3].vertex, in, info );
+				};
+				if ( (((ARG & 16) != 0) && ((ARG & 256) != 0)) ) {
+					NifStream( vertexData[i3].bitangentX, in, info );
+				};
+				if ( (((ARG & 16) != 0) && ((ARG & 256) == 0)) ) {
+					NifStream( vertexData[i3].unknownInt, in, info );
+				};
+				if ( ((ARG & 32) != 0) ) {
+					NifStream( vertexData[i3].uv.u, in, info );
+					NifStream( vertexData[i3].uv.v, in, info );
+				};
+				if ( ((ARG & 128) != 0) ) {
+					NifStream( vertexData[i3].normal.x, in, info );
+					NifStream( vertexData[i3].normal.y, in, info );
+					NifStream( vertexData[i3].normal.z, in, info );
+					NifStream( vertexData[i3].bitangentY, in, info );
+				};
+				if ( (((ARG & 128) != 0) && ((ARG & 256) != 0)) ) {
+					NifStream( vertexData[i3].tangent.x, in, info );
+					NifStream( vertexData[i3].tangent.y, in, info );
+					NifStream( vertexData[i3].tangent.z, in, info );
+					NifStream( vertexData[i3].bitangentZ, in, info );
+				};
+				if ( ((ARG & 512) != 0) ) {
+					NifStream( vertexData[i3].vertexColors, in, info );
+				};
+				if ( ((ARG & 1024) != 0) ) {
+					for (unsigned int i5 = 0; i5 < 4; i5++) {
+						NifStream( vertexData[i3].boneWeights[i5], in, info );
+					};
+					for (unsigned int i5 = 0; i5 < 4; i5++) {
+						NifStream( vertexData[i3].boneIndices[i5], in, info );
+					};
+				};
+				if ( ((ARG & 4096) != 0) ) {
+					NifStream( vertexData[i3].eyeData, in, info );
+				};
 			};
 		};
 		partition.resize(numSkinPartitionBlocks);
@@ -471,7 +512,45 @@ void NiSkinPartition::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 		NifStream( vertexDesc.vf8, out, info );
 		if ( (dataSize > 0) ) {
 			for (unsigned int i3 = 0; i3 < vertexData.size(); i3++) {
-				NifStream( vertexData[i3], out, info, vertexDesc.vertexAttributes );
+				if ( ((ARG & 16) != 0) ) {
+					NifStream( vertexData[i3].vertex, out, info );
+				};
+				if ( (((ARG & 16) != 0) && ((ARG & 256) != 0)) ) {
+					NifStream( vertexData[i3].bitangentX, out, info );
+				};
+				if ( (((ARG & 16) != 0) && ((ARG & 256) == 0)) ) {
+					NifStream( vertexData[i3].unknownInt, out, info );
+				};
+				if ( ((ARG & 32) != 0) ) {
+					NifStream( vertexData[i3].uv.u, out, info );
+					NifStream( vertexData[i3].uv.v, out, info );
+				};
+				if ( ((ARG & 128) != 0) ) {
+					NifStream( vertexData[i3].normal.x, out, info );
+					NifStream( vertexData[i3].normal.y, out, info );
+					NifStream( vertexData[i3].normal.z, out, info );
+					NifStream( vertexData[i3].bitangentY, out, info );
+				};
+				if ( (((ARG & 128) != 0) && ((ARG & 256) != 0)) ) {
+					NifStream( vertexData[i3].tangent.x, out, info );
+					NifStream( vertexData[i3].tangent.y, out, info );
+					NifStream( vertexData[i3].tangent.z, out, info );
+					NifStream( vertexData[i3].bitangentZ, out, info );
+				};
+				if ( ((ARG & 512) != 0) ) {
+					NifStream( vertexData[i3].vertexColors, out, info );
+				};
+				if ( ((ARG & 1024) != 0) ) {
+					for (unsigned int i5 = 0; i5 < 4; i5++) {
+						NifStream( vertexData[i3].boneWeights[i5], out, info );
+					};
+					for (unsigned int i5 = 0; i5 < 4; i5++) {
+						NifStream( vertexData[i3].boneIndices[i5], out, info );
+					};
+				};
+				if ( ((ARG & 4096) != 0) ) {
+					NifStream( vertexData[i3].eyeData, out, info );
+				};
 			};
 		};
 		for (unsigned int i2 = 0; i2 < partition.size(); i2++) {
@@ -753,11 +832,63 @@ std::string NiSkinPartition::asString( bool verbose ) const {
 				out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 				break;
 			};
-			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-				break;
+			if ( ((ARG & 16) != 0) ) {
+				out << "        Vertex:  " << vertexData[i2].vertex << endl;
 			};
-			out << "      Vertex Data[" << i2 << "]:  " << vertexData[i2] << endl;
-			array_output_count++;
+			if ( (((ARG & 16) != 0) && ((ARG & 256) != 0)) ) {
+				out << "        Bitangent X:  " << vertexData[i2].bitangentX << endl;
+			};
+			if ( (((ARG & 16) != 0) && ((ARG & 256) == 0)) ) {
+				out << "        Unknown Int:  " << vertexData[i2].unknownInt << endl;
+			};
+			if ( ((ARG & 32) != 0) ) {
+				out << "        u:  " << vertexData[i2].uv.u << endl;
+				out << "        v:  " << vertexData[i2].uv.v << endl;
+			};
+			if ( ((ARG & 128) != 0) ) {
+				out << "        x:  " << vertexData[i2].normal.x << endl;
+				out << "        y:  " << vertexData[i2].normal.y << endl;
+				out << "        z:  " << vertexData[i2].normal.z << endl;
+				out << "        Bitangent Y:  " << vertexData[i2].bitangentY << endl;
+			};
+			if ( (((ARG & 128) != 0) && ((ARG & 256) != 0)) ) {
+				out << "        x:  " << vertexData[i2].tangent.x << endl;
+				out << "        y:  " << vertexData[i2].tangent.y << endl;
+				out << "        z:  " << vertexData[i2].tangent.z << endl;
+				out << "        Bitangent Z:  " << vertexData[i2].bitangentZ << endl;
+			};
+			if ( ((ARG & 512) != 0) ) {
+				out << "        Vertex Colors:  " << vertexData[i2].vertexColors << endl;
+			};
+			if ( ((ARG & 1024) != 0) ) {
+				array_output_count = 0;
+				for (unsigned int i4 = 0; i4 < 4; i4++) {
+					if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+						out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+						break;
+					};
+					if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+						break;
+					};
+					out << "          Bone Weights[" << i4 << "]:  " << vertexData[i2].boneWeights[i4] << endl;
+					array_output_count++;
+				};
+				array_output_count = 0;
+				for (unsigned int i4 = 0; i4 < 4; i4++) {
+					if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+						out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+						break;
+					};
+					if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+						break;
+					};
+					out << "          Bone Indices[" << i4 << "]:  " << vertexData[i2].boneIndices[i4] << endl;
+					array_output_count++;
+				};
+			};
+			if ( ((ARG & 4096) != 0) ) {
+				out << "        Eye Data:  " << vertexData[i2].eyeData << endl;
+			};
 		};
 	};
 	array_output_count = 0;

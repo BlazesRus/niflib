@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -62,16 +62,16 @@ public:
 	//--BEGIN MISC CUSTOM CODE--//
 
 	/*!
-	 * Gets the scale. Usually (1.0, 1.0, 1.0).
+	 * Gets the scale. Usually (1.0, 1.0, 1.0, 0.0).
 	 * \return The scale.
 	 */
-	NIFLIB_API Vector3 GetScale() const;
+	NIFLIB_API Vector4 GetScale() const;
 
 	/*!
-	 * Sets the scale. Usually (1.0, 1.0, 1.0).
+	 * Sets the scale. Usually (1.0, 1.0, 1.0, 0.0).
 	 * \param[in] n The new scale.
 	 */
-	NIFLIB_API void SetScale( const Vector3 & n );
+	NIFLIB_API void SetScale( const Vector4 & n );
 
 	/*!
 	 * Gets the number of NiTriStripsData objects referenced by this shape.
@@ -112,8 +112,8 @@ public:
 	unsigned int GetNumDataLayers() const;
 
 	/*!
-	* Sets the number of OblivionColFilter objects referenced by this shape.
-	* \param[in] i The new number of OblivionColFilter objects.
+	* Sets the number of data layers objects referenced by this shape.
+	* \param[in] i The new number of data layers objects.
 	*/
 	NIFLIB_API void	SetNumDataLayers( unsigned int i );
 
@@ -129,8 +129,32 @@ public:
 	 */
 	NIFLIB_API void SetOblivionLayer( unsigned int index, OblivionLayer layer );
 
-	NIFLIB_API unsigned char GetOblivionFilter( unsigned int index ) const;
-	NIFLIB_API void SetOblivionFilter( unsigned int index, unsigned char filter ); 
+	/*!
+	 * Gets the SkyrimLayer referenced for the filter at the specified index.
+	 * \param[in] index The index at which the given OblivionLayer will be referenced.  Should be lower than the value set with bhkNiTriStripsShape::SetNumDataLayers.
+	 */
+	NIFLIB_API SkyrimLayer GetSkyrimLayer( unsigned int index ) const;
+
+	/*!
+ 	 * Sets the OblivionLayer referenced for the filter at the specified index.
+	 * \param[in] index The index at which the given SkyrimLayer will be referenced.  Should be lower than the value set with bhkNiTriStripsShape::SetNumDataLayers.
+	 */
+	NIFLIB_API void SetSkyrimLayer( unsigned int index, SkyrimLayer layer );
+
+	/*!
+	 * Gets the SkyrimLayer referenced for the filter at the specified index.
+	 * \param[in] index The index at which the given OblivionLayer will be referenced.  Should be lower than the value set with bhkNiTriStripsShape::SetNumDataLayers.
+	 */
+	NIFLIB_API Fallout3Layer GetFalloutLayer( unsigned int index ) const;
+
+	/*!
+ 	 * Sets the OblivionLayer referenced for the filter at the specified index.
+	 * \param[in] index The index at which the given SkyrimLayer will be referenced.  Should be lower than the value set with bhkNiTriStripsShape::SetNumDataLayers.
+	 */
+	NIFLIB_API void SetFalloutLayer( unsigned int index, Fallout3Layer layer );
+
+	NIFLIB_API Niflib::byte GetFlagsAndPartNumber( unsigned int index ) const;
+	NIFLIB_API void SetFlagsAndPartNumber( unsigned int index, Niflib::byte filter ); 
 
 	/*! Helper routine for calculating mass properties.
 	 *  \param[in]  density Uniform density of object

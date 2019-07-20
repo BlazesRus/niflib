@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -154,13 +154,13 @@ public:
 	 * Used to determine whether the front, back, or both sides of triangles will be drawn.   This isn't related to the stencil buffer, but happens to be included in this propery, probably for conveniance.
 	 * \return The current face drawing mode.
 	 */
-	NIFLIB_API FaceDrawMode GetFaceDrawMode() const;
+	NIFLIB_API StencilDrawMode GetStencilDrawMode() const;
 
 	/*!
 	 * Sets whether the front, back, or both sides of triangles will be drawn.   This isn't related to the stencil buffer, but happens to be included in this propery, probably for conveniance.
 	 * \param[in] value The new face drawing mode.
 	 */
-	NIFLIB_API void SetFaceDrawMode( FaceDrawMode value );
+	NIFLIB_API void SetStencilDrawMode( StencilDrawMode value );
 
 	//--END CUSTOM CODE--//
 protected:

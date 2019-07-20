@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -99,13 +99,13 @@ public:
 	 * Gets the current rotation of this rigid body.
 	 * \return The rotation of this rigid body.
 	 */
-	NIFLIB_API QuaternionXYZW GetRotation() const;
+	NIFLIB_API hkQuaternion GetRotation() const;
 
 	/*!
 	 * Sets a new rotation for this rigid body.
 	 * \param[in] value The new rotation for this rigid body.
 	 */
-	NIFLIB_API void SetRotation( const QuaternionXYZW & value );
+	NIFLIB_API void SetRotation( const hkQuaternion & value );
 
 	/*!
 	 * Gets the current linear velocity of this rigid body.
@@ -255,43 +255,43 @@ public:
 	 * Sets the current motion system for this rigid body.  Seems to override motion quality when set to keyframed.
 	 * \return The current motion system setting of this rigid body.
 	 */
-	NIFLIB_API MotionSystem GetMotionSystem() const;
+	NIFLIB_API hkMotionType GetMotionSystem() const;
 
 	/*!
 	 * Gets the current motion system of this rigid body.  Seems to override motion quality when set to keyframed.
 	 * \param[in] value The new motion system setting for this rigid body.
 	 */
-	NIFLIB_API void SetMotionSystem( MotionSystem value );
+	NIFLIB_API void SetMotionSystem( hkMotionType value );
 
 	/*!
 	 * Sets the quality of the calculations used to detect collisions for this object.  Essentially, the faster the object goes, the higher quality of motion it will require.
 	 * \return The current motion quality setting of this rigid body.
 	 */
-	NIFLIB_API MotionQuality GetQualityType() const;
+	NIFLIB_API hkQualityType GetQualityType() const;
 
 	/*!
 	 * Gets the quality of the calculations used to detect collisions for this object.  Essentially, the faster the object goes, the higher quality of motion it will require.
 	 * \param[in] value The new motion quality setting for this rigid body.
 	 */
-	NIFLIB_API void SetQualityType( MotionQuality value );
+	NIFLIB_API void SetQualityType( hkQualityType value );
 
 	// The initial deactivator type of the body.
 	// \return The current value.
-	NIFLIB_API DeactivatorType GetDeactivatorType() const;
+	NIFLIB_API hkDeactivatorType GetDeactivatorType() const;
 
 	// The initial deactivator type of the body.
 	// \param[in] value The new value.
-	NIFLIB_API void SetDeactivatorType( const DeactivatorType & value );
+	NIFLIB_API void SetDeactivatorType( const hkDeactivatorType & value );
 
 	// Usually set to 1 for fixed objects, or set to 2 for moving ones.  Seems to
 	// always be same as Unknown Byte 1.
 	// \return The current value.
-	NIFLIB_API SolverDeactivation GetSolverDeactivation() const;
+	NIFLIB_API hkSolverDeactivation GetSolverDeactivation() const;
 
 	// Usually set to 1 for fixed objects, or set to 2 for moving ones.  Seems to
 	// always be same as Unknown Byte 1.
 	// \param[in] value The new value.
-	NIFLIB_API void SetSolverDeactivation( const SolverDeactivation & value );
+	NIFLIB_API void SetSolverDeactivation( const hkSolverDeactivation & value );
 
 	/*!
 	 * Adds a constraint to this bhkRigidBody.
@@ -321,18 +321,6 @@ public:
 	//  center of gravity, and inertia tensor accordingly. If the mass parameter
 	//  is given then the density argument is ignored.
 	NIFLIB_API void UpdateMassProperties(float density = 1.0f, bool solid = true, float mass = 0.0f);
-
-	/*!
-	 * Returns the unknown 7 shorts
-	 * \return An array containing the 7 unknown shorts within this object.
-	 */
-	NIFLIB_API virtual NifArray<7,unsigned short > GetUnknown7Shorts() const;
-
-	/*! Replaces the unknown 7 shorts with new data
-	 * \param in An array containing the new data.  Size is 7.
-	 */
-	NIFLIB_API virtual void SetUnknown7Shorts( const NifArray<7,unsigned short > & in );
-
 
 	//--END CUSTOM CODE--//
 protected:

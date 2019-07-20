@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -356,22 +356,6 @@ std::list<NiObject *> bhkRigidBody::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-OblivionLayer bhkRigidBody::GetLayerCopy() const {
-	return layerCopy;
-}
-
-void bhkRigidBody::SetLayerCopy( OblivionLayer value ) {
-	layerCopy = value;
-}
-
-SkyrimLayer bhkRigidBody::GetSkyrimLayerCopy() const {
-	return skyrimLayerCopy;
-}
-
-void bhkRigidBody::SetSkyrimLayerCopy( SkyrimLayer value ) {
-	skyrimLayerCopy = value;
-}
-
 Vector4 bhkRigidBody::GetTranslation() const {
 	return translation;
 }
@@ -380,11 +364,11 @@ void bhkRigidBody::SetTranslation( const Vector4 & value ) {
 	translation = value;
 }
 
-QuaternionXYZW bhkRigidBody::GetRotation() const {
+hkQuaternion bhkRigidBody::GetRotation() const {
 	return rotation;
 }
 
-void bhkRigidBody::SetRotation( const QuaternionXYZW & value ) {
+void bhkRigidBody::SetRotation( const hkQuaternion & value ) {
 	rotation = value;
 }
 
@@ -405,11 +389,11 @@ void bhkRigidBody::SetAngularVelocity( const Vector4 & value ) {
 }
 
 InertiaMatrix  bhkRigidBody::GetInertia() const {
-	return inertia;
+	return inertiaTensor;
 }
 
 void bhkRigidBody::SetInertia( const InertiaMatrix&  value ) {
-	inertia = value;
+	inertiaTensor = value;
 }
 
 Vector4 bhkRigidBody::GetCenter() const {
@@ -484,35 +468,35 @@ void bhkRigidBody::SetPenetrationDepth( float value ) {
 	penetrationDepth = value;
 }
 
-MotionSystem bhkRigidBody::GetMotionSystem() const {
+hkMotionType bhkRigidBody::GetMotionSystem() const {
 	return motionSystem;
 }
 
-void bhkRigidBody::SetMotionSystem( MotionSystem value ) {
+void bhkRigidBody::SetMotionSystem( hkMotionType value ) {
 	motionSystem = value;
 }
 
-MotionQuality bhkRigidBody::GetQualityType() const {
+hkQualityType bhkRigidBody::GetQualityType() const {
 	return qualityType;
 }
 
-void bhkRigidBody::SetQualityType( MotionQuality value ) {
+void bhkRigidBody::SetQualityType( hkQualityType value ) {
 	qualityType = value;
 }
 
-DeactivatorType bhkRigidBody::GetDeactivatorType() const {
+hkDeactivatorType bhkRigidBody::GetDeactivatorType() const {
 	return deactivatorType;
 }
 
-void bhkRigidBody::SetDeactivatorType( const DeactivatorType & value ) {
+void bhkRigidBody::SetDeactivatorType( const hkDeactivatorType & value ) {
 	deactivatorType = value;
 }
 
-SolverDeactivation bhkRigidBody::GetSolverDeactivation() const {
+hkSolverDeactivation bhkRigidBody::GetSolverDeactivation() const {
 	return solverDeactivation;
 }
 
-void bhkRigidBody::SetSolverDeactivation( const SolverDeactivation & value ) {
+void bhkRigidBody::SetSolverDeactivation( const hkSolverDeactivation & value ) {
 	solverDeactivation = value;
 }
 
@@ -550,7 +534,7 @@ void bhkRigidBody::ApplyScale(float scale)
     center *= scale;
 
     // apply scale on inertia tensor
-    inertia *= pow(scale, 2.0f);
+    inertiaTensor *= pow(scale, 2.0f);
 
     //# apply scale on all blocks down the hierarchy
     //ApplyScale(scale)
@@ -569,23 +553,15 @@ void bhkRigidBody::UpdateMassProperties(float density, bool solid, float mass)
 	{
 		float volume;
 		Vector3 com;
-		shape->CalcMassProperties(density, solid, this->mass, volume, com, inertia);
+		shape->CalcMassProperties(density, solid, this->mass, volume, com, inertiaTensor);
 		center = com;
 		if (mass != 0.0f)
 		{
 			float mass_correction = (this->mass != 0.0f) ? mass / this->mass : 1.0f;
 			this->mass = mass;
-			inertia *= mass_correction;
+			inertiaTensor *= mass_correction;
 		}
 	}
-}
-
-NifArray<7,unsigned short> bhkRigidBody::GetUnknown7Shorts() const {
-	return unknown7Shorts;
-}
-
-void bhkRigidBody::SetUnknown7Shorts(const NifArray<7,unsigned short> & in ) {
-	unknown7Shorts = in;
 }
 
 //--END CUSTOM CODE--//

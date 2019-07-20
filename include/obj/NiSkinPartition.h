@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,6 +21,7 @@ class NiTriBasedGeom;
 // Include structures
 #include "../gen/SkinPartition.h"
 #include "../gen/BSVertexDesc.h"
+#include "../gen/BSVertexDataSSE.h"
 namespace Niflib {
 
 class NiSkinPartition;
@@ -201,7 +202,7 @@ protected:
 	unsigned int dataSize;
 	unsigned int vertexSize;
 	BSVertexDesc vertexDesc;
-	vector<BSVertexData > vertexData;
+	vector<BSVertexDataSSE > vertexData;
 	vector<SkinPartition > partition;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */

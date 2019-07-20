@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -105,11 +105,11 @@ std::list<NiObject *> bhkNiCollisionObject::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-Ref<NiObject > bhkNiCollisionObject::GetBody() const {
+Ref<bhkWorldObject > bhkNiCollisionObject::GetBody() const {
    return body;
 }
 
-void bhkNiCollisionObject::SetBody( NiObject * value ) {
+void bhkNiCollisionObject::SetBody( bhkWorldObject * value ) {
    body = value;
 }
 

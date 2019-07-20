@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -87,13 +87,17 @@ public:
 	 * Gets the scale. Usually (1.0, 1.0, 1.0).
 	 * \return The scale.
 	 */
-	NIFLIB_API Vector3 GetScale() const;
+	NIFLIB_API Vector4 GetScale() const;
 
 	/*!
 	 * Sets the scale. Usually (1.0, 1.0, 1.0).
 	 * \param[in] n The new scale.
 	 */
-	NIFLIB_API void SetScale( const Vector3 & n );
+	NIFLIB_API void SetScale( const Vector4 & n );
+
+	NIFLIB_API float GetRadius() const;
+
+	NIFLIB_API void SetRadius(float value);
 
 	/*! Helper routine for calculating mass properties.
 	 *  \param[in]  density Uniform density of object

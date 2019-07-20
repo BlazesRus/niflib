@@ -1,4 +1,4 @@
-/* Copyright (c) 2019, NIF File Format Library and Tools
+/* Copyright (c) 2005-2019, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -216,11 +216,11 @@ void bhkPackedNiTriStripsShape::SetSubShapes( vector<OblivionSubShape>& value ) 
 	subShapes = value;
 }
 
-Vector3 bhkPackedNiTriStripsShape::GetScale() const {
+Vector4 bhkPackedNiTriStripsShape::GetScale() const {
 	return scale;
 }
 
-void bhkPackedNiTriStripsShape::SetScale( const Vector3 & n ) {
+void bhkPackedNiTriStripsShape::SetScale( const Vector4 & n ) {
 	scale = n;	
 }
 
@@ -237,4 +237,15 @@ void bhkPackedNiTriStripsShape::CalcMassProperties(float density, bool solid, fl
 		Inertia::CalcMassPropertiesPolyhedron(verts, tris, density, solid, mass, volume, center, inertia);
 	}
 }
+
+float bhkPackedNiTriStripsShape::GetRadius() const
+{
+	return radius;
+}
+
+void bhkPackedNiTriStripsShape::SetRadius(float value)
+{
+	radius = value;
+}
+
 //--END CUSTOM CODE--//
