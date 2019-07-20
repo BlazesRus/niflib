@@ -42,9 +42,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\obj\BSMultiBoundData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Inertia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1644,20 +1641,404 @@
     <ClCompile Include="src\gen\SkinPartitionUnknownItem1.cpp">
       <Filter>Source Files\gen</Filter>
     </ClCompile>
-    <ClCompile Include="src\gen\BSSegment.cpp">
-      <Filter>Source Files\obj</Filter>
-    </ClCompile>
     <ClCompile Include="src\gen\BoneLOD.cpp">
       <Filter>Source Files\gen</Filter>
     </ClCompile>
     <ClCompile Include="src\gen\bhkCMSDBigTris.cpp">
       <Filter>Source Files\gen</Filter>
     </ClCompile>
+    <ClCompile Include="src\gen\BallAndSocketDescriptor.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\bhkPositionConstraintMotor.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\bhkSpringDamperConstraintMotor.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\bhkVelocityConstraintMotor.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BoneData.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BonePose.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BoneTransform.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BoneVertData.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BSConnectPoint.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BSGeometryPerSegmentSharedData.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BSGeometrySegmentData.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BSGeometrySegmentSharedData.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BSGeometrySubSegment.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BSPackedGeomData.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BSPackedGeomDataCombined.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BSPackedGeomObject.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BSSkinBoneTrans.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BSVertexData.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BSVertexDataSSE.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\BSVertexDesc.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\ByteVector3.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\ConstraintData.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\ConstraintInfo.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\ControlledBlock.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\DataStreamRef.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\FormatPrefs.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\HalfTexCoord.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\HalfVector3.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\HavokFilter.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\HavokMaterial.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\hkQuaternion.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\hkWorldObjCinfoProperty.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\InterpBlendItem.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\LODInfo.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\MalleableDescriptor.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\MTransform.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NiBound.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NiPhysXJointActor.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NiPhysXJointLimit.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NiPlane.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NiQuatTransform.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NiTransform.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NodeSet.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NxCapsule.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NxJointDriveDesc.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NxJointLimitSoftDesc.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NxMaterialDesc.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NxPlane.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\NxSpringDesc.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\PhysXBodyStoredVels.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\PhysXStateName.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\PixelFormatComponent.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\PrismaticDescriptor.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\PSSpawnRateKey.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\QTransform.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\SkinInfo.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\SkinInfoSet.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\StiffSpringDescriptor.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen\TriangleData.cpp">
+      <Filter>Source Files\gen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\bhkNPCollisionObject.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\bhkPhysicsSystem.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\bhkPoseArray.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\bhkRagdollSystem.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\bhkRagdollTemplate.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\bhkRagdollTemplateData.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\bhkSystem.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSAnimNote.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSClothExtraData.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSConnectPoint__Children.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSConnectPoint__Parents.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSDistantObjectLargeRefExtraData.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSDynamicTriShape.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSExtraData.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSEyeCenterExtraData.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSMeshLODTriShape.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSPackedCombinedGeomDataExtra.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSPackedCombinedSharedGeomDataExtra.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSPositionData.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSRangeNode.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSSkin__BoneData.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSSkin__Instance.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSSubIndexTriShape.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSTriShape.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiAccumulator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiBoolEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiBoolTimelineEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiBSplineColorEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiBSplineCompColorEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiBSplineCompFloatEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiBSplineCompPoint3Evaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiBSplineEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiBSplineFloatEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiBSplinePoint3Evaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiBSplineTransformEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiColorEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiConstBoolEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiConstColorEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiConstFloatEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiConstPoint3Evaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiConstQuaternionEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiConstTransformEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiFloatEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiFloatsExtraDataController.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiFloatsExtraDataPoint3Controller.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiKeyBasedEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiLightRadiusController.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiLookAtEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPathEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPhysXDest.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPhysXDynamicSrc.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPhysXJointDesc.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPhysXRigidBodyDest.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPhysXRigidBodySrc.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPhysXSrc.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPixelFormat.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPoint3Evaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPSAlignedQuadGenerator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPSCollider.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPSEmitter.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPSEmitterCtlr.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPSEmitterFloatCtlr.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPSForce.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPSForceBoolCtlr.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPSForceCtlr.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPSForceFloatCtlr.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiPSVolumeEmitter.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiQuaternionEvaluator.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\NiRotData.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj\BSMultiBoundData.cpp">
+      <Filter>Source Files\obj</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\obj\BSMultiBoundData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\ComplexShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -3299,14 +3680,401 @@
     <ClInclude Include="include\gen\SkinPartitionUnknownItem1.h">
       <Filter>Header Files\gen</Filter>
     </ClInclude>
-    <ClInclude Include="include\gen\BSSegment.h">
-      <Filter>Header Files\gen</Filter>
-    </ClInclude>
     <ClInclude Include="include\gen\BoneLOD.h">
       <Filter>Header Files\gen</Filter>
     </ClInclude>
     <ClInclude Include="include\gen\bhkCMSDBigTris.h">
       <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BallAndSocketDescriptor.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\bhkPositionConstraintMotor.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\bhkSpringDamperConstraintMotor.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\bhkVelocityConstraintMotor.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BoneData.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BonePose.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BoneTransform.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BoneVertData.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BSConnectPoint.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BSGeometryPerSegmentSharedData.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BSGeometrySegmentData.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BSGeometrySegmentSharedData.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BSGeometrySubSegment.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BSPackedGeomData.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BSPackedGeomDataCombined.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BSPackedGeomObject.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BSSkinBoneTrans.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BSVertexData.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BSVertexDataSSE.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\BSVertexDesc.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\ByteVector3.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\ConstraintData.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\ConstraintInfo.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\ControlledBlock.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\DataStreamRef.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\FormatPrefs.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\HalfTexCoord.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\HalfVector3.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\HavokFilter.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\HavokMaterial.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\hkQuaternion.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\hkWorldObjCinfoProperty.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\InterpBlendItem.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\LODInfo.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\MalleableDescriptor.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\MTransform.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NiBound.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NiPhysXJointActor.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NiPhysXJointLimit.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NiPlane.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NiQuatTransform.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NiTransform.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NodeSet.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NxCapsule.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NxJointDriveDesc.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NxJointLimitSoftDesc.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NxMaterialDesc.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NxPlane.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\NxSpringDesc.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\PhysXBodyStoredVels.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\PhysXStateName.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\PixelFormatComponent.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\PrismaticDescriptor.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\PSSpawnRateKey.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\QTransform.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\SkinInfo.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\SkinInfoSet.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\StiffSpringDescriptor.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gen\TriangleData.h">
+      <Filter>Header Files\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\bhkNPCollisionObject.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\bhkPhysicsSystem.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\bhkPoseArray.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\bhkRagdollSystem.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\bhkRagdollTemplate.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\bhkRagdollTemplateData.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\bhkSystem.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSAnimNote.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSClothExtraData.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSConnectPoint__Children.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSConnectPoint__Parents.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSDistantObjectLargeRefExtraData.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSDynamicTriShape.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSExtraData.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSEyeCenterExtraData.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSMeshLODTriShape.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSPackedCombinedGeomDataExtra.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSPackedCombinedSharedGeomDataExtra.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSPositionData.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSRangeNode.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSSkin__BoneData.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSSkin__Instance.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSSubIndexTriShape.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSTriShape.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiAccumulator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiBoolEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiBoolTimelineEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiBSplineColorEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiBSplineCompColorEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiBSplineCompFloatEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiBSplineCompPoint3Evaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiBSplineEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiBSplineFloatEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiBSplinePoint3Evaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiBSplineTransformEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiColorEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiConstBoolEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiConstColorEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiConstFloatEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiConstPoint3Evaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiConstQuaternionEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiConstTransformEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiFloatEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiFloatsExtraDataController.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiFloatsExtraDataPoint3Controller.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiKeyBasedEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiLightRadiusController.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiLookAtEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPathEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPhysXDest.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPhysXDynamicSrc.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPhysXJointDesc.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPhysXRigidBodyDest.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPhysXRigidBodySrc.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPhysXSrc.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPixelFormat.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPoint3Evaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPSAlignedQuadGenerator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPSCollider.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPSEmitter.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPSEmitterCtlr.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPSEmitterFloatCtlr.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPSForce.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPSForceBoolCtlr.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPSForceCtlr.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPSForceFloatCtlr.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiPSVolumeEmitter.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiQuaternionEvaluator.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\NiRotData.h">
+      <Filter>Header Files\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\obj\BSMultiBoundData.h">
+      <Filter>Header Files\obj</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
