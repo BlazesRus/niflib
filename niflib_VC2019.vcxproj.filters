@@ -1503,9 +1503,6 @@
     <ClCompile Include="src\gen\HingeDescriptor.cpp">
       <Filter>Source Files\gen</Filter>
     </ClCompile>
-    <ClCompile Include="src\gen\hkTriangle.cpp">
-      <Filter>Source Files\gen</Filter>
-    </ClCompile>
     <ClCompile Include="src\gen\LimitedHingeDescriptor.cpp">
       <Filter>Source Files\gen</Filter>
     </ClCompile>

@@ -942,7 +942,6 @@
     <ClCompile Include="src\gen\HalfSpaceBV.cpp" />
     <ClCompile Include="src\gen\Header.cpp" />
     <ClCompile Include="src\gen\HingeDescriptor.cpp" />
-    <ClCompile Include="src\gen\hkTriangle.cpp" />
     <ClCompile Include="src\gen\LimitedHingeDescriptor.cpp" />
     <ClCompile Include="src\gen\LODRange.cpp" />
     <ClCompile Include="src\gen\MatchGroup.cpp" />
