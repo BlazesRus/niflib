@@ -1464,9 +1464,6 @@
     <ClCompile Include="src\gen\CapsuleBV.cpp">
       <Filter>Source Files\gen</Filter>
     </ClCompile>
-    <ClCompile Include="src\gen\ChannelData.cpp">
-      <Filter>Source Files\gen</Filter>
-    </ClCompile>
     <ClCompile Include="src\ComplexShape.cpp">
       <Filter>Source Files\gen</Filter>
     </ClCompile>
@@ -3480,9 +3477,6 @@
       <Filter>Header Files\gen</Filter>
     </ClInclude>
     <ClInclude Include="include\gen\CapsuleBV.h">
-      <Filter>Header Files\gen</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gen\ChannelData.h">
       <Filter>Header Files\gen</Filter>
     </ClInclude>
     <ClInclude Include="include\gen\ControllerLink.h">
