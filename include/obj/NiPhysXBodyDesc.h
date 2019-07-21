@@ -17,6 +17,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "NiObject.h"
 
 // Include structures
+#include "../gen/Matrix34.h"
 #include "../gen/PhysXBodyStoredVels.h"
 namespace Niflib {
 

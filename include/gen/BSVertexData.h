@@ -14,6 +14,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "HalfVector3.h"
 #include "HalfTexCoord.h"
 #include "ByteVector3.h"
+#include "ByteColor4.h"
 namespace Niflib {
 
 

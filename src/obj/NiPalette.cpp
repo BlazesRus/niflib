@@ -14,6 +14,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPalette.h"
+#include "../../include/gen/ByteColor4.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
@@ -46,12 +47,18 @@ void NiPalette::Read( istream& in, list<unsigned int> & link_stack, const NifInf
 	NifStream( numEntries, in, info );
 	if ( (numEntries == 16) ) {
 		for (unsigned int i2 = 0; i2 < 16; i2++) {
-			NifStream( palette[i2], in, info );
+			NifStream( palette[i2].r, in, info );
+			NifStream( palette[i2].g, in, info );
+			NifStream( palette[i2].b, in, info );
+			NifStream( palette[i2].a, in, info );
 		};
 	};
 	if ( (numEntries != 16) ) {
 		for (unsigned int i2 = 0; i2 < 256; i2++) {
-			NifStream( (ByteColor4&)palette[i2], in, info );
+			NifStream( palette[i2].r, in, info );
+			NifStream( palette[i2].g, in, info );
+			NifStream( palette[i2].b, in, info );
+			NifStream( palette[i2].a, in, info );
 		};
 	};
 
@@ -68,12 +75,18 @@ void NiPalette::Write( ostream& out, const map<NiObjectRef,unsigned int> & link_
 	NifStream( numEntries, out, info );
 	if ( (numEntries == 16) ) {
 		for (unsigned int i2 = 0; i2 < 16; i2++) {
-			NifStream( palette[i2], out, info );
+			NifStream( palette[i2].r, out, info );
+			NifStream( palette[i2].g, out, info );
+			NifStream( palette[i2].b, out, info );
+			NifStream( palette[i2].a, out, info );
 		};
 	};
 	if ( (numEntries != 16) ) {
 		for (unsigned int i2 = 0; i2 < 256; i2++) {
-			NifStream( (ByteColor4&)palette[i2], out, info );
+			NifStream( palette[i2].r, out, info );
+			NifStream( palette[i2].g, out, info );
+			NifStream( palette[i2].b, out, info );
+			NifStream( palette[i2].a, out, info );
 		};
 	};
 
@@ -97,11 +110,10 @@ std::string NiPalette::asString( bool verbose ) const {
 				out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 				break;
 			};
-			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-				break;
-			};
-			out << "      Palette[" << i2 << "]:  " << palette[i2] << endl;
-			array_output_count++;
+			out << "      r:  " << palette[i2].r << endl;
+			out << "      g:  " << palette[i2].g << endl;
+			out << "      b:  " << palette[i2].b << endl;
+			out << "      a:  " << palette[i2].a << endl;
 		};
 	};
 	return out.str();

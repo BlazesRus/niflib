@@ -45,6 +45,7 @@ typedef vector<SkinPartition> PartitionList;
 #include "../../include/obj/NiSkinPartition.h"
 #include "../../include/gen/BSVertexDataSSE.h"
 #include "../../include/gen/BSVertexDesc.h"
+#include "../../include/gen/ByteColor4.h"
 #include "../../include/gen/ByteVector3.h"
 #include "../../include/gen/HalfTexCoord.h"
 #include "../../include/gen/SkinPartition.h"
@@ -239,7 +240,10 @@ void NiSkinPartition::Read( istream& in, list<unsigned int> & link_stack, const 
 					NifStream( vertexData[i3].bitangentZ, in, info );
 				};
 				if ( ((ARG & 512) != 0) ) {
-					NifStream( vertexData[i3].vertexColors, in, info );
+					NifStream( vertexData[i3].vertexColors.r, in, info );
+					NifStream( vertexData[i3].vertexColors.g, in, info );
+					NifStream( vertexData[i3].vertexColors.b, in, info );
+					NifStream( vertexData[i3].vertexColors.a, in, info );
 				};
 				if ( ((ARG & 1024) != 0) ) {
 					for (unsigned int i5 = 0; i5 < 4; i5++) {
@@ -538,7 +542,10 @@ void NiSkinPartition::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 					NifStream( vertexData[i3].bitangentZ, out, info );
 				};
 				if ( ((ARG & 512) != 0) ) {
-					NifStream( vertexData[i3].vertexColors, out, info );
+					NifStream( vertexData[i3].vertexColors.r, out, info );
+					NifStream( vertexData[i3].vertexColors.g, out, info );
+					NifStream( vertexData[i3].vertexColors.b, out, info );
+					NifStream( vertexData[i3].vertexColors.a, out, info );
 				};
 				if ( ((ARG & 1024) != 0) ) {
 					for (unsigned int i5 = 0; i5 < 4; i5++) {
@@ -858,7 +865,10 @@ std::string NiSkinPartition::asString( bool verbose ) const {
 				out << "        Bitangent Z:  " << vertexData[i2].bitangentZ << endl;
 			};
 			if ( ((ARG & 512) != 0) ) {
-				out << "        Vertex Colors:  " << vertexData[i2].vertexColors << endl;
+				out << "        r:  " << vertexData[i2].vertexColors.r << endl;
+				out << "        g:  " << vertexData[i2].vertexColors.g << endl;
+				out << "        b:  " << vertexData[i2].vertexColors.b << endl;
+				out << "        a:  " << vertexData[i2].vertexColors.a << endl;
 			};
 			if ( ((ARG & 1024) != 0) ) {
 				array_output_count = 0;

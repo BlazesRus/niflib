@@ -15,6 +15,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPhysXActorDesc.h"
+#include "../../include/gen/Matrix34.h"
 #include "../../include/obj/NiPhysXBodyDesc.h"
 #include "../../include/obj/NiPhysXRigidBodyDest.h"
 #include "../../include/obj/NiPhysXRigidBodySrc.h"
@@ -55,7 +56,18 @@ void NiPhysXActorDesc::Read( istream& in, list<unsigned int> & link_stack, const
 	NifStream( numPoses, in, info );
 	poses.resize(numPoses);
 	for (unsigned int i1 = 0; i1 < poses.size(); i1++) {
-		NifStream( poses[i1], in, info );
+		NifStream( poses[i1].m11, in, info );
+		NifStream( poses[i1].m21, in, info );
+		NifStream( poses[i1].m31, in, info );
+		NifStream( poses[i1].m12, in, info );
+		NifStream( poses[i1].m22, in, info );
+		NifStream( poses[i1].m32, in, info );
+		NifStream( poses[i1].m13, in, info );
+		NifStream( poses[i1].m23, in, info );
+		NifStream( poses[i1].m33, in, info );
+		NifStream( poses[i1].m14, in, info );
+		NifStream( poses[i1].m24, in, info );
+		NifStream( poses[i1].m34, in, info );
 	};
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
@@ -99,7 +111,18 @@ void NiPhysXActorDesc::Write( ostream& out, const map<NiObjectRef,unsigned int> 
 	NifStream( actorName, out, info );
 	NifStream( numPoses, out, info );
 	for (unsigned int i1 = 0; i1 < poses.size(); i1++) {
-		NifStream( poses[i1], out, info );
+		NifStream( poses[i1].m11, out, info );
+		NifStream( poses[i1].m21, out, info );
+		NifStream( poses[i1].m31, out, info );
+		NifStream( poses[i1].m12, out, info );
+		NifStream( poses[i1].m22, out, info );
+		NifStream( poses[i1].m32, out, info );
+		NifStream( poses[i1].m13, out, info );
+		NifStream( poses[i1].m23, out, info );
+		NifStream( poses[i1].m33, out, info );
+		NifStream( poses[i1].m14, out, info );
+		NifStream( poses[i1].m24, out, info );
+		NifStream( poses[i1].m34, out, info );
 	};
 	WriteRef( StaticCast<NiObject>(bodyDesc), out, info, link_map, missing_link_stack );
 	NifStream( density, out, info );
@@ -144,11 +167,18 @@ std::string NiPhysXActorDesc::asString( bool verbose ) const {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
 		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Poses[" << i1 << "]:  " << poses[i1] << endl;
-		array_output_count++;
+		out << "    m11:  " << poses[i1].m11 << endl;
+		out << "    m21:  " << poses[i1].m21 << endl;
+		out << "    m31:  " << poses[i1].m31 << endl;
+		out << "    m12:  " << poses[i1].m12 << endl;
+		out << "    m22:  " << poses[i1].m22 << endl;
+		out << "    m32:  " << poses[i1].m32 << endl;
+		out << "    m13:  " << poses[i1].m13 << endl;
+		out << "    m23:  " << poses[i1].m23 << endl;
+		out << "    m33:  " << poses[i1].m33 << endl;
+		out << "    m14:  " << poses[i1].m14 << endl;
+		out << "    m24:  " << poses[i1].m24 << endl;
+		out << "    m34:  " << poses[i1].m34 << endl;
 	};
 	out << "  Body Desc:  " << bodyDesc << endl;
 	out << "  Density:  " << density << endl;

@@ -77,11 +77,11 @@ struct NifInfo {
 	/*! Specifies which low-level number storage format to use. Should match the processor type for the target system. */
 	EndianType endian;
 	/*! This is only supported in Oblivion.  It contains the name of the person who created the NIF file. */
-	string creator;
+	ShortString author;
 	/*! This is only supported in Oblivion.  It seems to contain the type of script or program used to export the file. */
-	string exportInfo1;
+	ShortString processScript;
 	/*! This is only supported in Oblivion.  It seems to contain the more specific script or options of the above. */
-	string exportInfo2;
+	ShortString exportScript;
 };
 
 /*! Used to enable static arrays to be members of vectors */

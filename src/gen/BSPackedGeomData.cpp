@@ -11,6 +11,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/gen/BSPackedGeomDataCombined.h"
 #include "../../include/gen/BSVertexData.h"
 #include "../../include/gen/BSVertexDesc.h"
+#include "../../include/gen/ByteColor4.h"
 #include "../../include/gen/ByteVector3.h"
 #include "../../include/gen/HalfTexCoord.h"
 #include "../../include/gen/HalfVector3.h"

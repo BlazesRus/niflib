@@ -573,7 +573,7 @@ PixelLayout TextureWrapper::GetPixelLayout() {
 	}
 
 	//Just return default value for now.  Not sure where this data may or may not be stored in the old style image object.
-	return PIX_LAY_DEFAULT;
+	return PX_LAY_PALETTIZED_8;
 }
 
 void TextureWrapper::SetPixelLayout( PixelLayout layout ) {

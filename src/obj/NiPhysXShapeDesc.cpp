@@ -15,6 +15,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPhysXShapeDesc.h"
+#include "../../include/gen/Matrix34.h"
 #include "../../include/gen/NxCapsule.h"
 #include "../../include/gen/NxPlane.h"
 #include "../../include/obj/NiPhysXMeshDesc.h"
@@ -51,7 +52,18 @@ void NiPhysXShapeDesc::Read( istream& in, list<unsigned int> & link_stack, const
 	unsigned int block_num;
 	NiObject::Read( in, link_stack, info );
 	NifStream( shapeType, in, info );
-	NifStream( localPose, in, info );
+	NifStream( localPose.m11, in, info );
+	NifStream( localPose.m21, in, info );
+	NifStream( localPose.m31, in, info );
+	NifStream( localPose.m12, in, info );
+	NifStream( localPose.m22, in, info );
+	NifStream( localPose.m32, in, info );
+	NifStream( localPose.m13, in, info );
+	NifStream( localPose.m23, in, info );
+	NifStream( localPose.m33, in, info );
+	NifStream( localPose.m14, in, info );
+	NifStream( localPose.m24, in, info );
+	NifStream( localPose.m34, in, info );
 	NifStream( shapeFlags, in, info );
 	NifStream( collisionGroup, in, info );
 	NifStream( materialIndex, in, info );
@@ -97,7 +109,18 @@ void NiPhysXShapeDesc::Write( ostream& out, const map<NiObjectRef,unsigned int> 
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
 	NifStream( shapeType, out, info );
-	NifStream( localPose, out, info );
+	NifStream( localPose.m11, out, info );
+	NifStream( localPose.m21, out, info );
+	NifStream( localPose.m31, out, info );
+	NifStream( localPose.m12, out, info );
+	NifStream( localPose.m22, out, info );
+	NifStream( localPose.m32, out, info );
+	NifStream( localPose.m13, out, info );
+	NifStream( localPose.m23, out, info );
+	NifStream( localPose.m33, out, info );
+	NifStream( localPose.m14, out, info );
+	NifStream( localPose.m24, out, info );
+	NifStream( localPose.m34, out, info );
 	NifStream( shapeFlags, out, info );
 	NifStream( collisionGroup, out, info );
 	NifStream( materialIndex, out, info );
@@ -144,7 +167,18 @@ std::string NiPhysXShapeDesc::asString( bool verbose ) const {
 	unsigned int array_output_count = 0;
 	out << NiObject::asString();
 	out << "  Shape Type:  " << shapeType << endl;
-	out << "  Local Pose:  " << localPose << endl;
+	out << "  m11:  " << localPose.m11 << endl;
+	out << "  m21:  " << localPose.m21 << endl;
+	out << "  m31:  " << localPose.m31 << endl;
+	out << "  m12:  " << localPose.m12 << endl;
+	out << "  m22:  " << localPose.m22 << endl;
+	out << "  m32:  " << localPose.m32 << endl;
+	out << "  m13:  " << localPose.m13 << endl;
+	out << "  m23:  " << localPose.m23 << endl;
+	out << "  m33:  " << localPose.m33 << endl;
+	out << "  m14:  " << localPose.m14 << endl;
+	out << "  m24:  " << localPose.m24 << endl;
+	out << "  m34:  " << localPose.m34 << endl;
 	out << "  Shape Flags:  " << shapeFlags << endl;
 	out << "  Collision Group:  " << collisionGroup << endl;
 	out << "  Material Index:  " << materialIndex << endl;
