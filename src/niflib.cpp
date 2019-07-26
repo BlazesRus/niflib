@@ -186,9 +186,9 @@ vector<NiObjectRef> ReadNifList( istream & in, list<NiObjectRef> & missing_link_
 	info->userVersion = header.userVersion;
 	info->userVersion2 = header.userVersion2;
 	info->endian = EndianType(header.endianType);
-	info->creator = header.exportInfo.creator.str;
-	info->exportInfo1 = header.exportInfo.exportInfo1.str;
-	info->exportInfo2 = header.exportInfo.exportInfo2.str;
+	info->author = header.exportInfo.author;
+	info->exportScript = header.exportInfo.exportScript;
+	info->processScript = header.exportInfo.processScript;
 
 #ifdef DEBUG_HEADER_FOOTER
 	//Print debug output for header
@@ -486,9 +486,9 @@ void WriteNifTree( ostream & out, list<NiObjectRef> const & roots, list<NiObject
 	header.userVersion = info.userVersion;
 	header.userVersion2 = info.userVersion2;
 	header.endianType = info.endian;
-	header.exportInfo.creator.str = info.creator;
-	header.exportInfo.exportInfo1.str = info.exportInfo1;
-	header.exportInfo.exportInfo2.str = info.exportInfo2;
+	header.exportInfo.author = info.author;
+	header.exportInfo.exportScript = info.exportScript;
+	header.exportInfo.processScript = info.processScript;
 	header.copyright[0].line = "Numerical Design Limited, Chapel Hill, NC 27514";
 	header.copyright[1].line = "Copyright (c) 1996-2000";
 	header.copyright[2].line = "All Rights Reserved";
@@ -1105,7 +1105,7 @@ void MergeNifTrees( NiNode * target, NiControllerSequence * right, unsigned vers
 	//Atach it to
 
 	//Get the controller data
-	vector<ControllerLink> data = right->GetControllerData();
+	vector<ControlledBlock> data = right->GetControllerData();
 
 	//Connect a clone of all the interpolators/controllers to the named node
 	for ( unsigned int i = 0; i < data.size(); ++i ) {
