@@ -124,9 +124,9 @@ NifInfo Header::Read( istream& in ) {
 	info.userVersion = userVersion;
 	info.userVersion2 = userVersion2;
 	info.endian = EndianType(endianType);
-	info.creator = exportInfo.creator.str;
-	info.exportInfo1 = exportInfo.exportInfo1.str;
-	info.exportInfo2 = exportInfo.exportInfo2.str;
+	info.author = exportInfo.author;
+	info.exportScript = exportInfo.exportScript;
+	info.processScript = exportInfo.processScript;
 
 	return info;
 
