@@ -338,20 +338,20 @@ std::list<NiObject *> BSLightingShaderProperty::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-SkyrimShaderPropertyFlags1 BSLightingShaderProperty::GetShaderFlags1() const {
-	return shaderFlags1;
+SkyrimShaderPropertyFlags1 BSLightingShaderProperty::GetSkyrimShaderFlags1() const {
+	return shaderFlags1_sk;
 }
 
-void BSLightingShaderProperty::SetShaderFlags1( SkyrimShaderPropertyFlags1 value ) {
-	shaderFlags1 = value;
+void BSLightingShaderProperty::SetSkyrimShaderFlags1( SkyrimShaderPropertyFlags1 value ) {
+	shaderFlags1_sk = value;
 }
 
-SkyrimShaderPropertyFlags2 BSLightingShaderProperty::GetShaderFlags2() const {
-	return shaderFlags2;
+SkyrimShaderPropertyFlags2 BSLightingShaderProperty::GetSkyrimShaderFlags2() const {
+	return shaderFlags2_sk;
 }
 
-void BSLightingShaderProperty::SetShaderFlags2( SkyrimShaderPropertyFlags2 value ) {
-	shaderFlags2 = value;
+void BSLightingShaderProperty::SetSkyrimShaderFlags2( SkyrimShaderPropertyFlags2 value ) {
+	shaderFlags2_sk = value;
 }
 
 TexCoord BSLightingShaderProperty::GetUVOffset() const {
@@ -410,15 +410,6 @@ void BSLightingShaderProperty::SetAlpha( float value ) {
 	alpha = value;
 }
 
-float BSLightingShaderProperty::GetUnknownFloat2() const {
-	return unknownFloat2;
-}
-
-
-void BSLightingShaderProperty::SetUnknownFloat2( float value ) {
-	unknownFloat2 = value;
-}
-
 
 float BSLightingShaderProperty::GetGlossiness() const {
 	return glossiness;
@@ -458,6 +449,36 @@ float BSLightingShaderProperty::GetLightingEffect2() const {
 
 void BSLightingShaderProperty::SetLightingEffect2( float value ) {
 	lightingEffect2 = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetWetnessEnvMapScale() const
+{
+	return wetnessEnvMapScale;
+}
+
+void Niflib::BSLightingShaderProperty::SetWetnessEnvMapScale(float value)
+{
+	wetnessEnvMapScale = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetWetnessFresnelPower() const
+{
+	return wetnessFresnelPower;
+}
+
+void Niflib::BSLightingShaderProperty::SetWetnessFresnelPower(float value)
+{
+	wetnessFresnelPower = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetWetnessMetalness() const
+{
+	return wetnessMetalness;
+}
+
+void Niflib::BSLightingShaderProperty::SetWetnessMetalness(float value)
+{
+	wetnessMetalness = value;
 }
 
 float BSLightingShaderProperty::GetEnvironmentMapScale() const {
@@ -562,6 +583,116 @@ Vector3 BSLightingShaderProperty::GetRightEyeReflectionCenter() const {
 
 void BSLightingShaderProperty::SetRightEyeReflectionCenter( const Vector3 & value ) {
 	rightEyeReflectionCenter = value;
+}
+
+IndexString Niflib::BSLightingShaderProperty::GetWetMaterial() const
+{
+	return wetMaterial;
+}
+
+void Niflib::BSLightingShaderProperty::SetWetMaterial(IndexString value)
+{
+	wetMaterial = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetRefractionStrength() const
+{
+	return refractionStrength;
+}
+
+void Niflib::BSLightingShaderProperty::SetRefractionStrength(float value)
+{
+	refractionStrength = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetSmoothness() const
+{
+	return smoothness;
+}
+
+void Niflib::BSLightingShaderProperty::SetSmoothness(float value)
+{
+	smoothness = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetSubsurfaceRolloff() const
+{
+	return subsurfaceRolloff;
+}
+
+void Niflib::BSLightingShaderProperty::SetSubsurfaceRolloff(float value)
+{
+	subsurfaceRolloff = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetRimlightPower() const
+{
+	return rimlightPower;
+}
+
+void Niflib::BSLightingShaderProperty::SetRimlightPower(float value)
+{
+	rimlightPower = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetBacklightPower() const
+{
+	return backlightPower;
+}
+
+void Niflib::BSLightingShaderProperty::SetBacklightPower(float value)
+{
+	backlightPower = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetGrayscaleToPaletteScale() const
+{
+	return grayscaleToPaletteScale;
+}
+
+void Niflib::BSLightingShaderProperty::SetGrayscaleToPaletteScale(float value)
+{
+	grayscaleToPaletteScale = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetFresnelPower() const
+{
+	return fresnelPower;
+}
+
+void Niflib::BSLightingShaderProperty::SetFresnelPower(float value)
+{
+	fresnelPower = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetWetnessSpecScale() const
+{
+	return wetnessSpecScale;
+}
+
+void Niflib::BSLightingShaderProperty::SetWetnessSpecScale(float value)
+{
+	wetnessSpecScale = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetWetnessSpecPower() const
+{
+	return wetnessSpecPower;
+}
+
+void Niflib::BSLightingShaderProperty::SetWetnessSpecPower(float value)
+{
+	wetnessSpecPower = value;
+}
+
+float Niflib::BSLightingShaderProperty::GetWetnessMinVar() const
+{
+	return wetnessMinVar;
+}
+
+void Niflib::BSLightingShaderProperty::SetWetnessMinVar(float value)
+{
+	wetnessMinVar = value;
 }
 
 //--END CUSTOM CODE--//

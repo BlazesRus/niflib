@@ -64,25 +64,25 @@ public:
 	 * Shader flags used by Skyrim
 	 * \return The value of the shader flags
 	 */
-	NIFLIB_API SkyrimShaderPropertyFlags1 GetShaderFlags1() const;
+	NIFLIB_API SkyrimShaderPropertyFlags1 GetSkyrimShaderFlags1() const;
 
 	/*!
 	 * Sets the value of the shader flags used by Skyrim
 	 * \param[in] The new value of the shader flags
 	 */
-	NIFLIB_API void SetShaderFlags1(SkyrimShaderPropertyFlags1 value);
+	NIFLIB_API void SetSkyrimShaderFlags1(SkyrimShaderPropertyFlags1 value);
 
 	/*!
 	 * Gets the second set of shader flags used by Skyrim
 	 * \return The value of the second set of flags
 	 */
-	NIFLIB_API SkyrimShaderPropertyFlags2 GetShaderFlags2() const;
+	NIFLIB_API SkyrimShaderPropertyFlags2 GetSkyrimShaderFlags2() const;
 
 	/*!
 	 * Sets the value of the second set of skyrim shader flags
 	 * \param[in] the value of the second set of flags
 	 */
-	NIFLIB_API void SetShaderFlags2(SkyrimShaderPropertyFlags2 value); 
+	NIFLIB_API void SetSkyrimShaderFlags2(SkyrimShaderPropertyFlags2 value); 
 
 	/*!
 	 * Used to reposition the texture coordinates of the uv's
@@ -167,20 +167,6 @@ public:
 	 * \param[in] The new alpha value
 	 */
 	NIFLIB_API void SetAlpha(float value);
-
-	/*!
-	 * Get the unknown float2 of the material
-	 * WARNING: API not stable
-	 * \return The unknown float2 value
-	 */
-	NIFLIB_API float GetUnknownFloat2() const;
-
-	/*!
-	 * Sets the unknown float2 of the material
-	 * WARNING: API not stable
-	 * \param[in] The new unknown float2 value
-	 */
-	 NIFLIB_API void SetUnknownFloat2(float value);
 
 	/*!
 	 * Gets the glossiness of the material
@@ -365,6 +351,48 @@ public:
 	 * \param[in] The new right eye reflection center value
 	 */
 	NIFLIB_API void SetRightEyeReflectionCenter( const Vector3 & value);
+
+	NIFLIB_API IndexString GetWetMaterial() const;
+	NIFLIB_API void SetWetMaterial( IndexString value );
+
+	NIFLIB_API float GetRefractionStrength() const;
+	NIFLIB_API void SetRefractionStrength( float value );
+
+	NIFLIB_API float GetSmoothness() const;
+	NIFLIB_API void SetSmoothness( float value );
+
+	NIFLIB_API float GetSubsurfaceRolloff() const;
+	NIFLIB_API void SetSubsurfaceRolloff( float value );
+
+	NIFLIB_API float GetRimlightPower() const;
+	NIFLIB_API void SetRimlightPower( float value );
+
+	NIFLIB_API float GetBacklightPower() const;
+	NIFLIB_API void SetBacklightPower( float value );
+
+	NIFLIB_API float GetGrayscaleToPaletteScale() const;
+	NIFLIB_API void SetGrayscaleToPaletteScale( float value );
+
+	NIFLIB_API float GetFresnelPower() const;
+	NIFLIB_API void SetFresnelPower( float value );
+
+	NIFLIB_API float GetWetnessSpecScale() const;
+	NIFLIB_API void SetWetnessSpecScale( float value );
+
+	NIFLIB_API float GetWetnessSpecPower() const;
+	NIFLIB_API void SetWetnessSpecPower( float value );
+
+	NIFLIB_API float GetWetnessMinVar() const;
+	NIFLIB_API void SetWetnessMinVar( float value );
+
+	NIFLIB_API float GetWetnessEnvMapScale() const;
+	NIFLIB_API void SetWetnessEnvMapScale( float value );
+
+	NIFLIB_API float GetWetnessFresnelPower() const;
+	NIFLIB_API void SetWetnessFresnelPower( float value );
+
+	NIFLIB_API float GetWetnessMetalness() const;
+	NIFLIB_API void SetWetnessMetalness( float value );
 
 	//--END CUSTOM CODE--//
 protected:
