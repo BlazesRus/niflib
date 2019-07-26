@@ -476,25 +476,25 @@ void NiAVObject::SetVisibility( bool n ) {
 	}
 }
 
-bool NiAVObject::HasBoundingBox() const {
-	return hasBoundingBox;
+bool NiAVObject::HasBoundingVolume() const {
+	return hasBoundingVolume;
 }
 
-void NiAVObject::ClearBoundingBox() {
-	hasBoundingBox = false;
+void NiAVObject::ClearBoundingVolume() {
+	hasBoundingVolume = false;
 }
 
-BoundingBox NiAVObject::GetBoundingBox() const {
-	if ( hasBoundingBox == true ) {
-		return boundingBox;
+BoundingVolume NiAVObject::GetBoundingVolume() const {
+	if ( hasBoundingVolume == true ) {
+		return boundingVolume;
 	} else {
-		throw runtime_error("This NIAVObject has no Bounding Box.");
+		throw runtime_error("This NIAVObject has no Bounding Volume.");
 	}
 }
 
-void NiAVObject::SetBoundingBox( const BoundingBox & n ) {
-	boundingBox = n;
-	hasBoundingBox = true;
+void NiAVObject::SetBoundingVolume( const BoundingVolume & n ) {
+	boundingVolume = n;
+	hasBoundingVolume = true;
 }
 
 //--END CUSTOM CODE--//

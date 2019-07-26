@@ -70,7 +70,7 @@ public:
 	/*!
 	 * Clears all embedded bounding box information.  Older NIF files can have a bounding box specified in them which will be used for collision detection instead of evaluating the triangles.
 	 */
-	NIFLIB_API void ClearBoundingBox();
+	NIFLIB_API void ClearBoundingVolume();
 
 	/*!
 	 * Returns any embedded bounding volume information.  NiAVObject::HasBoundingVolume should be called first, as this function will throw an exception if there is no bounding volume information in this object.  Older NIF files can have a bounding volume specified in them which will be used for collision detection instead of evaluating the triangles.
