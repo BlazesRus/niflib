@@ -61,52 +61,28 @@ public:
 	//--BEGIN MISC CUSTOM CODE--//
 
 	/*!
-	 * Get the center of the bounding sphere?
-	 * \return The center of the bounding sphere?
+	 * Get the bounding sphere
+	 * \return the bounding sphere
 	 */
-	NIFLIB_API Vector3 GetBoundCenter() const;
+	NIFLIB_API NiBound GetBound() const;
 
 	/*!
-	 * Set the center of the bounding sphere?
-	 * \param[in] bound_center The new center of the bounding sphere?
+	 * Set the bounding sphere
+	 * \param[in] bound_center The new  bounding sphere
 	 */
-	NIFLIB_API void SetBoundCenter( const Vector3 & bound_center );
+	NIFLIB_API void SetBound( const NiBound & bound_center );
 
 	/*!
-	 * Get the radius of the bounding sphere?
-	 * \return The radius of the bounding sphere?
+	 * Get the bounding sphere in world space
+	 * \return The bounding sphere in world space
 	 */
-	NIFLIB_API float GetBoundRadius() const;
+	NIFLIB_API NiBound GetWorldBound() const;
 
 	/*!
-	 * Set the radius of the bounding sphere?
-	 * \param[in] value The new radius of the bounding sphere?
+	 * Set the bounding sphere in world space
+	 * \param[in] value The new cbounding sphere in world space
 	 */
-	NIFLIB_API void SetBoundRadius( float value );
-
-	/*!
-	 * Get the center of the bounding sphere in world space?
-	 * \return The center of the bounding sphere in world space?
-	 */
-	NIFLIB_API Vector3 GetWorldCenter() const;
-
-	/*!
-	 * Set the center of the bounding sphere in world space?
-	 * \param[in] value The new center of the bounding sphere in world space?
-	 */
-	NIFLIB_API void SetWorldCenter( const Vector3 & value );
-
-	/*!
-	 * Get the radius of the bounding sphere in world space?
-	 * \return The radius of the bounding sphere in world space?
-	 */
-	NIFLIB_API float GetWorldRadius() const;
-
-	/*!
-	 * Set the radius of the bounding sphere in world space?
-	 * \param[in] value The new radius of the bounding sphere in world space?
-	 */
-	NIFLIB_API void SetWorldRadius( float value );
+	NIFLIB_API void SetWorldBound( const NiBound & value );
 
 	/*!
 	 * Get the LOD levels based on proportion of screen size?
