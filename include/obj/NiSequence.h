@@ -92,11 +92,11 @@ public:
 
    // Refers to controlled objects.
    // \return The current value.
-   vector<ControllerLink > GetControlledBlocks() const;
+   vector<ControlledBlock > GetControlledBlocks() const;
 
    // Refers to controlled objects.
    // \param[in] value The new value.
-   void SetControlledBlocks( const vector<ControllerLink >& value );
+   void SetControlledBlocks( const vector<ControlledBlock >& value );
 
 	//--END CUSTOM CODE--//
 protected:
