@@ -202,7 +202,7 @@ void NiBSplineData::AppendNumCompactControlPoints( vector<unsigned int> value )
 	this->numCompactControlPoints += value.size();
 
 	for(unsigned int i = 0; i < value.size(); i++) {
-		this->numCompactControlPoints.push_back(value[i]);
+		this->compactControlPoints.push_back(value[i]);
 	}
 }
 
