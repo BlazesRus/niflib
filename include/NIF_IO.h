@@ -13,7 +13,6 @@ All rights reserved.  Please see niflib.h for license. */
 #include "nif_math.h"
 #include "nif_versions.h"
 #include "obj/NiObject.h"
-#include "gen/HalfVector3.h"
 
 #include <list>
 #include <map>
@@ -26,6 +25,8 @@ using namespace std;
 #endif
 
 #define MAXARRAYDUMP 20
+
+struct HalfVector3;
 
 //--IO Functions--//
 

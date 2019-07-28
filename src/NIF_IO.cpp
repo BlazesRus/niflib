@@ -5,6 +5,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../include/niflib.h"
 #include "../include/gen/Header.h"
 #include "../include/gen/ByteColor4.h"
+#include "../include/gen/HalfVector3.h"
 namespace Niflib {
 
 //--Endian Support Functions--//
