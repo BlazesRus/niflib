@@ -74,13 +74,13 @@ public:
    * Gets the flags field
    * \return flags
    */
-   NIFLIB_API unsigned short GetFlags() const;
+   NIFLIB_API bhkCOFlags GetFlags() const;
 
    /*!
    * Sets the flags field
    * \param[in] flags The new flags to be set
    */
-   NIFLIB_API void SetFlags(unsigned short value);
+   NIFLIB_API void SetFlags(bhkCOFlags value);
 
 	//--END CUSTOM CODE--//
 protected:

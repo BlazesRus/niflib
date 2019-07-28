@@ -144,7 +144,7 @@ public:
 	 * \param new_val Thew new texture descriptoin for the extra texture at the given slot number.
 	 * \sa NiTexturingProperty::GetTexture, TexType
 	 */
-	NIFLIB_API void SetShaderTexture( int n, TexDesc & new_val );
+	NIFLIB_API void SetShaderTexture( int n, TexDesc & new_val, unsigned int id );
 
 	/*! 
 	 * Retrieves the bump map luma offset.  This is only relevant if a texture is defined in the BUMP_MAP texture slot.  The function of this is unknown.
@@ -187,6 +187,9 @@ public:
 	 * \sa NiTexturingProperty::GetBumpMapMatrix
 	 */
 	NIFLIB_API void SetBumpMapMatrix( Matrix22 & new_val );
+
+	NIFLIB_API float GetParallaxOffset() const;
+	NIFLIB_API void SetParallaxOffset(float value);
 
 	//--END CUSTOM CODE--//
 protected:

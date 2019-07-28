@@ -1794,8 +1794,8 @@ TexDesc & NiTexturingProperty::GetTexture( int n ) {
 			return bumpMapTexture;
       case NORMAL_MAP:
          return normalTexture;
-      case UNKNOWN2_MAP:
-         return unknown2Texture;
+      case PARALLAX_MAP:
+         return parallaxTexture;
 		case DECAL_0_MAP:
 			return decal0Texture;
 		case DECAL_1_MAP:
@@ -1811,7 +1811,7 @@ TexDesc & NiTexturingProperty::GetTexture( int n ) {
 }
 
 TexDesc NiTexturingProperty::GetShaderTexture( int n ) const {
-	return shaderTextures[n].textureData;
+	return shaderTextures[n].map;
 }
 
 float NiTexturingProperty::GetLumaOffset() const {
@@ -1836,6 +1836,15 @@ Matrix22 NiTexturingProperty::GetBumpMapMatrix() const {
 
 void NiTexturingProperty::SetBumpMapMatrix( Matrix22 & new_val ) {
 	bumpMapMatrix = new_val;
+}
+
+float NiTexturingProperty::GetParallaxOffset() const {
+	return parallaxOffset;
+}
+
+void NiTexturingProperty::SetParallaxOffset(float value)
+{
+	parallaxOffset = value;
 }
 
 void NiTexturingProperty::SetTextureCount( int new_count ) {
@@ -1891,9 +1900,9 @@ void NiTexturingProperty::SetTexture( int n, TexDesc & new_val ) {
          hasNormalTexture = true;
          normalTexture = new_val;
          break;
-      case UNKNOWN2_MAP:
-         hasUnknown2Texture = true;
-         unknown2Texture = new_val;
+      case PARALLAX_MAP:
+         hasParallaxTexture = true;
+         parallaxTexture = new_val;
          break;
 		case DECAL_0_MAP:
 			hasDecal0Texture = true;
@@ -1914,14 +1923,16 @@ void NiTexturingProperty::SetTexture( int n, TexDesc & new_val ) {
 	};
 }
 
-void NiTexturingProperty::SetShaderTexture( int n, TexDesc & new_val ) {
+void NiTexturingProperty::SetShaderTexture( int n, TexDesc & new_val, unsigned int id ) {
 	//Make sure index is not out of range
 	if ( n < 0 || n > int(shaderTextures.size()) ) {
 		throw runtime_error("SetShaderTexture - Index out of range.  Call SetShaderTextureCount to resize.");
 	}
 
 	//Copy the values
-	shaderTextures[n].textureData = new_val;
+	shaderTextures[n].hasMap = true;
+	shaderTextures[n].map = new_val;
+	shaderTextures[n].mapId = id; // TODO!
 }
 
 bool NiTexturingProperty::HasTexture( int n ) const {
@@ -1940,8 +1951,8 @@ bool NiTexturingProperty::HasTexture( int n ) const {
          return hasBumpMapTexture;
       case NORMAL_MAP:
          return hasNormalTexture;
-      case UNKNOWN2_MAP:
-         return hasUnknown2Texture;
+      case PARALLAX_MAP:
+         return hasParallaxTexture;
       case DECAL_0_MAP:
          return hasDecal0Texture;
       case DECAL_1_MAP:
@@ -1986,9 +1997,9 @@ void NiTexturingProperty::ClearTexture( int n ) {
          hasNormalTexture = false;
          normalTexture.source = NULL;
          break;
-      case UNKNOWN2_MAP:
-         hasUnknown2Texture = false;
-         unknown2Texture.source = NULL;
+      case PARALLAX_MAP:
+         hasParallaxTexture = false;
+         parallaxTexture.source = NULL;
          break;
 		case DECAL_0_MAP:
 			hasDecal0Texture = false;

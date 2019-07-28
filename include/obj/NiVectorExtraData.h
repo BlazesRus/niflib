@@ -61,13 +61,13 @@ public:
 	 * Retrieves the vector value stored in this object.
 	 * \return The vector value stored in this object.
 	 */
-	NIFLIB_API Vector3 GetData() const;
+	NIFLIB_API Vector4 GetData() const;
 
 	/*!
 	 * Sets the vector value stored in this object.
 	 * \param[in] n The new vector value to store in this object.
 	 */
-	NIFLIB_API void SetData( const Vector3 & n );
+	NIFLIB_API void SetData( const Vector4 & n );
 
 	//TODO:  There is an unknown member in this class
 

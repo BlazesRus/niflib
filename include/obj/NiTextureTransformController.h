@@ -82,13 +82,13 @@ public:
 	 * Retreives the type of texture transformation that this controller applies.
 	 * \return The way this controller will animate the target texture.
 	 */
-	NIFLIB_API TransformMember GetTextureTransformType();
+	NIFLIB_API TransformMember GetTextureTransformMember();
 
 	/*
 	 * Sets the type of texture transformation that this controller applies.
 	 * \param[in] n The new way that this controller will animate the target texture.
 	 */
-	NIFLIB_API void SetTextureTransformType( TransformMember n );
+	NIFLIB_API void SetTextureTransformMember( TransformMember n );
 
 	/*!
 	 * Retrives the float data used by this controller.

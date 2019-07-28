@@ -126,11 +126,11 @@ void NiTextureTransformController::SetTargetTextureSlot( TexType n ) {
 	textureSlot = n;
 }
 
-TexTransform NiTextureTransformController::GetTextureTransformType() {
+TransformMember NiTextureTransformController::GetTextureTransformMember() {
 	return operation;
 }
 
-void NiTextureTransformController::SetTextureTransformType( TexTransform n ) {
+void NiTextureTransformController::SetTextureTransformMember( TransformMember n ) {
 	operation = n;
 }
 

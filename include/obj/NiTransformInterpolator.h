@@ -64,37 +64,13 @@ public:
 	 * Gets the translation value stored in this object.  Perhaps this is the current interpolated value, the value when posed, or at time index 0.
 	 * \return The translation value stored in this object.
 	 */
-	NIFLIB_API Vector3 GetTranslation() const;
+	NIFLIB_API NiQuatTransform GetQuatTransformation() const;
 
 	/*!
 	 * Sets the translation value stored in this object.  Perhaps this is the current interpolated value, the value when posed, or at time index 0.
 	 * \param[in] value The new translation value to store in this object.
 	 */
-	NIFLIB_API void SetTranslation( Vector3 value );
-
-	/*!
-	 * Gets the rotation value stored in this object.  Perhaps this is the current interpolated value, the value when posed, or at time index 0.
-	 * \return The rotation value stored in this object.
-	 */
-	NIFLIB_API Quaternion GetRotation() const;
-
-	/*!
-	 * Sets the rotation value stored in this object.  Perhaps this is the current interpolated value, the value when posed, or at time index 0.
-	 * \param[in] value The new rotation value to store in this object.
-	 */
-	NIFLIB_API void SetRotation( Quaternion value );
-
-	/*!
-	 * Gets the scale value stored in this object.  Perhaps this is the current interpolated value, the value when posed, or at time index 0.
-	 * \return The scale value stored in this object.
-	 */
-	NIFLIB_API float GetScale() const;
-
-	/*!
-	 * Sets the scale value stored in this object.  Perhaps this is the current interpolated value, the value when posed, or at time index 0.
-	 * \param[in] value The new scale value to store in this object.
-	 */
-	NIFLIB_API void SetScale( float value );
+	NIFLIB_API void SetQuatTransformation( NiQuatTransform value );
 
 	/*!
 	 * Gets the NiTransformData object that this interpolator links to, if any.

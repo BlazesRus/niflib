@@ -195,14 +195,6 @@ void bhkMoppBvTreeShape::SetShape( bhkShape * value ) {
 	shape = value;
 }
 
-HavokMaterial bhkMoppBvTreeShape::GetMaterial() const {
-	return material;
-}
-
-void bhkMoppBvTreeShape::SetMaterial( HavokMaterial value ) {
-	material = value;
-}
-
 vector<byte> bhkMoppBvTreeShape::GetMoppCode() const {
 	return moppData;
 }
@@ -234,6 +226,21 @@ MoppDataBuildType bhkMoppBvTreeShape::GetBuildType() const {
 
 void bhkMoppBvTreeShape::SetBuildType(MoppDataBuildType value) {
 	buildType = value;
+}
+
+float Niflib::bhkMoppBvTreeShape::GetShapeScale()
+{
+	return shapeScale;
+}
+
+void Niflib::bhkMoppBvTreeShape::SetShapeScale(float value)
+{
+	shapeScale = value;
+}
+
+unsigned int Niflib::bhkMoppBvTreeShape::GetMoppDataSize()
+{
+	return moppDataSize;
 }
 
 void bhkMoppBvTreeShape::CalcMassProperties( float density, bool solid, float &mass, float &volume, Vector3 &center, InertiaMatrix& inertia )

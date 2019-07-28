@@ -126,7 +126,7 @@ vector<float> NiVertWeightsExtraData::GetData() const {
 }
 	
 void NiVertWeightsExtraData::SetData( const vector<float> & n ) {
-	numVertices = (unsigned int)(n.size());
+	numVertices = (unsigned short)(n.size());
 	numBytes = numVertices + 2;
 	weight = n;
 }

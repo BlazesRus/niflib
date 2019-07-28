@@ -94,7 +94,7 @@ public:
 	 * \param[in] bone_index The numeric index of the bone that the skin weight data should be returned for.  Must be >= zero and < the number returned by GetBoneCount.
 	 * \return The skin weight data for the specified bone.
 	 */
-	NIFLIB_API vector<SkinWeight> GetBoneWeights( unsigned int bone_index ) const;
+	NIFLIB_API vector<BoneVertData> GetBoneWeights( unsigned int bone_index ) const;
 
 	/*!
 	 * Sets the skin weights for a particular bone.  This information includes the vertex index into the geometry data's vertex array, and the percentage weight that defines how much the movement of this bone influences its position.
@@ -104,13 +104,13 @@ public:
 	 * \param[in] radius The radius of a bounding circle centered at the center point which contains all the vertices affected by this bone.  This is the distance from the center to vertex that is the greatest distance away.
 	 * \return The skin weight data for the specified bone.
 	 */
-	NIFLIB_API void SetBoneWeights( unsigned int bone_index, const vector<SkinWeight> & weights, Vector3 center, float radius );
+	NIFLIB_API void SetBoneWeights( unsigned int bone_index, const vector<BoneVertData> & weights, Vector3 center, float radius );
 	
 	/*!
 	 * Sets the skin weights for a particular bone, without changing center and radius
 	 * \sa NiSkinData::SetBoneWeights
 	 */
-	NIFLIB_API void SetBoneWeights( unsigned int bone_index, const vector<SkinWeight> & weights );
+	NIFLIB_API void SetBoneWeights( unsigned int bone_index, const vector<BoneVertData> & weights );
 
 	/*!
 	 * Returns a reference to the hardware skin partition data object, if any.

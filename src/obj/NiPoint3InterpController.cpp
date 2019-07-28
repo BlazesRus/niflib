@@ -93,12 +93,4 @@ std::list<NiObject *> NiPoint3InterpController::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-Ref<NiPosData > NiPoint3InterpController::GetData() const {
-	return data;
-}
-
-void NiPoint3InterpController::SetData( NiPosData * value ) {
-	data = value;
-}
-
 //--END CUSTOM CODE--//

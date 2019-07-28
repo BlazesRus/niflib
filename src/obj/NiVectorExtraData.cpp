@@ -96,11 +96,11 @@ std::list<NiObject *> NiVectorExtraData::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-Vector3 NiVectorExtraData::GetData() const {
+Vector4 NiVectorExtraData::GetData() const {
 	return vectorData;
 };
 	
-void NiVectorExtraData::SetData( const Vector3 & n ) {
+void NiVectorExtraData::SetData( const Vector4 & n ) {
 	vectorData = n;
 };
 

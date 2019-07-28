@@ -202,11 +202,11 @@ void NiStencilProperty::SetPassAction(StencilAction value) {
    passAction = value;
 }
 
-FaceDrawMode NiStencilProperty::GetFaceDrawMode() const {
+StencilDrawMode NiStencilProperty::GetStencilDrawMode() const {
    return drawMode;
 }
 
-void NiStencilProperty::SetFaceDrawMode(FaceDrawMode value) {
+void NiStencilProperty::SetStencilDrawMode(StencilDrawMode value) {
    drawMode = value;
 }
 

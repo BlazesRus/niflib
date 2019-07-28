@@ -113,11 +113,11 @@ void bhkNiCollisionObject::SetBody( bhkWorldObject * value ) {
    body = value;
 }
 
-unsigned short bhkNiCollisionObject::GetFlags() const {
+bhkCOFlags bhkNiCollisionObject::GetFlags() const {
   return flags;
 }
 
-void bhkNiCollisionObject::SetFlags(unsigned short value) {
+void bhkNiCollisionObject::SetFlags(bhkCOFlags value) {
   flags = value;
 }
 //--END CUSTOM CODE--//

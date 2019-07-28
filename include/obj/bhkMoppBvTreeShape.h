@@ -72,18 +72,6 @@ public:
 	NIFLIB_API void SetShape( bhkShape * value );
 
 	/*!
-	 * Get the shape's material.  This determines the type of noises the object makes as it collides in Oblivion.
-	 * \return The Oblivion material used by this collision shape.
-	 */
-	NIFLIB_API HavokMaterial GetMaterial() const;
-
-	/*!
-	 * Sets the shape's material.  This determines the type of noises the object makes as it collides in Oblivion.
-	 * \param[in] value The new material for this shape to use.
-	 */
-	NIFLIB_API void SetMaterial( HavokMaterial value );
-
-	/*!
 	* Get the shape's bounding volume code.  The code is specific to the Havok Physics engine.
 	* \return A byte vector containing the code representing the MOPP.
 	*/
@@ -144,6 +132,10 @@ public:
 
 	NIFLIB_API void SetBuildType(MoppDataBuildType value);
 
+	NIFLIB_API float GetShapeScale();
+	NIFLIB_API void SetShapeScale(float value);
+
+	NIFLIB_API unsigned int GetMoppDataSize();
 
 private:
 	unsigned int moppDataSizeCalc(const NifInfo & info) const {

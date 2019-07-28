@@ -125,7 +125,6 @@ Vector3 bhkBoxShape::GetDimensions() const {
 
 void bhkBoxShape::SetDimensions(const Vector3 &value) {
 	dimensions = value;
-	minimumSize = min( min(value.x, value.y), value.z );
 }
 
 void bhkBoxShape::CalcMassProperties( float density, bool solid, float &mass, float &volume, Vector3 &center, InertiaMatrix& inertia )
