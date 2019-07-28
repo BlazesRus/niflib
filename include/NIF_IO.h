@@ -52,6 +52,7 @@ void WriteFloat( float val, ostream& out );
 void WriteString( string const & val, ostream& out );
 void WriteBool( bool val, ostream& out, unsigned int version );
 void WriteHalfFloat( hfloat val, ostream& out );
+void WriteRef(NiObjectRef data, ostream& out, const NifInfo& info, const map<NiObjectRef,unsigned int> & link_map, list<NiObject *> & missing_link_stack );
 
 //-- BitField Helper functions --//
 
