@@ -545,7 +545,7 @@ void ComplexShape::Merge( NiAVObject * root ) {
 				vector<NiNodeRef> shapeBones = skinInst->GetBones();
 
 				//Get weights
-				vector<SkinWeight> shapeWeights;
+				vector<BoneVertData> shapeWeights;
 				for ( unsigned int b = 0; b < shapeBones.size(); ++b ) {
 					shapeWeights = skinData->GetBoneWeights(b);
 					for ( unsigned int w = 0; w < shapeWeights.size(); ++w ) {
