@@ -107,11 +107,11 @@ std::list<NiObject *> BSEffectShaderPropertyColorController::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 EffectShaderControlledColor BSEffectShaderPropertyColorController::GetTargetColor() const {
-	return targetColor;
+	return typeOfControlledColor;
 }
 
 void BSEffectShaderPropertyColorController::SetTargetColor(EffectShaderControlledColor value) {
-	targetColor = value;
+	typeOfControlledColor = value;
 }
 
 //--END CUSTOM CODE--//

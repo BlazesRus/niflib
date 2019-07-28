@@ -107,11 +107,11 @@ std::list<NiObject *> BSEffectShaderPropertyFloatController::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 EffectShaderControlledVariable BSEffectShaderPropertyFloatController::GetTargetVariable() const {
-	return targetVariable;
+	return typeOfControlledVariable;
 }
 
 void BSEffectShaderPropertyFloatController::SetTargetVariable(EffectShaderControlledVariable value) {
-	targetVariable = value;
+	typeOfControlledVariable = value;
 }
 
 //--END CUSTOM CODE--//

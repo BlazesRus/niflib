@@ -94,7 +94,7 @@ public:
 	 * The version on this class calculates the center and radius of
 	 * each set of affected vertices automatically.
 	 */
-	NIFLIB_API void SetBoneWeights( unsigned int bone_index, const vector<SkinWeight> & n );
+	NIFLIB_API void SetBoneWeights( unsigned int bone_index, const vector<BoneVertData> & n );
 
 	/*!
 	 * Retrieves the NiSkinInstance object used by this geometry node, if any.

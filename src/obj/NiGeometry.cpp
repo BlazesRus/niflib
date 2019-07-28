@@ -559,7 +559,7 @@ void NiGeometry::GetSkinDeformation( vector<Vector3> & vertices, vector<Vector3>
 	for ( unsigned int i = 0; i < skin_data->GetBoneCount(); ++i ) {
 		Matrix44 bone_world = bone_nodes[i]->GetWorldTransform();
 		Matrix44 bone_offset = skin_data->GetBoneTransform(i);
-		vector<SkinWeight> weights = skin_data->GetBoneWeights(i);
+		vector<BoneVertData> weights = skin_data->GetBoneWeights(i);
 		Matrix44 vert_trans =  bone_offset * bone_world;
 		Matrix44 norm_trans = Matrix44( vert_trans.GetRotation() );
 		for ( unsigned int j = 0; j < weights.size(); ++j ) {
@@ -601,7 +601,7 @@ void NiGeometry::ApplyTransforms() {
 }
 
 // Calculate bounding sphere using minimum-volume axis-align bounding box.  Its fast but not a very good fit.
-static void CalcAxisAlignedBox(const vector<SkinWeight> & n, const vector<Vector3>& vertices, Vector3& center, float& radius)
+static void CalcAxisAlignedBox(const vector<BoneVertData> & n, const vector<Vector3>& vertices, Vector3& center, float& radius)
 {
    //--Calculate center & radius--//
 
@@ -642,7 +642,7 @@ static void CalcAxisAlignedBox(const vector<SkinWeight> & n, const vector<Vector
 }
 
 // Calculate bounding sphere using average position of the points.  Better fit but slower.
-static void CalcCenteredSphere(const vector<SkinWeight> & n, const vector<Vector3>& vertices, Vector3& center, float& radius)
+static void CalcCenteredSphere(const vector<BoneVertData> & n, const vector<Vector3>& vertices, Vector3& center, float& radius)
 {
    size_t nv = n.size();
    Vector3 sum;
@@ -657,7 +657,7 @@ static void CalcCenteredSphere(const vector<SkinWeight> & n, const vector<Vector
    }
 }
 
-void NiGeometry::SetBoneWeights( unsigned int bone_index, const vector<SkinWeight> & n ) {
+void NiGeometry::SetBoneWeights( unsigned int bone_index, const vector<BoneVertData> & n ) {
 	
 	if ( n.size() == 0 ) {
 		throw runtime_error( "You must specify at least one weight value." );
