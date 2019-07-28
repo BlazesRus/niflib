@@ -145,14 +145,14 @@ public:
 	 * \return A vector containing the data for all controllers.
 	 * \sa NiControllerSequence::AddController, NiControllerSequence::AddInterpolator, NiControllerSequence::SetContollerData
 	 */
-	NIFLIB_API vector<ControllerLink> GetControllerData() const;
+	NIFLIB_API vector<ControlledBlock> GetControllerData() const;
 
 	/*!
 	* Retrieves the data for the controllers or interpolators which are attached to this controller sequence.
 	* \return A vector containing the data for all controllers.
 	* \sa NiControllerSequence::AddController, NiControllerSequence::AddInterpolator, NiControllerSequence::GetContollerData
 	*/
-	NIFLIB_API void SetControllerData(const vector<ControllerLink>& value);
+	NIFLIB_API void SetControllerData(const vector<ControlledBlock>& value);
 
 	/*!
 	 * Retrieves the text keys, which are tags associated with keyframe times that mark the start and stop of each sequence, among other things such as the triggering of sound effects.

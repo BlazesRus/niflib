@@ -129,20 +129,75 @@ std::list<NiObject *> NiPathController::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-Ref<NiFloatData> NiPathController::GetFloatData() const {
-	return floatData;
+PathFlags NiPathController::GetPathFlags() const
+{
+	return pathFlags;
 }
 
-void NiPathController::SetFloatData( NiFloatData * n ) {
-	floatData = n;
+void NiPathController::SetPathFlags(PathFlags value)
+{
+	pathFlags = value;
 }
 
-Ref<NiPosData> NiPathController::GetPosData() const {
-	return posData;
+float NiPathController::GetBankDir() const
+{
+	return bankDir;
 }
 
-void NiPathController::SetPosData( NiPosData * n ) {
-	posData = n;
+void NiPathController::SetBankDir(float value)
+{
+	bankDir = value;
 }
+
+float NiPathController::GetMaxBankAngle() const
+{
+	return maxBankAngle;
+}
+
+void NiPathController::SetMaxBankAngle(float value)
+{
+	maxBankAngle = value;
+}
+
+float NiPathController::GetSmoothing() const
+{
+	return smoothing;
+}
+
+void NiPathController::SetSmoothing(float value)
+{
+	smoothing = value;
+}
+
+float NiPathController::GetFollowAxis() const
+{
+	return followAxis;
+}
+
+void NiPathController::SetFollowAxis(float value)
+{
+	followAxis = value;
+}
+
+Ref<NiPosData> NiPathController::GetPathData() const
+{
+	return pathData;
+}
+
+void NiPathController::SetPathData(const Ref<NiPosData>& value)
+{
+	pathData = value;
+}
+
+Ref<NiFloatData> NiPathController::GetPercentData() const
+{
+	return percentData;
+}
+
+void NiPathController::SetPercentData(const Ref<NiFloatData>& value)
+{
+	percentData = value;
+}
+
 
 //--END CUSTOM CODE--//

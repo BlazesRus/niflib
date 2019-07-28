@@ -276,20 +276,20 @@ std::list<NiObject *> NiSequence::GetPtrs() const {
 }
 
 //--BEGIN MISC CUSTOM CODE--//
-string NiSequence::GetName() const {
+IndexString NiSequence::GetName() const {
    return name;
 }
 
-void NiSequence::SetName( const string & value ) {
+void NiSequence::SetName( const IndexString & value ) {
    name = value;
 }
 
-string NiSequence::GetTextKeysName() const {
-   return textKeysName;
+IndexString NiSequence::GetAccumRootName() const {
+   return accumRootName;
 }
 
-void NiSequence::SetTextKeysName( const string & value ) {
-   textKeysName = value;
+void NiSequence::SetAccumRootName( const IndexString & value ) {
+   accumRootName = value;
 }
 
 Ref<NiTextKeyExtraData > NiSequence::GetTextKeys() const {
@@ -300,12 +300,22 @@ void NiSequence::SetTextKeys( Ref<NiTextKeyExtraData > value ) {
    textKeys = value;
 }
 
-vector<ControllerLink > NiSequence::GetControlledBlocks() const {
+vector<ControlledBlock > NiSequence::GetControlledBlocks() const {
    return controlledBlocks;
 }
 
-void NiSequence::SetControlledBlocks( const vector<ControllerLink >& value ) {
+void NiSequence::SetControlledBlocks( const vector<ControlledBlock >& value ) {
    controlledBlocks = value;
+}
+
+int NiSequence::GetArrayGrowBy()
+{
+	return arrayGrowBy;
+}
+
+void NiSequence::SetArrayGrowBy( int value )
+{
+	arrayGrowBy = value;
 }
 
 //--END CUSTOM CODE--//

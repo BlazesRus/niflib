@@ -60,42 +60,26 @@ public:
 
 	//--BEGIN MISC CUSTOM CODE--//
 
-	/*!
-	 * Gets the NiPosData object that this interpolator links to, if any.
-	 * \return The NiPosData object that this interpolator links to, or NULL if one is not linked.
-	 */
-	NIFLIB_API Ref<NiPosData> GetPosData() const;
+	NIFLIB_API PathFlags GetPathFlags() const;
+	NIFLIB_API void SetPathFlags(PathFlags value);
 
-	/*!
-	 * Sets the NiPosData object that this interpolator links to, if any.
-	 * \return The NiPosData object that this interpolator should now link to, or NULL to clear the current one.
-	 */
-	NIFLIB_API void SetPosData( NiPosData * value );
+	NIFLIB_API float GetBankDir() const;
+	NIFLIB_API void SetBankDir(float value);
 
-	/*!
-	 * Gets the NiFloatData object that this interpolator links to, if any.
-	 * \return The NiFloatData object that this interpolator links to, or NULL if one is not linked.
-	 */
-	NIFLIB_API Ref<NiFloatData > GetFloatData() const;
+	NIFLIB_API float GetMaxBankAngle() const;
+	NIFLIB_API void SetMaxBankAngle(float value);
 
-	/*!
-	 * Sets the NiFloatData object that this interpolator links to, if any.
-	 * \return The NiFloatData object that this interpolator should now link to, or NULL to clear the current one.
-	 */
-	NIFLIB_API void SetFloatData( NiFloatData * value );
+	NIFLIB_API float GetSmoothing() const;
+	NIFLIB_API void SetSmoothing(float value);
 
-	/*!
-	 * This function will adjust the times in all the keys stored in the data
-	 * objects referenced by this interpolator such that phase will equal 0 and
-	 * frequency will equal one.  In other words, it will cause the key times
-	 * to be in seconds starting from zero.
-	 * \param[in] phase The phase shift to remove from any keys stored in this
-	 * object.
-	 * \param[in] frequency The frequency to normalize to 1.0 for any keys
-	 * stored in this object
-	 */
-	NIFLIB_API virtual void NormalizeKeys( float phase, float frequency );
+	NIFLIB_API float GetFollowAxis() const;
+	NIFLIB_API void SetFollowAxis(float value);
 
+	NIFLIB_API Ref<NiPosData > GetPathData() const;
+	NIFLIB_API void SetPathData(const Ref<NiPosData >& value);
+
+	NIFLIB_API Ref<NiFloatData > GetPercentData() const;
+	NIFLIB_API void SetPercentData(const Ref<NiFloatData >& value);
 
 	//--END CUSTOM CODE--//
 protected:

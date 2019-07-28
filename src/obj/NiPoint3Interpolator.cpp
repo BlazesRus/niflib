@@ -106,11 +106,11 @@ std::list<NiObject *> NiPoint3Interpolator::GetPtrs() const {
 //--BEGIN MISC CUSTOM CODE--//
 
 Vector3 NiPoint3Interpolator::GetPoint3Value() const {
-	return point3Value;
+	return value;
 }
 
 void NiPoint3Interpolator::SetPoint3Value( Vector3 value ) {
-	point3Value = value;
+	value = value;
 }
 
 Ref<NiPosData > NiPoint3Interpolator::GetData() const {

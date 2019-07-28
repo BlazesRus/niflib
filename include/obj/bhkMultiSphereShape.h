@@ -61,14 +61,14 @@ public:
 	 * Gets the spheres which make up the multi sphere shape.
 	 * \return The spheres which make up the multi sphere shape.
 	 */
-	NIFLIB_API vector<SphereBV> GetSpheres() const;
+	NIFLIB_API vector<NiBound> GetSpheres() const;
 
 	/*!
 	 * Sets the spheres which make up the multi sphere shape.
 	 * \param[in] value The new spheres which will make up the multi sphere shape.
 	 */
 
-	NIFLIB_API void SetSpheres( const vector<SphereBV> & value );
+	NIFLIB_API void SetSpheres( const vector<NiBound> & value );
 
 	/*! Helper routine for calculating mass properties.
 	 *  \param[in]  density Uniform density of object

@@ -376,18 +376,12 @@ void NiGeometry::SetData( NiGeometryData * n ) {
 	data = n;
 }
 
-string NiGeometry::GetShader() const {
-	return shaderName;
+Ref<BSShaderProperty > NiGeometry::GetBSShader() const {
+	return shaderProperty;
 }
 
-void NiGeometry::SetShader( const string & n ) {
-	//Check if name is blank, if so clear shader
-	if ( n.size() == 0 ) {
-		hasShader = false;
-		shaderName.clear();
-	} else {
-		shaderName = n;
-	}
+void NiGeometry::SetBSShader( const Ref<BSShaderProperty > & n ) {
+	shaderProperty = n;
 }
 
 Ref<NiSkinInstance> NiGeometry::GetSkinInstance() const {
@@ -700,36 +694,39 @@ void NiGeometry::SetBoneWeights( unsigned int bone_index, const vector<SkinWeigh
 	skinData->SetBoneWeights( bone_index, n, center, radius );
 }
 
-int NiGeometry::GetActiveMaterial() const {
-   return activeMaterial;
+void NiGeometry::SetAlphaProperty(const Ref<NiAlphaProperty >& value)
+{
+	alphaProperty = value;
 }
 
-void NiGeometry::SetActiveMaterial( int value ) {
-   activeMaterial = value;
+Ref<NiAlphaProperty > NiGeometry::GetAlphaProperty() const
+{
+	return alphaProperty;
 }
 
-bool NiGeometry::HasShader() const {
-   return hasShader;
+MaterialData NiGeometry::GetMaterialData() const
+{
+	return materialData;
 }
 
-Ref<NiProperty> NiGeometry::GetBSProperty(short index) {
-	if ((index < 0) || (index > 1))   return NULL;
-	return bsProperties[index];
+void NiGeometry::SetMaterialData(MaterialData value)
+{
+	materialData = value;
 }
 
-void NiGeometry::SetBSProperty(short index, Niflib::Ref<NiProperty> value) {
-	if ((index >= 0) && (index <= 1))
-	{
-		bsProperties[index] = value;
-	}
+Ref<NiObject> NiGeometry::GetSkin()
+{
+	return skin;
 }
 
-NifArray<2,Ref<NiProperty > > Niflib::NiGeometry::GetBSProperties() {
-	return this->bsProperties;
+NiBound NiGeometry::GetBound()
+{
+	return bound;
 }
 
-void Niflib::NiGeometry::SetBSProperties(NifArray<2, Ref<NiProperty> > value ) {
-	this->bsProperties = value;
+void NiGeometry::SetBound(const NiBound& value)
+{
+	bound = value;
 }
 
 //--END CUSTOM CODE--//

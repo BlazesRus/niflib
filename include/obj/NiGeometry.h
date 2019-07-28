@@ -121,16 +121,16 @@ public:
 	NIFLIB_API void SetData( NiGeometryData * n );
 
 	/*!
-	 * Retrieves the name of the shader used by this geometry node.  The allowable values are game-dependent.
-	 * \return The shader name.
+	 * Retrieves the shader used by this geometry node.  The allowable values are game-dependent.
+	 * \return The shader.
 	 */
-	NIFLIB_API string GetShader() const;
+	NIFLIB_API  Ref<BSShaderProperty > GetBSShader() const;
 
 	/*!
-	 * Sets the name of the shader used by this geometry node.  The allowable values are game-dependent.
-	 * \param[in] n The new shader name.
+	 * Sets the shader used by this geometry node.  The allowable values are game-dependent.
+	 * \param[in] n The new shader.
 	 */
-	NIFLIB_API void SetShader( const string & n );
+	NIFLIB_API void SetBSShader( const Ref<BSShaderProperty > & n );
 
 	/*
 	 * Returns the position of the verticies and values of the normals after they
@@ -164,39 +164,16 @@ public:
 	 */
 	NIFLIB_API bool IsSkin();
 
-   // Active Material.
-   // \return The current value.
-   NIFLIB_API int GetActiveMaterial() const;
+   NIFLIB_API void SetAlphaProperty(const Ref<NiAlphaProperty >& value);
+   NIFLIB_API Ref<NiAlphaProperty > GetAlphaProperty() const;
 
-   // Active Material.
-   // \param[in] value The new value.
-   NIFLIB_API void SetActiveMaterial( int value );
+   NIFLIB_API MaterialData GetMaterialData() const;
+   NIFLIB_API void SetMaterialData(MaterialData value);
 
-   // Shader.
-   // \return The current value.
-   NIFLIB_API bool HasShader() const;
+   NIFLIB_API Ref<NiObject> GetSkin();
 
-   // BSProperty
-   // \param[in] index Index of property to be retrieved.
-   // \return The propterty.
-   NIFLIB_API Ref<NiProperty> GetBSProperty(short index);
-
-   // BSProperty
-   // \param[in] index Index of property to be set.
-   // \param[in] index Property to be set.
-   NIFLIB_API void SetBSProperty(short index, Ref<NiProperty> value);
-
-   /*
-	 * Returns the array of the only 2 properties that are specific to Bethesda
-	 * \return Returns the array of the 2 properties
-	 */
-   NIFLIB_API NifArray<2,Ref<NiProperty > > GetBSProperties();
-
-   /*
-	 * Sets the array of the only 2 properties that are specific to Bethesda
-	 * \param[in] The new array of properties
-	 */
-   NIFLIB_API void SetBSProperties(NifArray<2, Ref<NiProperty> > value);
+   NIFLIB_API NiBound GetBound();
+   NIFLIB_API void SetBound(const NiBound& value);
 
 	//--END CUSTOM CODE--//
 protected:

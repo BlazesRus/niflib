@@ -145,11 +145,11 @@ void BSShaderProperty::SetShaderFlags( const BSShaderFlags & value ) {
 }
 
 float BSShaderProperty::GetEnvmapScale() const {
-   return envmapScale;
+   return environmentMapScale;
 }
 
 void BSShaderProperty::SetEnvmapScale( float value ) {
-   envmapScale = value;
+   environmentMapScale = value;
 }
 
 //--END CUSTOM CODE--//

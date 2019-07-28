@@ -258,7 +258,7 @@ void ComplexShape::Merge( NiAVObject * root ) {
 		vector<NiPropertyRef> current_property_group =  (*geom)->GetProperties();
 
 		//Special code to handle the Bethesda Skyrim properties
-		NifArray<2, NiPropertyRef> bs_properties = (*geom)->GetBSProperties();
+		NifArray<2, NiPropertyRef> bs_properties = (*geom)->GetBS();
 		if(bs_properties[0] != NULL) {
 			current_property_group.push_back(bs_properties[0]);
 		}

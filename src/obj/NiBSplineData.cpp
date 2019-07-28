@@ -166,7 +166,7 @@ void NiBSplineData::AppendFloatControlPoints( vector<float> value )
 	}
 }
 
-int NiBSplineData::GetNumFloatControlPoints()
+unsigned int NiBSplineData::GetNumFloatControlPoints()
 {
 	return this->numFloatControlPoints;
 }
@@ -182,43 +182,40 @@ vector<float> NiBSplineData::GetFloatControlPointRange(int offset, int count) co
 	return vector<float>(srcbeg, srcend);
 }
 
-vector<short > NiBSplineData::GetShortControlPoints() const 
+vector<short > NiBSplineData::GetCompactControlPoints() const 
 {
-	return shortControlPoints;
+	return compactControlPoints;
 }
 
-void NiBSplineData::SetShortControlPoints( vector<short> value )
+void NiBSplineData::SetCompactControlPoints( vector<short> value )
 {
-	this->shortControlPoints.clear();
-	this->numShortControlPoints = value.size();
+	this->compactControlPoints.clear();
+	this->numCompactControlPoints = value.size();
 
 	for(unsigned int i = 0; i < value.size(); i++) {
-		this->shortControlPoints.push_back(value[i]);
+		this->compactControlPoints.push_back(value[i]);
 	}
 }
 
-void NiBSplineData::AppendShortControlPoints( vector<short> value )
+void NiBSplineData::AppendNumCompactControlPoints( vector<unsigned int> value )
 {
-	this->numShortControlPoints += value.size();
+	this->numCompactControlPoints += value.size();
 
 	for(unsigned int i = 0; i < value.size(); i++) {
-		this->shortControlPoints.push_back(value[i]);
+		this->numCompactControlPoints.push_back(value[i]);
 	}
 }
 
-
-int NiBSplineData::GetNumShortControlPoints()
+unsigned int NiBSplineData::GetNumCompactControlPoints()
 {
-	return this->numShortControlPoints;
+	return this->numCompactControlPoints;
 }
 
-
-vector<short > NiBSplineData::GetShortControlPointRange(int offset, int count) const
+vector<short > NiBSplineData::GetCompactControlPointRange(int offset, int count) const
 {
-   vector<short> value;
-   if (offset < 0 || count < 0 || ((offset + count) > int(shortControlPoints.size())))
+   if (offset < 0 || count < 0 || ((offset + count) > compactControlPoints.size()))
       throw runtime_error("Invalid offset or count.");
-   vector<short>::const_iterator srcbeg = shortControlPoints.begin(), srcend = shortControlPoints.begin(); 
+   vector<short>::const_iterator srcbeg = compactControlPoints.begin(), srcend = compactControlPoints.begin(); 
    std::advance(srcbeg, offset);
    std::advance(srcend, offset + count);
    return vector<short>(srcbeg, srcend);

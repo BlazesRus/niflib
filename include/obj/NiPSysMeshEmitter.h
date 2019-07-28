@@ -60,20 +60,22 @@ public:
 	 * Adds a single geometry to the collection. The collection will expand if necessary.
 	 * \param[in] mesh The shape to add to the collection.
 	 */
-	NIFLIB_API bool AddEmitterMesh( Ref<NiTriBasedGeom > mesh );
+	NIFLIB_API bool AddEmitterMesh( Ref<NiAVObject > mesh );
 
 	/*!
 	 * Remove a single geometry from the collection.
 	 * \param[in] mesh The shape remove from the collection.
 	 */
-	NIFLIB_API bool RemoveEmitterMesh( Ref<NiTriBasedGeom > mesh );
+	NIFLIB_API bool RemoveEmitterMesh( Ref<NiAVObject > mesh );
 
 	/*!
 	 * Replace a single geometry by another in the specified shape group.
 	 * \param[in] newmesh The geometry put into the collection.
 	 * \param[in] oldmesh The geometry remove from collection.
 	 */
-	NIFLIB_API bool ReplaceEmitterMesh( Ref<NiTriBasedGeom > newmesh, Ref<NiTriBasedGeom > oldmesh );
+	NIFLIB_API bool ReplaceEmitterMesh( Ref<NiAVObject > newmesh, Ref<NiAVObject > oldmesh );
+
+	NIFLIB_API Ref<NiAVObject> GetEmitterMesh(size_t value);
 
 	//--END CUSTOM CODE--//
 protected:

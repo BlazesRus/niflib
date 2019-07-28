@@ -64,31 +64,27 @@ public:
 
 	//--BEGIN MISC CUSTOM CODE--//
 
-	//TODO:  This class has a lot of unknown data
+	NIFLIB_API PathFlags GetPathFlags() const;
+	NIFLIB_API void SetPathFlags(PathFlags value);
 
-	/*!
-	 * Retrives the float data used by this controller.
-	 * \return The float data.
-	 */
-	NIFLIB_API Ref<NiFloatData> GetFloatData() const;
+	NIFLIB_API float GetBankDir() const;
+	NIFLIB_API void SetBankDir(float value);
 
-	/*!
-	 * Sets the float data used by this controller.
-	 * \param[in] n The new float data.
-	 */
-	NIFLIB_API void SetFloatData( NiFloatData * n );
+	NIFLIB_API float GetMaxBankAngle() const;
+	NIFLIB_API void SetMaxBankAngle(float value);
 
-	/*!
-	 * Retrives the pos data used by this controller.
-	 * \return The pos data.
-	 */
-	NIFLIB_API Ref<NiPosData> GetPosData() const;
+	NIFLIB_API float GetSmoothing() const;
+	NIFLIB_API void SetSmoothing(float value);
 
-	/*!
-	 * Sets the pos data used by this controller.
-	 * \param[in] n The new pos data.
-	 */
-	NIFLIB_API void SetPosData( NiPosData * n );
+	NIFLIB_API float GetFollowAxis() const;
+	NIFLIB_API void SetFollowAxis(float value);
+
+	NIFLIB_API Ref<NiPosData > GetPathData() const;
+	NIFLIB_API void SetPathData(const Ref<NiPosData >& value);
+
+	NIFLIB_API Ref<NiFloatData > GetPercentData() const;
+	NIFLIB_API void SetPercentData(const Ref<NiFloatData >& value);
+
 
 	//--END CUSTOM CODE--//
 protected:

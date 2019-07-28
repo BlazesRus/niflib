@@ -120,7 +120,7 @@ public:
 	 * 3: FOG_MAP
 	 * \return The texture type.
 	 */
-	NIFLIB_API EffectType GetTextureType() const;
+	NIFLIB_API TextureType GetTextureType() const;
 
 	/*!
 	 * Sets the texture type used by this effect.  Valid values are:
@@ -130,7 +130,7 @@ public:
 	 * 3: FOG_MAP
 	 * \param[in] value The new texture type.
 	 */
-	NIFLIB_API void SetTextureType( EffectType value );
+	NIFLIB_API void SetTextureType( TextureType value );
 
 	/*!
 	 * Retrieves the texture coordinate generation mode.  Valid values are:
@@ -205,6 +205,20 @@ public:
 	 * \param[in] value The new PS2 K value.
 	 */
 	NIFLIB_API void SetPs2K( unsigned short value );
+
+	NIFLIB_API unsigned short GetMaxAnisotropy() const;
+	NIFLIB_API void SetMaxAnisotropy( unsigned short value );
+
+	NIFLIB_API TexClampMode GetTextureClampMode() const;
+	NIFLIB_API void SetTextureClampMode( TexClampMode value );
+
+	NIFLIB_API Ref<NiImage> GetImageIndex() const;
+	NIFLIB_API void SetImageIndex( Ref<NiImage> value );
+
+	NIFLIB_API byte GetHasPlane() const;
+
+	NIFLIB_API NiPlane GetPlane() const;
+	NIFLIB_API void SetPlane( NiPlane value );
 
 	//--END CUSTOM CODE--//
 protected:

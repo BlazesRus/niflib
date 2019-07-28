@@ -106,11 +106,11 @@ std::list<NiObject *> NiBoolInterpolator::GetPtrs() const {
 //--BEGIN MISC CUSTOM CODE--//
 
 bool NiBoolInterpolator::GetBoolValue() const {
-	return boolValue;
+	return value;
 }
 
 void NiBoolInterpolator::SetBoolValue( bool value ) {
-	boolValue = value;
+	value = value;
 }
 
 Ref<NiBoolData > NiBoolInterpolator::GetData() const {

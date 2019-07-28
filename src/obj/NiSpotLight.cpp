@@ -106,12 +106,20 @@ std::list<NiObject *> NiSpotLight::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-float NiSpotLight::GetCutoffAngle() const {
-	return cutoffAngle;
+float NiSpotLight::GetOuterSpotAngle() const {
+	return outerSpotAngle;
 }
 
-void NiSpotLight::SetCutoffAngle( float value ) {
-	cutoffAngle = value;
+void NiSpotLight::SetOuterSpotAngle( float value ) {
+	outerSpotAngle = value;
+}
+
+float NiSpotLight::GetInnerSpotAngle() const {
+	return innerSpotAngle;
+}
+
+void NiSpotLight::SetInnerSpotAngle( float value ) {
+	innerSpotAngle = value;
 }
 
 float NiSpotLight::GetExponent() const {

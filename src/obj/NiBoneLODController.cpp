@@ -385,8 +385,8 @@ vector<Ref<NiNode> > NiBoneLODController::GetNodeGroup( int index ) const {
 
 void NiBoneLODController::AddNodeToGroup( int index, NiNode * node ) {
    while (index >= int(nodeGroups.size()))
-      nodeGroups.insert(nodeGroups.end(), NodeGroup() );
-   numNodeGroups2 = int(nodeGroups.size());
+      nodeGroups.insert(nodeGroups.end(), NodeSet() );
+   numNodeGroups = int(nodeGroups.size());
 
    vector<NiNode*>& nodes = nodeGroups[index].nodes;
    vector<NiNode*>::iterator itr = std::find(nodes.begin(), nodes.end(), node);
@@ -407,8 +407,8 @@ void NiBoneLODController::RemoveNodeFromGroup( int index, NiNode * node ) {
 
 void NiBoneLODController::SetNodeGroup( int index, const vector<Ref<NiNode> >& group ) {
    while (index >= int(nodeGroups.size()))
-      nodeGroups.insert(nodeGroups.end(), NodeGroup() );
-   numNodeGroups2 = int(nodeGroups.size());
+      nodeGroups.insert(nodeGroups.end(), NodeSet() );
+   numNodeGroups = int(nodeGroups.size());
    nodeGroups[index].nodes.assign(group.begin(), group.end());
 }
 
@@ -416,15 +416,15 @@ void NiBoneLODController::RemoveNodeGroup( int index ) {
    if (index < 0 || index >= int(nodeGroups.size()) ) {
       throw runtime_error("Invalid index referenced.");
    }
-   vector<NodeGroup>::iterator itr = nodeGroups.begin();
+   vector<NodeSet>::iterator itr = nodeGroups.begin();
    std::advance(itr, index);
    nodeGroups.erase(itr);
-   numNodeGroups2 = int(nodeGroups.size());
+   numNodeGroups = int(nodeGroups.size());
 }
 
 void NiBoneLODController::ClearNodeGroups() {
    nodeGroups.clear();
-   numNodeGroups2 = int(nodeGroups.size());
+   numNodeGroups = int(nodeGroups.size());
 }
 
 bool NiBoneLODController::AddShapeToGroup( Ref<NiTriBasedGeom > shape ) {

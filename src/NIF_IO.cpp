@@ -137,6 +137,14 @@ unsigned short ReadUShort( istream& in ){
 	return tmp;
 }
 
+hfloat ReadHalfFloat( istream& in ) {
+	hfloat tmp = 0;
+	in.read( (char*)&tmp, sizeof(hfloat) );
+	if (in.fail())
+	  throw runtime_error("premature end of stream");
+	return tmp;
+}
+
 short ReadShort( istream& in ){
 
 	short tmp = 0;
@@ -259,6 +267,11 @@ void WriteBool( bool val, ostream& out, unsigned int version ) {
 		else
 			WriteByte( 0, out );
 	}
+}
+
+void WriteHalfFloat( hfloat val, ostream& out )
+{
+	out.write( (char*)&val, sizeof(val) );
 }
 
 //-- NifStream And ostream Functions --//
@@ -491,6 +504,21 @@ void NifStream( Triangle const & val, ostream& out, const NifInfo & info ) {
 	WriteUShort( val.v2, out );
 	WriteUShort( val.v3, out );
 };
+
+//HalfVector3
+void NifStream( HalfVector3 & val, istream& in, const NifInfo & info)
+{
+	val.x = ReadHalfFloat( in );
+	val.y = ReadHalfFloat( in );
+	val.z = ReadHalfFloat( in );
+}
+
+void NifStream( HalfVector3 const & val, ostream& out, const NifInfo & info)
+{
+	WriteHalfFloat( val.x, out );
+	WriteHalfFloat( val.y, out );
+	WriteHalfFloat( val.z, out );
+}
 
 //Vector3
 void NifStream( Vector3 & val, istream& in, const NifInfo & info ) {

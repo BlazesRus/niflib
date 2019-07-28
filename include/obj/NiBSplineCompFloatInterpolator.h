@@ -57,55 +57,11 @@ public:
 
 	//--BEGIN MISC CUSTOM CODE--//
 
-	/*!
-	* Gets the base value when a curve is not defined.
-	* \return The base value.
-	*/
-	NIFLIB_API float GetBase() const;
+	NIFLIB_API float GetOffset() const;
+	NIFLIB_API void SetOffset( float value );
 
-	/*!
-	* Sets the base value when a curve is not defined.
-	* \param[in] value The new base value.
-	*/
-	NIFLIB_API void SetBase( float value );
-
-	/*!
-	* Gets value bias.
-	* \return The value bias.
-	*/
-	NIFLIB_API float GetBias() const;
-
-	/*!
-	* Sets value bias.
-	* \param[in] value The new value bias.
-	*/
-	NIFLIB_API void SetBias( float value );
-
-	/*!
-	* Gets value multiplier.
-	* \return The value multiplier.
-	*/
-	NIFLIB_API float GetMultiplier() const;
-
-	/*!
-	* Sets value multiplier.
-	* \param[in] value The new value multiplier.
-	*/
-	NIFLIB_API void SetMultiplier( float value );
-
-	/*!
-	* Retrieves the key data.
-	* \return A vector containing control float data which specify a value over time.
-	*/
-	NIFLIB_API vector< float > GetControlData() const;
-
-	/*!
-	* Retrieves the sampled data between start and stop time.
-	* \param npoints The number of data points to sample between start and stop time.
-	* \param degree N-th order degree of polynomial used to fit the data.
-	* \return A vector containing Key<float> data which specify a value over time.
-	*/
-	NIFLIB_API vector< Key<float> > SampleKeys(int npoints, int degree) const;
+	NIFLIB_API float GetHalfRange() const;
+	NIFLIB_API void SetHalfRange( float value );
 
 	/*!
 	* Retrieves the number of control points used in the spline curve.

@@ -55,21 +55,6 @@ public:
 	 */
 	NIFLIB_API virtual const Type & GetType() const;
 
-	//--BEGIN MISC CUSTOM CODE--//
-
-	/*!
-	 * Retrives the pos data used by this controller.
-	 * \return The pos data.
-	 */
-	NIFLIB_API Ref<NiPosData> GetData() const;
-
-	/*!
-	 * Sets the pos data used by this controller.
-	 * \param[in] value The new pos data.
-	 */
-	NIFLIB_API void SetData( NiPosData * value );
-
-	//--END CUSTOM CODE--//
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );

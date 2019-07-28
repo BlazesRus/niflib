@@ -246,7 +246,6 @@ void NiControllerSequence::SetParent(NiControllerManager * parent) {
 
 void NiControllerSequence::SetTextKey( NiTextKeyExtraData * txt_key ) {
 	//Set new name
-	textKeysName = txt_key->GetName();
 	textKeys = txt_key;
 }
 
@@ -260,8 +259,8 @@ void NiControllerSequence::AddController( NiTimeController * obj ) {
 	if ( target == NULL ) {
 		throw runtime_error("Controller must have a target to be added to a NiControllerSequence.");
 	}
-	//Make a new ControllerLink and fill out necessary data
-	ControllerLink cl;
+	//Make a new ControlledBlock and fill out necessary data
+	ControlledBlock cl;
 	cl.controller = obj;
 	cl.targetName = target->GetName();
 	cl.nodeName = target->GetName();
@@ -283,8 +282,8 @@ void NiControllerSequence::AddController( string const & targetName, NiTimeContr
 		throw runtime_error("Attempted to add a null controller to NiControllerSequence.");
 	}
 
-	//Make a new ControllerLink and fill out necessary data
-	ControllerLink cl;
+	//Make a new ControlledBlock and fill out necessary data
+	ControlledBlock cl;
 	cl.controller = obj;
 	cl.targetName = targetName;
 	cl.nodeName = targetName;
@@ -316,8 +315,8 @@ void NiControllerSequence::AddInterpolator( NiSingleInterpController * obj, byte
       stringPalette = new NiStringPalette;
 	}
 
-	//Make a new ControllerLink and fill out necessary data
-	ControllerLink cl;
+	//Make a new ControlledBlock and fill out necessary data
+	ControlledBlock cl;
 
 	cl.interpolator = interp;
 	cl.priority = priority;
@@ -355,8 +354,8 @@ void NiControllerSequence::AddInterpolator( NiSingleInterpController * obj, byte
 
 
 
-	//Make a new ControllerLink and fill out necessary data
-	ControllerLink cl;
+	//Make a new ControlledBlock and fill out necessary data
+	ControlledBlock cl;
 
 	NiPropertyRef prop = DynamicCast<NiProperty>(target);
 
@@ -404,7 +403,7 @@ void NiControllerSequence::AddGenericInterpolator( NiInterpolator * interpolator
 	}
 
 	//Make a new ControllerLink and fill out necessary data
-	ControllerLink cl;
+	ControlledBlock cl;
 
 	NiPropertyRef prop = DynamicCast<NiProperty>(target);
 
@@ -448,11 +447,11 @@ void NiControllerSequence::ClearControllerData() {
 	controlledBlocks.clear();
 }
 
-vector<ControllerLink> NiControllerSequence::GetControllerData() const {
+vector<ControlledBlock> NiControllerSequence::GetControllerData() const {
 	return controlledBlocks;
 }
 
-void NiControllerSequence::SetControllerData(const vector<ControllerLink>& value) {
+void NiControllerSequence::SetControllerData(const vector<ControlledBlock>& value) {
 	if ( value.size() != controlledBlocks.size() ) 
 		throw runtime_error("The SetControllerData requires the ControllerLink array size to match the existing array.");
 	controlledBlocks = value;

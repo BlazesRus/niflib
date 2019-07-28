@@ -102,81 +102,6 @@ std::list<NiObject *> NiBSplineCompFloatInterpolator::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-float NiBSplineCompFloatInterpolator::GetBase() const {
-	return base;
-}
-
-void NiBSplineCompFloatInterpolator::SetBase( float value ) {
-	base = value;
-}
-
-
-float NiBSplineCompFloatInterpolator::GetBias() const {
-	return bias;
-}
-
-void NiBSplineCompFloatInterpolator::SetBias( float value ) {
-	bias = value;
-}
-
-float NiBSplineCompFloatInterpolator::GetMultiplier() const {
-	return multiplier;
-}
-
-void NiBSplineCompFloatInterpolator::SetMultiplier( float value ) {
-	multiplier = value;
-}
-
-vector< float > NiBSplineCompFloatInterpolator::GetControlData() const
-{
-	vector< float > value;
-	if ((offset != USHRT_MAX) && splineData && basisData) { // has translation data
-		int nctrl = basisData->GetNumControlPoints();
-		int npts = nctrl * SizeofValue;
-		vector<short> points = splineData->GetShortControlPointRange(offset, npts);
-		value.reserve(nctrl);
-		for (int i=0; i<npts; ) {
-			float data = float(points[i++]) / float (32767) * multiplier + bias;
-			value.push_back(data);
-		}
-	}
-	return value;
-}
-
-
-vector< Key<float> > NiBSplineCompFloatInterpolator::SampleKeys(int npoints, int degree) const
-{
-	vector< Key<float> > value;
-	if ((offset != USHRT_MAX) && splineData && basisData) // has rotation data
-	{
-		int nctrl = basisData->GetNumControlPoints();
-		int npts = nctrl * SizeofValue;
-		vector<short> points = splineData->GetShortControlPointRange(offset, npts);
-		vector<float> control(npts);
-		vector<float> output(npoints*SizeofValue);
-		for (int i=0, j=0; i<nctrl; ++i) {
-			control[i] = float(points[j++]) / float (32767);
-		}
-		// fit data
-		bspline(nctrl-1, degree+1, SizeofValue, &control[0], &output[0], npoints);
-
-		// copy to key
-		float time = GetStartTime();
-		float incr = (GetStopTime() - GetStartTime()) / float(npoints) ;
-		value.reserve(npoints);
-		for (int i=0, j=0; i<npoints; i++) {
-			Key<float> key;
-			key.time = time;
-			key.backward_tangent = 0.0f;
-			key.forward_tangent = 0.0f; 
-			key.data = output[j++] * multiplier + bias;
-			value.push_back(key);
-			time += incr;
-		}
-	}
-	return value;
-}
-
 int NiBSplineCompFloatInterpolator::GetNumControlPoints() const
 {
 	if (basisData)
@@ -184,6 +109,26 @@ int NiBSplineCompFloatInterpolator::GetNumControlPoints() const
 		return basisData->GetNumControlPoints();
 	}
 	return 0;
+}
+
+float Niflib::NiBSplineCompFloatInterpolator::GetOffset() const
+{
+	return floatOffset;
+}
+
+float Niflib::NiBSplineCompFloatInterpolator::GetHalfRange() const
+{
+	return floatHalfRange;
+}
+
+void Niflib::NiBSplineCompFloatInterpolator::SetHalfRange(float value)
+{
+	floatHalfRange = value;
+}
+
+void Niflib::NiBSplineCompFloatInterpolator::SetOffset(float value)
+{
+	floatOffset = value;
 }
 
 //--END CUSTOM CODE--//

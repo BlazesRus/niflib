@@ -79,7 +79,7 @@ public:
 	* Get the number of float control points stored in the data
 	* \return The number of float control points
 	*/
-	NIFLIB_API int GetNumFloatControlPoints();
+	NIFLIB_API unsigned int GetNumFloatControlPoints();
 
 	/*!
 	 * Get Range of signed shorts representing the data scaled by SHRT_MAX.
@@ -93,25 +93,25 @@ public:
 	 * Get Signed shorts representing the spline data scaled by SHRT_MAX.
 	 * \return The spline data.
 	 */
-	NIFLIB_API vector<short> GetShortControlPoints() const;
+	NIFLIB_API vector<short> GetCompactControlPoints() const;
 
 	/*!
 	* Sets the short control points representing the spline data
 	* \param[in] The new short control points to replace the current ones
 	*/
-	NIFLIB_API void SetShortControlPoints(vector<short> value);
+	NIFLIB_API void SetCompactControlPoints(vector<short> value);
 
 	/*!
 	* Adds short control points at the end of the short control points collection 
 	* \param[in] The short points to add at the end of the collection
 	*/
-	NIFLIB_API void AppendShortControlPoints(vector<short> value);
+	NIFLIB_API void AppendNumCompactControlPoints(vector<unsigned int> value);
 
 	/*!
 	* Get the number of short control points stored in the data
 	* \return The number of short control points
 	*/
-	NIFLIB_API int GetNumShortControlPoints();
+	NIFLIB_API unsigned int GetNumCompactControlPoints();
 
 	/*!
 	 * Get Range of signed shorts representing the data scaled by SHRT_MAX.
@@ -119,7 +119,7 @@ public:
 	 * \param[in] count The number of control points to get.
 	 * \return The control points that fall within the specified range.
 	 */
-	NIFLIB_API vector<short> GetShortControlPointRange(int offset, int count) const;
+	NIFLIB_API vector<short> GetCompactControlPointRange(int offset, int count) const;
 
 	//--END CUSTOM CODE--//
 protected:

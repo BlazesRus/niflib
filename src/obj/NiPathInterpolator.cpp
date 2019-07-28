@@ -125,30 +125,74 @@ std::list<NiObject *> NiPathInterpolator::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-Ref<NiPosData > NiPathInterpolator::GetPosData() const {
-	return posData;
+PathFlags NiPathInterpolator::GetPathFlags() const
+{
+	return flags;
 }
 
-void NiPathInterpolator::SetPosData( NiPosData * value ) {
-	posData = value;
+void NiPathInterpolator::SetPathFlags(PathFlags value)
+{
+	flags = value;
 }
 
-Ref<NiFloatData > NiPathInterpolator::GetFloatData() const {
-	return floatData;
+float NiPathInterpolator::GetBankDir() const
+{
+	return bankDir;
 }
 
-void NiPathInterpolator::SetFloatData( NiFloatData * value ) {
-	floatData = value;
+void NiPathInterpolator::SetBankDir(float value)
+{
+	bankDir = value;
 }
 
-void NiPathInterpolator::NormalizeKeys( float phase, float frequency ) {
-	if ( posData != NULL ) {
-		posData->NormalizeKeys( phase, frequency );
-	}
-	if ( floatData != NULL ) {
-		floatData->NormalizeKeys( phase, frequency );
-	}
+float NiPathInterpolator::GetMaxBankAngle() const
+{
+	return maxBankAngle;
 }
 
+void NiPathInterpolator::SetMaxBankAngle(float value)
+{
+	maxBankAngle = value;
+}
+
+float NiPathInterpolator::GetSmoothing() const
+{
+	return smoothing;
+}
+
+void NiPathInterpolator::SetSmoothing(float value)
+{
+	smoothing = value;
+}
+
+float NiPathInterpolator::GetFollowAxis() const
+{
+	return followAxis;
+}
+
+void NiPathInterpolator::SetFollowAxis(float value)
+{
+	followAxis = value;
+}
+
+Ref<NiPosData> NiPathInterpolator::GetPathData() const
+{
+	return pathData;
+}
+
+void NiPathInterpolator::SetPathData(const Ref<NiPosData>& value)
+{
+	pathData = value;
+}
+
+Ref<NiFloatData> NiPathInterpolator::GetPercentData() const
+{
+	return percentData;
+}
+
+void NiPathInterpolator::SetPercentData(const Ref<NiFloatData>& value)
+{
+	percentData = value;
+}
 
 //--END CUSTOM CODE--//

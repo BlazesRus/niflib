@@ -3,3 +3,10 @@ lib/
 obj/
 Debug - DLL/
 .vs/
+x64/
+*.user
+*.lib
+*.pdb
+*.pch
+*.obj
+*.o

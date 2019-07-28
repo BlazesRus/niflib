@@ -206,11 +206,11 @@ void NiTextureEffect::SetTextureClamping( TexClampMode value ) {
 	textureClamping = value;
 }
 
-EffectType NiTextureEffect::GetTextureType() const {
+TextureType NiTextureEffect::GetTextureType() const {
 	return textureType;
 }
 
-void NiTextureEffect::SetTextureType( EffectType value ) {
+void NiTextureEffect::SetTextureType( TextureType value ) {
 	textureType = value;
 }
 
@@ -230,14 +230,6 @@ void NiTextureEffect::SetSourceTexture( Ref<NiSourceTexture > value ) {
 	sourceTexture = value;
 }
 
-byte NiTextureEffect::GetClippingPlane() const {
-	return clippingPlane;
-}
-
-void NiTextureEffect::SetClippingPlane( byte value ) {
-	clippingPlane = value;
-}
-
 unsigned short NiTextureEffect::GetPs2L() const {
 	return ps2L;
 }
@@ -252,6 +244,52 @@ unsigned short NiTextureEffect::GetPs2K() const {
 
 void NiTextureEffect::SetPs2K( unsigned short value ) {
 	ps2K = value;
+}
+
+unsigned short Niflib::NiTextureEffect::GetMaxAnisotropy() const
+{
+	return maxAnisotropy;
+}
+
+void Niflib::NiTextureEffect::SetMaxAnisotropy(unsigned short value)
+{
+	maxAnisotropy = value;
+}
+
+TexClampMode Niflib::NiTextureEffect::GetTextureClampMode() const
+{
+	return textureClamping;
+}
+
+void Niflib::NiTextureEffect::SetTextureClampMode(TexClampMode value)
+{
+	textureClamping = value;
+}
+
+Ref<NiImage> Niflib::NiTextureEffect::GetImageIndex() const
+{
+	return image;
+}
+
+void Niflib::NiTextureEffect::SetImageIndex(Ref<NiImage> value)
+{
+	image = value;
+}
+
+byte Niflib::NiTextureEffect::GetHasPlane() const
+{
+	return enablePlane;
+}
+
+NiPlane Niflib::NiTextureEffect::GetPlane() const
+{
+	return plane;
+}
+
+void Niflib::NiTextureEffect::SetPlane(NiPlane value)
+{
+	plane = value;
+	enablePlane = 1;
 }
 
 //--END CUSTOM CODE--//

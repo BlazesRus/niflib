@@ -55,16 +55,28 @@ public:
 	//--BEGIN MISC CUSTOM CODE--//
 
 	/*!
-	 * Retrieves the opening angle of the spot light.
-	 * \return The cutoff angle.
+	 * Retrieves the inner angle of the spot light.
+	 * \return The inner spot angle.
 	 */
-	NIFLIB_API float GetCutoffAngle() const;
+	NIFLIB_API float GetInnerSpotAngle() const;
 
 	/*!
-	 * Sets the opening angle of the spot light.
-	 * \param[in] value The new cutoff angle.
+	 * Sets the inner angle of the spot light.
+	 * \param[in] value The new inner spot angle.
 	 */
-	NIFLIB_API void SetCutoffAngle( float value );
+	NIFLIB_API void SetInnerSpotAngle( float value );
+
+		/*!
+	 * Retrieves the outer angle of the spot light.
+	 * \return The outer spot angle.
+	 */
+	NIFLIB_API float GetOuterSpotAngle() const;
+
+	/*!
+	 * Sets the outer angle of the spot light.
+	 * \param[in] value The new outer spot angle.
+	 */
+	NIFLIB_API void SetOuterSpotAngle( float value );
 
 	/*!
 	 * Retrieves the exponent of this spot light.  This describes the distribution of light.  See glLight in OpenGL.

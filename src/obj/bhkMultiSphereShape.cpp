@@ -124,11 +124,11 @@ std::list<NiObject *> bhkMultiSphereShape::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-vector<SphereBV > bhkMultiSphereShape::GetSpheres() const {
+vector<NiBound > bhkMultiSphereShape::GetSpheres() const {
 	return spheres;
 }
 
-void bhkMultiSphereShape::SetSpheres( const vector<SphereBV >& value ) {
+void bhkMultiSphereShape::SetSpheres( const vector<NiBound >& value ) {
 	spheres = value;
 }
 

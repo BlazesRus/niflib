@@ -65,22 +65,22 @@ public:
    // animation file contains an attack sequence, then the file would be called
    // "demon_attack1.kf" and this field would contain the string "attack1".
    // \return The current value.
-   string GetName() const;
+   IndexString GetName() const;
 
    // Name of this object. This is also the name of the action associated with this
    // file. For instance, if the original NIF file is called "demon.nif" and this
    // animation file contains an attack sequence, then the file would be called
    // "demon_attack1.kf" and this field would contain the string "attack1".
    // \param[in] value The new value.
-   void SetName( const string & value );
+   void SetName( const IndexString & value );
 
    // Name of following referenced NiTextKeyExtraData class.
    // \return The current value.
-   string GetTextKeysName() const;
+   IndexString GetAccumRootName() const;
 
    // Name of following referenced NiTextKeyExtraData class.
    // \param[in] value The new value.
-   void SetTextKeysName( const string & value );
+   void SetAccumRootName( const IndexString & value );
 
    // Link to NiTextKeyExtraData.
    // \return The current value.
@@ -97,6 +97,9 @@ public:
    // Refers to controlled objects.
    // \param[in] value The new value.
    void SetControlledBlocks( const vector<ControlledBlock >& value );
+
+	int GetArrayGrowBy();
+	void SetArrayGrowBy( int value );
 
 	//--END CUSTOM CODE--//
 protected:

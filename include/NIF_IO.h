@@ -13,6 +13,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "nif_math.h"
 #include "nif_versions.h"
 #include "obj/NiObject.h"
+#include "gen/HalfVector3.h"
 
 #include <list>
 #include <map>
@@ -37,6 +38,7 @@ byte ReadByte( istream& in );
 float ReadFloat( istream &in );
 string ReadString( istream &in );
 bool ReadBool( istream &in, unsigned int version );
+hfloat ReadHalfFloat( istream& in );
 
 //-- Write Utility Functions --//
 void WriteInt( int val, ostream& out );
@@ -48,6 +50,7 @@ void WriteByte( byte val, ostream& out );
 void WriteFloat( float val, ostream& out );
 void WriteString( string const & val, ostream& out );
 void WriteBool( bool val, ostream& out, unsigned int version );
+void WriteHalfFloat( hfloat val, ostream& out );
 
 //-- BitField Helper functions --//
 
@@ -144,6 +147,10 @@ void NifStream( TexCoord const & val, ostream& out, const NifInfo & info);
 //Triangle
 void NifStream( Triangle & val, istream& in, const NifInfo & info);
 void NifStream( Triangle const & val, ostream& out, const NifInfo & info);
+
+//HalfVector3
+void NifStream( HalfVector3 & val, istream& in, const NifInfo & info);
+void NifStream( HalfVector3 const & val, ostream& out, const NifInfo & info);
 
 //Vector3
 void NifStream( Vector3 & val, istream& in, const NifInfo & info);
