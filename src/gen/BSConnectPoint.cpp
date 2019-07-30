@@ -11,7 +11,7 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Constructor
-BSConnectPoint::BSConnectPoint() : parent((string)WorkshopConnectPoints), scale(1.0f) {};
+BSConnectPoint::BSConnectPoint() : parent("WorkshopConnectPoints"), scale(1.0f) {};
 
 //Copy Constructor
 BSConnectPoint::BSConnectPoint( const BSConnectPoint & src ) {
