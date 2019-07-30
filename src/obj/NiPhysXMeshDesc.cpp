@@ -58,9 +58,9 @@ void NiPhysXMeshDesc::Read( istream& in, list<unsigned int> & link_stack, const 
 	};
 	if ( ( info.version >= 0x14030005 ) && ( info.version <= 0x1E020002 ) ) {
 		NifStream( meshSize, in, info );
-		meshData.resize(meshSize);
-		for (unsigned int i2 = 0; i2 < meshData.size(); i2++) {
-			NifStream( (unsigned short&)meshData[i2], in, info );
+		meshData.data.resize(meshSize);
+		for (unsigned int i2 = 0; i2 < meshData.data.size(); i2++) {
+			NifStream( (unsigned short&)meshData.data[i2], in, info );
 		};
 	};
 	NifStream( meshFlags, in, info );
@@ -85,7 +85,7 @@ void NiPhysXMeshDesc::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	//--END CUSTOM CODE--//
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
-	meshSize = (unsigned short)(meshData.size());
+	meshSize = (unsigned short)(meshData.data.size());
 	if ( info.version <= 0x14030004 ) {
 		NifStream( isConvex, out, info );
 	};
@@ -97,8 +97,8 @@ void NiPhysXMeshDesc::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	};
 	if ( ( info.version >= 0x14030005 ) && ( info.version <= 0x1E020002 ) ) {
 		NifStream( meshSize, out, info );
-		for (unsigned int i2 = 0; i2 < meshData.size(); i2++) {
-			NifStream( (unsigned short&)meshData[i2], out, info );
+		for (unsigned int i2 = 0; i2 < meshData.data.size(); i2++) {
+			NifStream( (unsigned short&)meshData.data[i2], out, info );
 		};
 	};
 	NifStream( meshFlags, out, info );
@@ -125,7 +125,7 @@ std::string NiPhysXMeshDesc::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiObject::asString();
-	meshSize = (unsigned short)(meshData.size());
+	meshSize = (unsigned short)(meshData.data.size());
 	out << "  Is Convex:  " << isConvex << endl;
 	out << "  Mesh Name:  " << meshName << endl;
 	meshData.dataSize = (unsigned int)(meshData.data.size());
