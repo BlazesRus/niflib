@@ -103,7 +103,10 @@ struct Triangle {
 	unsigned short v3; /*!< The index of the third vertex. */ 
 
 	/*! Default constructor */
-	NIFLIB_API Triangle() {}
+	NIFLIB_API Triangle() 
+	{
+		v1 = v2 = v3 = 0;
+	}
 
 	/*! This constructor can be used to set all values in this structure during initialization
 	 * \param[in] v1 The index of the first vertex.
@@ -472,7 +475,11 @@ struct Float2 {
 	}
 
 	/*! Default constructor. */
-	NIFLIB_API Float2() {}
+	NIFLIB_API Float2() 
+	{
+        data[0] = 0.0f;
+        data[1] = 0.0f;
+	}
 
 	/*! This constructor can be used to set all values in this structure during initialization
 	 * \param[in] f1 The value to set the first floating point number to.
@@ -564,7 +571,12 @@ struct Float3 {
 	}
 
 	/*!Default constructor.*/
-	NIFLIB_API Float3() {}
+	NIFLIB_API Float3()
+	{
+        data[0] = 0.0f;
+        data[1] = 0.0f;
+        data[2] = 0.0f;
+	}
 
 	/*! This constructor can be used to set all values in this structure during initialization
 	 * \param[in] f1 The value to set the first floating point number to.
@@ -697,7 +709,12 @@ struct Float4 {
 	}
 
 	/*! Default Constructor.*/
-	NIFLIB_API Float4() {}
+	NIFLIB_API Float4() {
+        data[0] = 0.0f;
+        data[1] = 0.0f;
+        data[2] = 0.0f;
+        data[3] = 0.0f;
+	}
 
 	/*! This constructor can be used to set all values in this structure during initialization
 	 * \param[in] f1 The value to set the first floating point number to.
@@ -963,7 +980,10 @@ struct Color3 {
 	float b; /*!< The blue component of this color.  Should be between 0.0f and 1.0f. */ 
 
 	/*! Default constructor */
-	NIFLIB_API Color3() {}
+	NIFLIB_API Color3() 
+	{
+		r = g = b = 0.0f;
+	}
 
 	/*! Copy constructor */
 	NIFLIB_API Color3(const Color3& src) {
