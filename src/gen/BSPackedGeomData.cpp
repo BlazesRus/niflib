@@ -17,7 +17,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/gen/HalfVector3.h"
 #include "../../include/gen/NiBound.h"
 #include "../../include/gen/NiTransform.h"
-#include "../../include/obj/BSPackedCombinedSharedGeomDataExtra.h"
+//#include "../../include/obj/BSPackedCombinedSharedGeomDataExtra.h"
 using namespace Niflib;
 
 //Constructor

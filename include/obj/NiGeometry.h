@@ -13,6 +13,8 @@ All rights reserved.  Please see niflib.h for license. */
 //--BEGIN FILE HEAD CUSTOM CODE--//
 #include "../gen/SkinWeight.h"
 #include "../obj/NiGeometryData.h"
+
+#include "../gen/BoneVertData.h"
 //--END CUSTOM CODE--//
 
 #include "NiAVObject.h"

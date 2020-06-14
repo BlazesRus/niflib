@@ -1111,20 +1111,29 @@ struct Color4 {
 
 /*! Represents a quaternion - a 4D extention of complex numbers used as an alternitive to matrices to represent rotation.*/
 struct Quaternion {
+private:
+
+public:
 	float w; /*!< The W scalar component of this Quaternion. */ 
 	float x; /*!< The X vector component of this Quaternion. */ 
 	float y; /*!< The Y vector component of this Quaternion. */ 
 	float z; /*!< The Z vector component of this Quaternion. */ 
 
-	/*! Default constructor. */
-	NIFLIB_API Quaternion() {}
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Quaternion"/> struct.
+	/// </summary>
+	NIFLIB_API Quaternion()
+	{
+		w = 0.0f; x = 0.0f; y = 0.0f; z = 0.0f;
+	}
 
-	/*! This constructor can be used to set all values in this structure during initialization
-	 * \param[in] w The value to set the W scalar component of this quaternion to.
-	 * \param[in] x The value to set the X vector component of this quaternion to.
-	 * \param[in] y The value to set the Y vector component of this quaternion to.
-	 * \param[in] z The value to set the Z vector component of this quaternion to.
-	 */
+	 /// <summary>
+	 /// Initializes a new instance of the <see cref="Quaternion"/> struct.
+	 /// </summary>
+	 /// <param name="w">The value to set the W scalar component of this quaternion to.</param>
+	 /// <param name="x">The value to set the X vector component of this quaternion to.</param>
+	 /// <param name="y">The value to set the Y vector component of this quaternion to.</param>
+	 /// <param name="z">The value to set the Z vector component of this quaternion to.</param>
 	NIFLIB_API Quaternion(float w, float x, float y, float z) {
 		this->w = w;
 		this->x = x;
