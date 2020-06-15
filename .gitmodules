@@ -1,7 +1,3 @@
 [submodule "qhull"]
 	path = qhull
 	url = https://github.com/qhull/qhull
-[submodule "docsys"]
-	path = docsys
-	url = https://github.com/arves100/nifdocsys
-	branch = develop
