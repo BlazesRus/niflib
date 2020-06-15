@@ -225,52 +225,127 @@ void NiPixelData::Reset( int new_width, int new_height, PixelFormat px_fmt ) {
 
 	//Set up pixel format fields
 	pixelFormat = px_fmt;
-	switch(pixelFormat) {
-		case PX_FMT_RGB8:
-			redMask    = 0x000000FF;
-			greenMask  = 0x0000FF00;
-			blueMask   = 0x00FF0000;
-			alphaMask  = 0x00000000;
+	switch(pixelFormat) {//PX_FMT_RGB8 etc are invalid cases according to compiler so these values might be wrong
+		case PX_FMT_RGB:
+            redMask = 0x000000FF;
+            greenMask = 0x0000FF00;
+            blueMask = 0x00FF0000;
+            alphaMask = 0x00000000;
 			bitsPerPixel = 24;
-			unknown8Bytes[0] = 96;
-			unknown8Bytes[1] = 8;
-			unknown8Bytes[2] = 130;
-			unknown8Bytes[3] = 0;
-			unknown8Bytes[4] = 0;
-			unknown8Bytes[5] = 65;
-			unknown8Bytes[6] = 0;
-			unknown8Bytes[7] = 0;
+			pixelData[0] = 96;
+			pixelData[1] = 8;
+			pixelData[2] = 130;
+			pixelData[3] = 0;
+			pixelData[4] = 0;
+			pixelData[5] = 65;
+			pixelData[6] = 0;
+			pixelData[7] = 0;
 			break;
-		case PX_FMT_RGBA8 :
-			redMask    = 0x000000FF;
-			greenMask  = 0x0000FF00;
-			blueMask   = 0x00FF0000;
-			alphaMask  = 0xFF000000;
-			bitsPerPixel = 32;
-			unknown8Bytes[0] = 129;
-			unknown8Bytes[1] = 8;
-			unknown8Bytes[2] = 130;
-			unknown8Bytes[3] = 32;
-			unknown8Bytes[4] = 0;
-			unknown8Bytes[5] = 65;
-			unknown8Bytes[6] = 12;
-			unknown8Bytes[7] = 0;
-			break;	
-		case PX_FMT_PAL8 :
-			redMask   = 0x00000000;
-			blueMask  = 0x00000000;
-			greenMask = 0x00000000;
-			alphaMask = 0x00000000;
-			bitsPerPixel = 8;
-			unknown8Bytes[0] = 34;
-			unknown8Bytes[1] = 0;
-			unknown8Bytes[2] = 0;
-			unknown8Bytes[3] = 32;
-			unknown8Bytes[4] = 0;
-			unknown8Bytes[5] = 65;
-			unknown8Bytes[6] = 12;
-			unknown8Bytes[7] = 0;
-			break;	
+        case PX_FMT_RGBA:
+            redMask = 0x000000FF;
+            greenMask = 0x0000FF00;
+            blueMask = 0x00FF0000;
+            alphaMask = 0x00000000;
+            bitsPerPixel = 24;
+            pixelData[0] = 129;
+            pixelData[1] = 8;
+            pixelData[2] = 130;
+            pixelData[3] = 32;
+            pixelData[4] = 0;
+            pixelData[5] = 65;
+            pixelData[6] = 12;
+            pixelData[7] = 0;
+            break;
+        case PX_FMT_PAL://likely similar to PX_FMT_PAL8
+            redMask = 0x00000000;
+            blueMask = 0x00000000;
+            greenMask = 0x00000000;
+            alphaMask = 0x00000000;
+            bitsPerPixel = 8;
+            pixelData[0] = 34;
+            pixelData[1] = 0;
+            pixelData[2] = 0;
+            pixelData[3] = 32;
+            pixelData[4] = 0;
+            pixelData[5] = 65;
+            pixelData[6] = 12;
+            pixelData[7] = 0;
+            break;
+        case PX_FMT_PALA:
+            redMask = 0x00000000;
+            blueMask = 0x00000000;
+            greenMask = 0x00000000;
+			alphaMask = 0xFF000000;
+            bitsPerPixel = 8;
+            pixelData[0] = 34;
+            pixelData[1] = 0;
+            pixelData[2] = 0;
+            pixelData[3] = 32;
+            pixelData[4] = 0;
+            pixelData[5] = 65;
+            pixelData[6] = 12;
+            pixelData[7] = 0;
+            break;
+        case PX_FMT_DXT1://Random Guess likely wrong
+            redMask = 0x000000FF;
+            greenMask = 0x0000FF00;
+            blueMask = 0x00FF0000;
+            alphaMask = 0x00000000;
+            bitsPerPixel = 4;
+            pixelData[0] = 96;
+            pixelData[1] = 8;
+            pixelData[2] = 130;
+            pixelData[3] = 0;
+            pixelData[4] = 0;
+            pixelData[5] = 65;
+            pixelData[6] = 0;
+            pixelData[7] = 0;
+            break;
+        /*		case PX_FMT_RGB8:
+                    redMask    = 0x000000FF;
+                    greenMask  = 0x0000FF00;
+                    blueMask   = 0x00FF0000;
+                    alphaMask  = 0x00000000;
+                    bitsPerPixel = 24;
+                    pixelData[0] = 96;
+                    pixelData[1] = 8;
+                    pixelData[2] = 130;
+                    pixelData[3] = 0;
+                    pixelData[4] = 0;
+                    pixelData[5] = 65;
+                    pixelData[6] = 0;
+                    pixelData[7] = 0;
+                    break;
+                case PX_FMT_RGBA8 :
+                    redMask    = 0x000000FF;
+                    greenMask  = 0x0000FF00;
+                    blueMask   = 0x00FF0000;
+                    alphaMask  = 0xFF000000;
+                    bitsPerPixel = 32;
+                    pixelData[0] = 129;
+                    pixelData[1] = 8;
+                    pixelData[2] = 130;
+                    pixelData[3] = 32;
+                    pixelData[4] = 0;
+                    pixelData[5] = 65;
+                    pixelData[6] = 12;
+                    pixelData[7] = 0;
+                    break;
+                case PX_FMT_PAL8 :
+                    redMask   = 0x00000000;
+                    blueMask  = 0x00000000;
+                    greenMask = 0x00000000;
+                    alphaMask = 0x00000000;
+                    bitsPerPixel = 8;
+                    pixelData[0] = 34;
+                    pixelData[1] = 0;
+                    pixelData[2] = 0;
+                    pixelData[3] = 32;
+                    pixelData[4] = 0;
+                    pixelData[5] = 65;
+                    pixelData[6] = 12;
+                    pixelData[7] = 0;
+                    break;*/
 		//[4,0,0,0,0,0,0,0] if 0 (?) bits per pixel
 		default:
 			throw runtime_error("The pixel type you have requested is not currently supported.");
@@ -288,21 +363,31 @@ vector<Color4> NiPixelData::GetColors() const {
 	//Pack the pixel data from the first mipmap into a vector of
 	//Color4 based on the pixel format.
 	pixels.resize( mipmaps[0].width * mipmaps[0].height );
-	switch(pixelFormat) {
-		case PX_FMT_RGB8:
+	byte tempiCalc;
+	switch(pixelFormat) {//To-Do check to make sure these values and code are correct(guess for now since editing code to try getting to now compile and gave errors from code that was there)
+		case PX_FMT_RGB://PX_FMT_RGB8
 			for ( unsigned int i = 0; i < pixels.size(); ++i ) {
-				pixels[i].r = float(pixelData[0][i * 3]) / 255.0f;
-				pixels[i].g = float(pixelData[0][i * 3 + 1]) / 255.0f;
-				pixels[i].b = float(pixelData[0][i * 3 + 2]) / 255.0f;
+				tempiCalc = i * 3;
+                pixels[i].r = float(pixelData[tempiCalc]) / 255.0f;
+                pixels[i].g = float(pixelData[tempiCalc + 1]) / 255.0f;
+                pixels[i].b = float(pixelData[tempiCalc + 2]) / 255.0f;
+                //pixels[i].r = float(pixelData[0][i * 3]) / 255.0f;
+                //pixels[i].g = float(pixelData[0][i * 3 + 1]) / 255.0f;
+                //pixels[i].b = float(pixelData[0][i * 3 + 2]) / 255.0f;
 				pixels[i].a = 1.0f;
 			}
 			break;
-		case PX_FMT_RGBA8:
+		case PX_FMT_RGBA://PX_FMT_RGBA8
 			for ( unsigned int i = 0; i < pixels.size(); ++i ) {
-				pixels[i].r = float(pixelData[0][i * 4]) / 255.0f;
-				pixels[i].g = float(pixelData[0][i * 4 + 1]) / 255.0f;
-				pixels[i].b = float(pixelData[0][i * 4 + 2]) / 255.0f;
-				pixels[i].a = float(pixelData[0][i * 4 + 3]) / 255.0f;
+				tempiCalc = i * 4;
+                pixels[i].r = float(pixelData[tempiCalc]) / 255.0f;
+                pixels[i].g = float(pixelData[tempiCalc + 1]) / 255.0f;
+                pixels[i].b = float(pixelData[tempiCalc + 2]) / 255.0f;
+                pixels[i].a = float(pixelData[tempiCalc + 3]) / 255.0f;
+				//pixels[i].r = float(pixelData[0][i * 4]) / 255.0f;
+				//pixels[i].g = float(pixelData[0][i * 4 + 1]) / 255.0f;
+				//pixels[i].b = float(pixelData[0][i * 4 + 2]) / 255.0f;
+				//pixels[i].a = float(pixelData[0][i * 4 + 3]) / 255.0f;
 			}
 			break;
 		default:
@@ -322,13 +407,16 @@ vector<Color4> NiPixelData::GetColors() const {
 
 void NiPixelData::SetColors( const vector<Color4> & new_pixels, bool generate_mipmaps ) {
 	//Ensure that compatible pixel format is being used
-	if ( pixelFormat != PX_FMT_RGB8 && pixelFormat != PX_FMT_RGBA8 ) {
-		throw runtime_error("The SetColors function only supports the PX_FMT_RGB8 and PX_FMT_RGBA8 pixel formats.");
-	}
+	//if ( pixelFormat != PX_FMT_RGB8 && pixelFormat != PX_FMT_RGBA8 ) {
+	//	throw runtime_error("The SetColors function only supports the PX_FMT_RGB8 and PX_FMT_RGBA8 pixel formats.");
+	//}
+    if ( pixelFormat != PX_FMT_RGB && pixelFormat != PX_FMT_RGBA) {
+    	throw runtime_error("The SetColors function only supports the PX_FMT_RGB and PX_FMT_RGBA pixel formats.");
+    }
 
 	//Ensure that there is size information in the mipmaps
 	if ( mipmaps.size() == 0 ) {
-		throw runtime_error("The size informatoin has not been set.  Call the IPixelData::Reset() function first.");
+		throw runtime_error("The size information has not been set.  Call the IPixelData::Reset() function first.");
 	}
 
 	//Ensure that the right number of pixels for the dimentions set have been passed
@@ -360,7 +448,7 @@ void NiPixelData::SetColors( const vector<Color4> & new_pixels, bool generate_mi
 	}
 
 	pixelData.resize(1);
-	pixelData[0].resize( size * bitsPerPixel / 8 );
+	pixelData.resize(size * bitsPerPixel / 8);//pixelData[0].resize( size * bitsPerPixel / 8 );
 
 	//Copy pixels to Color4 C array
 	Color4 * tmp_image = new Color4[new_pixels.size()];
@@ -440,10 +528,10 @@ void NiPixelData::SetColors( const vector<Color4> & new_pixels, bool generate_mi
 		#endif
 
 		//Start at offset
-		byte * map = &pixelData[0][mipmaps[i].offset];
+		byte* map = &pixelData[mipmaps[i].offset];//&pixelData[0][mipmaps[i].offset];
 
 		switch(pixelFormat) {
-		case PX_FMT_RGB8:
+		case PX_FMT_RGB://PX_FMT_RGB8:
 			for ( unsigned int j = 0; j < mipmaps[i].width * mipmaps[i].height; ++j ) {
 				map[j * 3] = int( tmp_image[j].r * 255.0f );
 				map[j * 3 + 1] = int( tmp_image[j].g * 255.0f );
@@ -456,7 +544,7 @@ void NiPixelData::SetColors( const vector<Color4> & new_pixels, bool generate_mi
 			//	cin.get();
 			//#endif
 			break;
-		case PX_FMT_RGBA8:
+		case PX_FMT_RGBA://PX_FMT_RGBA8:
 			for ( unsigned int j = 0; j < mipmaps[i].width * mipmaps[i].height; ++j ) {
 				map[j * 4] = int( tmp_image[j].r * 255.0f );
 				map[j * 4 + 1] = int( tmp_image[j].g * 255.0f );
@@ -470,8 +558,9 @@ void NiPixelData::SetColors( const vector<Color4> & new_pixels, bool generate_mi
 			//	cin.get();
 			//#endif
 			break;
-		case PX_FMT_PAL8:
-			throw runtime_error("The SetColors function only supports the PX_FMT_RGB8 and PX_FMT_RGBA8 pixel formats.");
+		//case PX_FMT_PAL8:
+		default:
+			throw runtime_error("The SetColors function only supports the PX_FMT_RGB and PX_FMT_RGBA pixel formats.");
 			break;
 		}
 	}
