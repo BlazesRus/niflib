@@ -230,7 +230,7 @@ vector<NiObjectRef> ReadNifList( istream & in, list<NiObjectRef> & missing_link_
 		if (in.eof() ) {
 			errStream << "End of file reached prematurely.  This NIF may be corrupt or improperly supported." << endl;
 			if ( new_obj != NULL ) {
-				errStream << "Last successfuly read object was:  " << endl;
+				errStream << "Last successfully read object was:  " << endl;
 				errStream << "====[ " << "Object " << i - 1 << " | " << new_obj->GetType().GetTypeName() << " ]====" << endl;
 				errStream << new_obj->asString();
 			} else {
@@ -251,9 +251,9 @@ vector<NiObjectRef> ReadNifList( istream & in, list<NiObjectRef> & missing_link_
 				unsigned int checkValue = ReadUInt( in );
 				if ( checkValue != 0 ) {
 					//Throw an exception if it's not zero
-					errStream << "Read failue - Bad object position.  Invalid check value:  " << checkValue << endl;
+					errStream << "Read failure - Bad object position.  Invalid check value:  " << checkValue << endl;
 					if ( new_obj != NULL ) {
-						errStream << "Last successfuly read object was:  " << endl;
+						errStream << "Last successfully read object was:  " << endl;
 						errStream << "====[ " << "Object " << i - 1 << " | " << new_obj->GetType().GetTypeName() << " ]====" << endl;
 						errStream << new_obj->asString();
 					} else {
@@ -273,9 +273,9 @@ vector<NiObjectRef> ReadNifList( istream & in, list<NiObjectRef> & missing_link_
 			// Find which object type this is by reading the string at this location
 			unsigned int objectTypeLength = ReadUInt( in );
 			if (objectTypeLength > 30 || objectTypeLength < 6) {
-				errStream << "Read failue - Bad object position.  Invalid Type Name Length:  " << objectTypeLength  << endl;
+				errStream << "Read failure - Bad object position.  Invalid Type Name Length:  " << objectTypeLength  << endl;
 				if ( new_obj != NULL ) {
-					errStream << "Last successfuly read object was:  " << endl;
+					errStream << "Last successfully read object was:  " << endl;
 					errStream << "====[ " << "Object " << i - 1 << " | " << new_obj->GetType().GetTypeName() << " ]====" << endl;
 					errStream << new_obj->asString();
 				} else {
@@ -331,7 +331,7 @@ vector<NiObjectRef> ReadNifList( istream & in, list<NiObjectRef> & missing_link_
 			//which is used as the index
 			index = ReadUInt(in);
 		} else {
-			//These newer verisons use their position in the file as their index
+			//These newer versions use their position in the file as their index
 			index = i;
 		}
 

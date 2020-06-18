@@ -1049,6 +1049,7 @@
     <ClInclude Include="include\gen\SkinPartitionUnknownItem1.h" />
     <ClInclude Include="include\gen\StiffSpringDescriptor.h" />
     <ClInclude Include="include\gen\TriangleData.h" />
+    <ClInclude Include="include\NifDisplayMap.h" />
     <ClInclude Include="include\obj\bhkNPCollisionObject.h" />
     <ClInclude Include="include\obj\bhkPhysicsSystem.h" />
     <ClInclude Include="include\obj\bhkPoseArray.h" />

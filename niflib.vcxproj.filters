@@ -4067,6 +4067,9 @@
     <ClInclude Include="include\obj\BSMultiBoundData.h">
       <Filter>Header Files\obj</Filter>
     </ClInclude>
+    <ClInclude Include="include\NifDisplayMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

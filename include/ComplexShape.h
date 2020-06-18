@@ -82,7 +82,7 @@ struct TexCoordIndex {
  * Used by ComplexShape::ComplexFace class to describe a single point in
  * the 3D model.  Points share their data in case of duplication, so all
  * information, such as position, normal vector, texture coordinates, etc.,
- * are stored as indices into the asociated data arrays.
+ * are stored as indices into the associated data arrays.
  */
 struct ComplexPoint {
 	/*! Constructor */
@@ -113,7 +113,7 @@ struct ComplexPoint {
 
 /*! 
  * Used by ComplexShape to describe a single polygon.  Complex shape
- * polygons can have more than three points, unlike the triangels required
+ * polygons can have more than three points, unlike the triangles required
  * within the NIF format.  Each face may also be associated with a
  * different set of NiProperty classes, enabling each face to have unique
  * material settings.
@@ -142,7 +142,7 @@ struct TexCoordSet {
 	 */
 	TexType texType;
 	/*!
-	 * A list of all the texture cooridnates for this texture set.
+	 * A list of all the texture coordinates for this texture set.
 	 */
 	vector<TexCoord> texCoords;
 };
@@ -150,7 +150,7 @@ struct TexCoordSet {
 /*!
  * This class is a helper object to ease the process of converting between the
  * 3D model format of a NIF file, which is optimized for real time display via
- * OpenGL or DirectX, and the more compact, complex format usually prefered by
+ * OpenGL or DirectX, and the more compact, complex format usually preferred by
  * 3D modeling software.
  * 
  * It is capable of mering multiple NiTriShape objects into one multi-material
