@@ -108,7 +108,7 @@ ostream & operator<<( ostream & out, PlatformID const & val );
  * Biped bodypart data used for visibility control of triangles.  Options are
  * Fallout 3, except where marked for Skyrim (uses SBP prefix)
  *         Skyrim BP names are listed only for vanilla names, different creatures
- * have different defnitions for naming.
+ * have different definitions for naming.
  */
 enum BSDismemberBodyPartType {
 	BP_TORSO = 0, /*!< Torso */
@@ -1454,7 +1454,7 @@ enum BSLightingShaderPropertyShaderType {
 	ST_LOD_LANDSCAPE = 9, /*!< ST_LOD Landscape */
 	ST_SNOW = 10, /*!< ST_Snow */
 	ST_MULTILAYER_PARALLAX = 11, /*!< Enables EnvMap Mask(TS6), Layer(TS7), Parallax Layer Thickness, Parallax Refraction Scale, Parallax Inner Layer U Scale, Parallax Inner Layer V Scale, EnvMap Scale */
-	ST_TREE_ANIM = 12, /*!< ST_Tree Anim */
+	ST_TREE_ANIM = 12, /*!< ST_Tree Animation */
 	ST_LOD_OBJECTS = 13, /*!< ST_LOD Objects */
 	ST_SPARKLE_SNOW = 14, /*!< Enables SparkleParams */
 	ST_LOD_OBJECTS_HD = 15, /*!< ST_LOD Objects HD */
@@ -1521,7 +1521,7 @@ ostream & operator<<( ostream & out, PixelTiling const & val );
 enum SkyrimLayer {
 	SKYL_UNIDENTIFIED = 0, /*!< Unidentified */
 	SKYL_STATIC = 1, /*!< Static */
-	SKYL_ANIMSTATIC = 2, /*!< Anim Static */
+	SKYL_ANIMSTATIC = 2, /*!< Static Animation */
 	SKYL_TRANSPARENT = 3, /*!< Transparent */
 	SKYL_CLUTTER = 4, /*!< Clutter. Object with this layer will float on water surface. */
 	SKYL_WEAPON = 5, /*!< Weapon */
@@ -1547,7 +1547,7 @@ enum SkyrimLayer {
 	SKYL_SHELLCASING = 25, /*!< Shell Casing */
 	SKYL_TRANSPARENT_SMALL = 26, /*!< Transparent Small */
 	SKYL_INVISIBLE_WALL = 27, /*!< Invisible Wall */
-	SKYL_TRANSPARENT_SMALL_ANIM = 28, /*!< Transparent Small Anim */
+	SKYL_TRANSPARENT_SMALL_ANIM = 28, /*!< Small Transparent Animation */
 	SKYL_WARD = 29, /*!< Ward */
 	SKYL_CHARCONTROLLER = 30, /*!< Char Controller */
 	SKYL_STAIRHELPER = 31, /*!< Stair Helper */
@@ -1607,7 +1607,7 @@ enum SkyrimShaderPropertyFlags1 {
 	SLSF1_GREYSCALE_TO_PALETTEALPHA = 32, /*!< in EffectShaderProperty */
 	SLSF1_USE_FALLOFF = 64, /*!< Use Falloff value in EffectShaderProperty */
 	SLSF1_ENVIRONMENT_MAPPING = 128, /*!< Environment mapping (uses Envmap Scale). */
-	SLSF1_RECIEVE_SHADOWS = 256, /*!< Object can recieve shadows. */
+	SLSF1_RECIEVE_SHADOWS = 256, /*!< Object can receive shadows. */
 	SLSF1_CAST_SHADOWS = 512, /*!< Can cast shadows */
 	SLSF1_FACEGEN_DETAIL_MAP = 1024, /*!< Use a face detail map in the 4th texture slot. */
 	SLSF1_PARALLAX = 2048, /*!< Unused? */
@@ -1758,7 +1758,7 @@ enum DataStreamAccess {
 	CPU_WRITE_VOLATILE = 8, /*!< CPU Write Volatile */
 	GPU_READ = 16, /*!< GPU Read */
 	GPU_WRITE = 32, /*!< GPU Write */
-	CPU_WRITE_STATIC_INITITIALIZED = 64, /*!< CPU Write Static Inititialized */
+	CPU_WRITE_STATIC_INITIALIZED = 64, /*!< CPU Static Write Initialized */
 };
 
 ostream & operator<<( ostream & out, DataStreamAccess const & val );

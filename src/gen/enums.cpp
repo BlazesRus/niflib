@@ -2760,7 +2760,7 @@ ostream & operator<<( ostream & out, DataStreamAccess const & val ) {
 		case CPU_WRITE_VOLATILE: return out << "CPU Write Volatile";
 		case GPU_READ: return out << "GPU Read";
 		case GPU_WRITE: return out << "GPU Write";
-		case CPU_WRITE_STATIC_INITITIALIZED: return out << "CPU Write Static Inititialized";
+		case CPU_WRITE_STATIC_INITIALIZED: return out << "CPU Write Static Inititialized";
 		default: return out << "Invalid Value! - " << (unsigned int)(val);
 	}
 }

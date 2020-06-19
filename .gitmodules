@@ -4,3 +4,4 @@
 [submodule "docsys"]
 	path = docsys
 	url = https://github.com/BlazesRus/nifdocsys.git
+	branch = develop
