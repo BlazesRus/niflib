@@ -28,7 +28,7 @@ public:
     /// Implements the <see cref="std::vector{std::string}" />
     /// </summary>
     /// <seealso cref="std::vector{std::string}" />
-    NIFLIB_API class FormulaElement : std::vector<std::string>
+    NIFLIB_API class FormulaElement : public std::vector<std::string>//Empty Elements not allowed
     {//@; #i, and #f starting elements reserved, and of course all operator values
        
         // Expression Example: ((Variable01 >= 1)&&(Variable02>2.5))
@@ -59,6 +59,14 @@ public:
     /// </summary>
     std::vector<int> FloatValues;
 
+    void TrimFormula()
+    {
+        if(ExprLayout[0].size()==2&& ExprLayout[0][0].front()=='@')
+        {
+            ExprLayout[0] = ExprLayout[1]; ExprLayout.pop_back();//Reduce formula in (@1) to just @1
+        }
+    }
+
     bool EvalAsBool()
     {
         return true;//Placeholder code
@@ -77,5 +85,7 @@ public:
         short ScanType = 0;
         size_t CurrentFormElement = 0;
         ExprLayout.push_back(FormulaElement());
+
+        TrimFormula();
     }
 };
