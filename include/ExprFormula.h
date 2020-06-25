@@ -43,17 +43,14 @@ public:
         // Initial FormulaElement Values : @1, &&, @2
 
     };
+
     std::vector<FormulaElement> ExprLayout;
-
-    //Don't need to refer to element for variable names
-    //std::vector<std::string> ValueNames;
-
-    //Might add optional vector reference to other values stored elsewhere for evaluating values
 
     /// <summary>
     /// The stored int values
     /// </summary>
     std::vector<int> IntValues;
+
     /// <summary>
     /// The stored float values
     /// </summary>
@@ -67,7 +64,17 @@ public:
         }
     }
 
-    bool EvalAsBool()
+    bool EvalAsBool(std::map<std::string, bool> ElementValues;)
+    {
+        return true;//Placeholder code
+    }
+	
+    bool EvalAsBool(std::map<std::string, float> ElementValues;)
+    {
+        return true;//Placeholder code
+    }
+
+    bool EvalAsBool(std::map<std::string, int> ElementValues;)
     {
         return true;//Placeholder code
     }
@@ -84,8 +91,11 @@ public:
         //3 = Value
         short ScanType = 0;
         size_t CurrentFormElement = 0;
-        ExprLayout.push_back(FormulaElement());
-
+        ExprLayout.push_back(FormulaElement());//Initialyze first (Formula) field
+        for (std::string::iterator CurrentVal = ElemValue.begin(), std::string::iterator LastVal = ElemValue.end(); CurrentVal != LastVal; ++CurrentVal)
+        {
+		
+		}
         TrimFormula();
     }
 };
