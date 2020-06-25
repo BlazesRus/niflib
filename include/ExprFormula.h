@@ -13,39 +13,27 @@
 
 /// <summary>
 /// Class ExprFormula. (FormulaElement)Operator(FormulaElement)
-/// FormulaKeys References
+/// FormulaElements stored as std::vector<std::string>
+/// Expression Example: ((Variable01 >= 1)&&(Variable02>2.5))
+/// with (Variable01 >= 1) FormulaElement values:
+/// Variable01, >=, #i0
+/// with (Variable01 >= 1) values referenced from:
+/// Variable01, >=, IntValues[0]
+/// with (Variable02>2.5) FormulaElement values:
+/// Variable02, >, #i0
+/// with (Variable02>2.5) values referenced from:
+/// Variable02, >, FloatValues[0]
+/// Initial FormulaElement Values : @1, &&, @2
 /// </summary>
-NIFLIB_API class ExprFormula// : std::map<std::string, Storage>
+NIFLIB_API class ExprFormula: public std::vector<std::vector<std::string>>
 {
 private:
     /// <summary>
     /// Prevents a default instance of the <see cref="ExprFormula"/> class from being created.
     /// </summary>
     ExprFormula() {}
+    using StringVector = std::vector<std::string>;
 public:
-    /// <summary>
-    /// Class FormulaElement. 
-    /// Implements the <see cref="std::vector{std::string}" />
-    /// </summary>
-    /// <seealso cref="std::vector{std::string}" />
-    NIFLIB_API class FormulaElement : public std::vector<std::string>//Empty Elements not allowed
-    {//@; #i, and #f starting elements reserved, and of course all operator values
-       
-        // Expression Example: ((Variable01 >= 1)&&(Variable02>2.5))
-        // with (Variable01 >= 1) FormulaElement values:
-        // Variable01, >=, #i0
-        // with (Variable01 >= 1) values referenced from:
-        // Variable01, >=, IntValues[0]
-        // with (Variable02>2.5) FormulaElement values:
-        // Variable02, >, #i0
-        // with (Variable02>2.5) values referenced from:
-        // Variable02, >, FloatValues[0]
-        // Initial FormulaElement Values : @1, &&, @2
-
-    };
-
-    std::vector<FormulaElement> ExprLayout;
-
     /// <summary>
     /// The stored int values
     /// </summary>
@@ -58,23 +46,23 @@ public:
 
     void TrimFormula()
     {
-        if(ExprLayout[0].size()==2&& ExprLayout[0][0].front()=='@')
+        if(this[0].size()==2&& this[0][0].front()=="@")
         {
-            ExprLayout[0] = ExprLayout[1]; ExprLayout.pop_back();//Reduce formula in (@1) to just @1
+            this[0] = this[1]; this->pop_back();//Reduce formula in (@1) to just @1
         }
     }
 
-    bool EvalAsBool(std::map<std::string, bool> ElementValues;)
+    bool EvalAsBool(std::map<std::string, bool> ElementValues)
     {
         return true;//Placeholder code
     }
 	
-    bool EvalAsBool(std::map<std::string, float> ElementValues;)
+    bool EvalAsBool(std::map<std::string, float> ElementValues)
     {
         return true;//Placeholder code
     }
 
-    bool EvalAsBool(std::map<std::string, int> ElementValues;)
+    bool EvalAsBool(std::map<std::string, int> ElementValues)
     {
         return true;//Placeholder code
     }
@@ -91,8 +79,8 @@ public:
         //3 = Value
         short ScanType = 0;
         size_t CurrentFormElement = 0;
-        ExprLayout.push_back(FormulaElement());//Initialyze first (Formula) field
-        for (std::string::iterator CurrentVal = ElemValue.begin(), std::string::iterator LastVal = ElemValue.end(); CurrentVal != LastVal; ++CurrentVal)
+        this->push_back(StringVector());//Initialize first (Formula) field
+        for (std::string::iterator CurrentVal = ElemValue.begin(), LastVal = ElemValue.end(); CurrentVal != LastVal; ++CurrentVal)
         {
 		
 		}
