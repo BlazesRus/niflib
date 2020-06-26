@@ -34,8 +34,15 @@ private:
     /// Prevents a default instance of the <see cref="ExprFormula"/> class from being created.
     /// </summary>
     ExprFormula() {}
+protected://All Derivatives can use
     using StringVector = std::vector<std::string>;
-	std::string ReturnRestOfString(std::string& targetStr, size_t index)
+    /// <summary>
+    /// Returns the rest of string.
+    /// </summary>
+    /// <param name="targetStr">The target string.</param>
+    /// <param name="index">The index.</param>
+    /// <returns>std.string.</returns>
+    std::string ReturnRestOfString(std::string& targetStr, size_t index)
 	{
 		std::string strBuffer="";
 		for (std::string::iterator CurrentVal = targetStr.begin()+index, LastVal = targetStr.end(); CurrentVal != LastVal; ++CurrentVal)
@@ -60,6 +67,9 @@ public:
     /// </summary>
     std::vector<bool> BoolValues;
 
+    /// <summary>
+    /// Trims the formula.
+    /// </summary>
     void TrimFormula()
     {
         if(this->size() == 2&&this[0].size()==1&& this[0][0].front()=="@")
@@ -97,7 +107,12 @@ public:
         return (Value==0.0f)?false:true;
     }
 	
-	void RecursivelyAddToString(std::string& strBuffer, size_t FormIndex)
+    /// <summary>
+    /// Recursively adds to the string.
+    /// </summary>
+    /// <param name="strBuffer">The string buffer.</param>
+    /// <param name="FormIndex">Index of the form.</param>
+    void RecursivelyAddToString(std::string& strBuffer, size_t FormIndex)
 	{
 		size_t NextFormIndex;
         std::string CurString;
@@ -134,8 +149,12 @@ public:
 		}
 	}
 	
+    /// <summary>
+    /// Converts to string(with no extra spacing applied).
+    /// </summary>
+    /// <returns>std.string.</returns>
     std::string ToString()
-    {//No Spacing Applied for now
+    {
         std::string strBuffer="";
 		size_t FormIndex;
         std::string CurString;
@@ -173,6 +192,12 @@ public:
         return strBuffer;
     }
 
+    /// <summary>
+    /// Inserts from buffer.
+    /// </summary>
+    /// <param name="strBuffer">The string buffer.</param>
+    /// <param name="FormulaIndex">Index of the formula.</param>
+    /// <param name="ScanType">Type of the scan.</param>
     void InsertFromBuffer(std::string& strBuffer, size_t& FormulaIndex, short& ScanType)
     {
         if (strBuffer=="true")
@@ -211,7 +236,10 @@ public:
    //     }
     }
 
-	void ResetToBlank()
+    /// <summary>
+    /// Resets to single blank formula
+    /// </summary>
+    void ResetToBlank()
 	{
 		this->clear();
 		this->push_back(StringVector());//Initialize first (Formula) field
