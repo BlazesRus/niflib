@@ -54,18 +54,37 @@ public:
 
     bool EvalAsBool(std::map<std::string, bool> ElementValues)
     {
-        return true;//Placeholder code
+		bool Value = false;
+        for (std::vector<std::string>::iterator CurrentVal = this[0].begin(), LastVal = this[0].begin(); CurrentVal != LastVal; ++CurrentVal)
+        {
+		}
+        return Value;
     }
 	
+	//RecursivelyEvaluateFloatingVals
     bool EvalAsBool(std::map<std::string, float> ElementValues)
     {
-        return true;//Placeholder code
+		float Value = 0.0f;
+        for (std::vector<std::string>::iterator CurrentVal = this[0].begin(), LastVal = this[0].begin(); CurrentVal != LastVal; ++CurrentVal)
+        {
+		}
+        return (Value==0.0f)?false:true;
     }
 
     bool EvalAsBool(std::map<std::string, int> ElementValues)
     {
-        return true;//Placeholder code
+		int Value = 0.0;
+        for (std::vector<std::string>::iterator CurrentVal = this[0].begin(), LastVal = this[0].begin(); CurrentVal != LastVal; ++CurrentVal)
+        {
+		}
+        return (Value==0.0f)?false:true;
     }
+	
+	std::string ToString()
+	{
+		std::string strBuffer="";
+		return strBuffer;//Placeholder Code
+	}
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExprFormula"/> class.
@@ -74,15 +93,126 @@ public:
     ExprFormula(std::string ElemValue)
     {
         //0 = ???
-        //1 = Number
-        //2 = Operator
-        //3 = Value
+        //1 = Operator
+		//2 = Formula
+        //3 = Variable Value
+		//4 = Number
+		//5 = Float Number
+		//6 = Int Number
+		//7 = Bool Number
         short ScanType = 0;
+		std::string strBuffer = "";
+		size_t FormulaIndex = 0;
         size_t CurrentFormElement = 0;
         this->push_back(StringVector());//Initialize first (Formula) field
         for (std::string::iterator CurrentVal = ElemValue.begin(), LastVal = ElemValue.end(); CurrentVal != LastVal; ++CurrentVal)
         {
-		
+			if(*CurrentVal=='(')
+			{
+				FormulaIndex = this->size();
+				this->push_back(StringVector());
+			}
+			else if(*CurrentVal==')')
+			{
+				if(ScanType==3)
+				{
+				
+				}
+				else if(ScanType==5)
+				{
+				
+				}
+				else if(ScanType==6)
+				{
+				
+				}
+				else if(ScanType==7)
+				{
+				
+				}
+				strBuffer = "";
+				--FormulaIndex;
+			}
+			else if(ScanType==0)//Almost only at either start of a formula or after operator 
+			{
+				if(*CurrentVal=='#')
+				{
+					ScanType = 4;
+				}
+				else if(*CurrentVal=='@')
+				{
+					ScanType = 2;
+				}
+				//operators = ['==', '!=', '>=', '<=', '&&', '||', '&', '|', '-', '+', '>', '<', '/', '*', '!','++','--']
+				else if(*CurrentVal=='+')//++
+				{
+					strBuffer = '+'; ScanType = 1;
+				}
+				else if(*CurrentVal=='-')//--
+				{
+					strBuffer = '-'; ScanType = 1;
+				}
+/*				else if(*CurrentVal=='!')//Negative Operator only valid for in front of NonOperators
+				{
+					strBuffer = '!'; //ScanType = 1;
+				}
+*/
+				//else if(*CurrentVal=='&')
+				//{
+				//	strBuffer = '&'; ScanType = 1;
+				//}
+				//else if(*CurrentVal=='|')
+				//{
+				//	strBuffer = '|'; ScanType = 1;
+				//}
+				//else if(*CurrentVal=='=')
+				//{
+				//	strBuffer = '+'; ScanType = 1;
+				//}
+				//else if(*CurrentVal=='>')
+				//{
+				//	strBuffer = '>'; ScanType = 1;
+				//}
+				//else if(*CurrentVal=='<')
+				//{
+				//	strBuffer = '>'; ScanType = 1;
+				//}
+				//else if(*CurrentVal=='/')
+				//{
+				//	strBuffer = '/'; ScanType = 1;
+				//}
+				//else if(*CurrentVal=='*')
+				//{
+				//	strBuffer = '*'; ScanType = 1;
+				//}
+				else
+				{
+				
+				}
+			}
+			else if(ScanType==4)
+			{
+				if(*CurrentVal=='f')
+				{
+					ScanType = 5;
+				}
+				else if(*CurrentVal=='f')
+				{
+					ScanType = 5;
+				}
+			}
+			else if(ScanType==2)
+			{
+			
+			}
+			else if(ScanType==1)
+			{
+			
+			}
+			else
+			{
+			
+			}
 		}
         TrimFormula();
     }
