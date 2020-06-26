@@ -35,6 +35,15 @@ private:
     /// </summary>
     ExprFormula() {}
     using StringVector = std::vector<std::string>;
+	std::string ReturnRestOfString(std::string& targetStr, size_t index)
+	{
+		std::string strBuffer="";
+		for (std::string::iterator CurrentVal = targetStr.begin()+index, LastVal = targetStr.end(); CurrentVal != LastVal; ++CurrentVal)
+		{
+			strBuffer += *CurrentVal;
+		}
+		return strBuffer;
+	}
 public:
     /// <summary>
     /// The stored int values
@@ -87,11 +96,81 @@ public:
         }
         return (Value==0.0f)?false:true;
     }
-    
+	
+	void RecursivelyAddToString(std::string& strBuffer, size_t FormIndex)
+	{
+		size_t NextFormIndex;
+        std::string CurString;
+		for (std::vector<std::string>::iterator CurrentVal = at(FormIndex).begin(), LastVal = at(FormIndex).end(); CurrentVal != LastVal; ++CurrentVal)
+		{
+            CurString = *CurrentVal;
+			if(CurString.front()=='@')//FormulaDetected
+			{
+				strBuffer += "(";
+				NextFormIndex = VariableConversionFunctions::ReadIntFromString(ReturnRestOfString(CurString,1));
+				RecursivelyAddToString(strBuffer, NextFormIndex);
+				strBuffer += ")";
+			}
+			else if(CurString.front()=='#')//NumberDetected
+			{
+				FormIndex = VariableConversionFunctions::ReadIntFromString(ReturnRestOfString(CurString,2));
+				if(CurString[1]=='f')
+				{
+					strBuffer += FloatValues.at(FormIndex);
+				}
+				else if(CurString[1]=='i')
+				{
+					strBuffer += IntValues.at(FormIndex);
+				}
+				else//Boolean with second value assumed to be b(until I add support for 4th type of value etc)
+				{
+					strBuffer += BoolValues.at(FormIndex);
+				}
+			}
+			else
+			{
+				strBuffer += CurString;
+			}
+		}
+	}
+	
     std::string ToString()
-    {
+    {//No Spacing Applied for now
         std::string strBuffer="";
-        return strBuffer;//Placeholder Code
+		size_t FormIndex;
+        std::string CurString;
+        for (std::vector<std::string>::iterator CurrentVal = at(0).begin(), LastVal = at(0).end(); CurrentVal != LastVal; ++CurrentVal)
+        {
+            CurString = *CurrentVal;
+            if (CurString.front() == '@')//FormulaDetected
+            {
+                strBuffer += "(";
+                FormIndex = VariableConversionFunctions::ReadIntFromString(ReturnRestOfString(CurString, 1));
+                RecursivelyAddToString(strBuffer, FormIndex);
+                strBuffer += ")";
+            }
+            else if (CurString.front() == '#')//NumberDetected
+            {
+                FormIndex = VariableConversionFunctions::ReadIntFromString(ReturnRestOfString(CurString, 2));
+                if (CurString[1] == 'f')
+                {
+                    strBuffer += FloatValues.at(FormIndex);
+                }
+                else if (CurString[1] == 'i')
+                {
+                    strBuffer += IntValues.at(FormIndex);
+                }
+                else//Boolean with second value assumed to be b(until I add support for 4th type of value etc)
+                {
+                    strBuffer += BoolValues.at(FormIndex);
+                }
+            }
+            else
+            {
+                strBuffer += CurString;
+            }
+        }
+        return strBuffer;
     }
 
     void InsertFromBuffer(std::string& strBuffer, size_t& FormulaIndex, short& ScanType)
@@ -131,6 +210,12 @@ public:
    //         this->at(FormulaIndex).push_back("#b" + valIndex);
    //     }
     }
+
+	void ResetToBlank()
+	{
+		this->clear();
+		this->push_back(StringVector());//Initialize first (Formula) field
+	}
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExprFormula" /> class.
