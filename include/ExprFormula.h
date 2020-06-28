@@ -39,12 +39,18 @@ private:
     public:
         std::string Value;
         size_t Index;
+        float fCalc;
+        int iCalc;
+        bool SaveAsFloat;
         OperatorInfo(std::string value, size_t index)
         {
             Value = value;
             Index = index;
+            SaveAsFloat = false;
         }
     };
+    using OpValVector = std::vector<OperatorInfo>;
+    using BoolVector = std::vector<bool>;
 protected://All Derivatives can use
     using StringVector = std::vector<std::string>;
     /// <summary>
@@ -128,32 +134,29 @@ public:
         std::string LeftString;
         std::string RightString;
         std::string OpString;
-        //Performing calculation with highest complexity for individual formulas to increase accuracy of calculation
-        //0 = Integer
-        //1 = Float
-        bool FloatCalc = false;
-        //Calculate left and right each separately with order of operations applied https://en.cppreference.com/w/cpp/language/operator_precedence(++,--,!,*,/,+,-)
+        ////Performing calculation with highest complexity for individual formulas to increase accuracy of calculation
+        ////0 = Integer
+        ////1 = Float
+        //bool FloatCalc = false;
+
+        //Calculate left and right each separately with order of operations applied https://en.cppreference.com/w/cpp/language/operator_precedence
         std::vector<OperatorInfo> OperatorValues;
-
-        /// <summary>
-        /// The Calculated int values
-        /// </summary>
-        std::vector<int> cIntValues;
-
-        /// <summary>
-        /// The Calculated float values
-        /// </summary>
-        std::vector<float> cFloatValues;
+        std::vector<OpValVector> FormulaOperators;
 
         auto targetForm = at(0);
-
-        for (size_t index = 0; index < targetForm.size(); ++index)
+        for(size_t formIndex = 0; formIndex < this->size(); ++formIndex)
         {
-            CurString = targetForm.at(index);
-            if (CurString == "!" || CurString == "&" || CurString == "&&" || CurString == "|" || CurString == "||" || CurString == "<" || CurString == "<=" || CurString == ">" || CurString == ">=" || CurString == "+" || CurString == "++" || CurString == "-" || CurString == "--" || CurString == "/" || CurString == "*" || CurString == "==")//Find all operators in formula
+            targetForm = at(formIndex);
+            for (size_t index = 0; index < targetForm.size(); ++index)
             {
-                OperatorValues.push_back(OperatorInfo(CurString, index);
+                CurString = targetForm.at(index);
+                if (CurString == "!" || CurString == "&" || CurString == "&&" || CurString == "|" || CurString == "||" || CurString == "<" || CurString == "<=" || CurString == ">" || CurString == ">=" || CurString == "+" || CurString == "++" || CurString == "-" || CurString == "--" || CurString == "/" || CurString == "*" || CurString == "==")//Find all operators in formula
+                {
+                    OperatorValues.push_back(OperatorInfo(CurString, index));
+                }
             }
+            FormulaOperators.push_back(OperatorValues);
+            OperatorValues.clear();
         }
         return TotalValue;
     }
