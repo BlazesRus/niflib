@@ -34,6 +34,17 @@ private:
     /// Prevents a default instance of the <see cref="ExprFormula"/> class from being created.
     /// </summary>
     ExprFormula() {}
+    class OperatorInfo
+    {
+    public:
+        std::string Value;
+        size_t Index;
+        OperatorInfo(std::string value, size_t index)
+        {
+            Value = value;
+            Index = index;
+        }
+    };
 protected://All Derivatives can use
     using StringVector = std::vector<std::string>;
     /// <summary>
@@ -78,32 +89,73 @@ public:
         }
     }
 
-    bool EvalAsBool(std::map<std::string, bool> ElementValues)
-    {
-        bool Value = false;
-        for (std::vector<std::string>::iterator CurrentVal = at(0).begin(), LastVal = at(0).end(); CurrentVal != LastVal; ++CurrentVal)
-        {
-        }
-        return Value;
-    }
+    //bool EvalAsBool(std::map<std::string, bool> ElementValues)
+    //{
+    //    bool Value = false;
+    //    for (std::vector<std::string>::iterator CurrentVal = at(0).begin(), LastVal = at(0).end(); CurrentVal != LastVal; ++CurrentVal)
+    //    {
+    //    }
+    //    return Value;
+    //}
 
-    //RecursivelyEvaluateFloatingVals
-    bool EvalAsBool(std::map<std::string, float> ElementValues)
-    {
-        float Value = 0.0f;
-        for (std::vector<std::string>::iterator CurrentVal = at(0).begin(), LastVal = at(0).end(); CurrentVal != LastVal; ++CurrentVal)
-        {
-        }
-        return (Value == 0.0f) ? false : true;
-    }
+    ////RecursivelyEvaluateFloatingVals
+    //bool EvalAsBool(std::map<std::string, float> ElementValues)
+    //{
+    //    float Value = 0.0f;
+    //    for (std::vector<std::string>::iterator CurrentVal = at(0).begin(), LastVal = at(0).end(); CurrentVal != LastVal; ++CurrentVal)
+    //    {
+    //    }
+    //    return (Value == 0.0f) ? false : true;
+    //}
 
-    bool EvalAsBool(std::map<std::string, int> ElementValues)
+    //bool EvalAsBool(std::map<std::string, int> ElementValues)
+    //{
+    //    int Value = 0.0;
+    //    std::string CurString;
+    //    for (std::vector<std::string>::iterator CurrentVal = at(0).begin(), LastVal = at(0).end(); CurrentVal != LastVal; ++CurrentVal)
+    //    {
+    //        auto tVal = *CurrentVal;
+    //    }
+    //    return (Value == 0.0f) ? false : true;
+    //}
+
+    float EvalValues(std::map<std::string, float> ElementValues)
     {
-        int Value = 0.0;
-        for (std::vector<std::string>::iterator CurrentVal = at(0).begin(), LastVal = at(0).end(); CurrentVal != LastVal; ++CurrentVal)
+        float TotalValue = 0.0f;
+        //std::string strBuffer = "";
+        size_t FormIndex;
+        std::string CurString;
+        std::string LeftString;
+        std::string RightString;
+        std::string OpString;
+        //Performing calculation with highest complexity for individual formulas to increase accuracy of calculation
+        //0 = Integer
+        //1 = Float
+        bool FloatCalc = false;
+        //Calculate left and right each separately with order of operations applied https://en.cppreference.com/w/cpp/language/operator_precedence(++,--,!,*,/,+,-)
+        std::vector<OperatorInfo> OperatorValues;
+
+        /// <summary>
+        /// The Calculated int values
+        /// </summary>
+        std::vector<int> cIntValues;
+
+        /// <summary>
+        /// The Calculated float values
+        /// </summary>
+        std::vector<float> cFloatValues;
+
+        auto targetForm = at(0);
+
+        for (size_t index = 0; index < targetForm.size(); ++index)
         {
+            CurString = targetForm.at(index);
+            if (CurString == "!" || CurString == "&" || CurString == "&&" || CurString == "|" || CurString == "||" || CurString == "<" || CurString == "<=" || CurString == ">" || CurString == ">=" || CurString == "+" || CurString == "++" || CurString == "-" || CurString == "--" || CurString == "/" || CurString == "*" || CurString == "==")//Find all operators in formula
+            {
+                OperatorValues.push_back(OperatorInfo(CurString, index);
+            }
         }
-        return (Value == 0.0f) ? false : true;
+        return TotalValue;
     }
 
     /// <summary>
