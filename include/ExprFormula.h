@@ -5,6 +5,7 @@
 #pragma once
 
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <string>
 #include "C:\UserFiles\GitHub\MultiPlatformGlobalCode\GlobalCode\VariableConversionFunctions\VariableConversionFunctions.h"
@@ -37,20 +38,40 @@ private:
     class OperatorInfo
     {
     public:
-        std::string Value;
+        //std::string Value;
         size_t Index;
         float fCalc;
         int iCalc;
         bool SaveAsFloat;
-        OperatorInfo(std::string value, size_t index)
+        OperatorInfo(size_t index)
         {
-            Value = value;
             Index = index;
             SaveAsFloat = false;
+            fCalc = 0.0f; iCalc = 0;
         }
     };
     using OpValVector = std::vector<OperatorInfo>;
-    using BoolVector = std::vector<bool>;
+    using IndexVector = std::vector<size_t>;
+    class OpValMap : public std::unordered_map<std::string, OpValVector>
+    {public:
+        IndexVector OpIndexes;
+        /// <summary>
+        /// A Copy of the element values; Element value of () means already calculated into nearby operation 
+        /// </summary>
+        std::vector<std::string> ElementVals;
+        void Add(std::string value, size_t index)
+        {
+            if (this->find(value) == this->end())//Initialize vector if not found
+            {
+                this->insert_or_assign(value, OpValVector());
+            }
+            this->at(value).push_back(index);
+        }
+        void Reset()
+        {
+            this->clear(); OpIndexes.clear(); ElementVals.clear();
+        }
+    };
 protected://All Derivatives can use
     using StringVector = std::vector<std::string>;
     /// <summary>
@@ -140,8 +161,10 @@ public:
         //bool FloatCalc = false;
 
         //Calculate left and right each separately with order of operations applied https://en.cppreference.com/w/cpp/language/operator_precedence
-        std::vector<OperatorInfo> OperatorValues;
-        std::vector<OpValVector> FormulaOperators;
+        OpValMap OperatorValues;
+        std::vector<OpValMap> FormulaOperators;
+        //IndexVector OrderOfOperations;
+        //std::vector<IndexVector> FormulaOpOrders;
 
         auto targetForm = at(0);
         for(size_t formIndex = 0; formIndex < this->size(); ++formIndex)
@@ -152,11 +175,16 @@ public:
                 CurString = targetForm.at(index);
                 if (CurString == "!" || CurString == "&" || CurString == "&&" || CurString == "|" || CurString == "||" || CurString == "<" || CurString == "<=" || CurString == ">" || CurString == ">=" || CurString == "+" || CurString == "++" || CurString == "-" || CurString == "--" || CurString == "/" || CurString == "*" || CurString == "==")//Find all operators in formula
                 {
-                    OperatorValues.push_back(OperatorInfo(CurString, index));
+                    OperatorValues.Add(CurString, index);
                 }
+                OperatorValues.ElementVals.push_back(CurString);
             }
             FormulaOperators.push_back(OperatorValues);
-            OperatorValues.clear();
+            ////Sort out order of operations here
+            //FormulaOpOrders.push_back(OrderOfOperations);
+            //OrderOfOperations.clear();
+            OperatorValues.Reset();
+            
         }
         return TotalValue;
     }
