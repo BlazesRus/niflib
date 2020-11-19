@@ -1,10 +1,6 @@
 [submodule "qhull"]
 	path = qhull
 	url = https://github.com/qhull/qhull
-[submodule "docsys"]
-	path = docsys
-	url = https://github.com/BlazesRus/nifdocsys.git
-	branch = develop
 [submodule "NifGen"]
 	path = NifGen
 	url = https://github.com/BlazesRus/NifLibGenerator
