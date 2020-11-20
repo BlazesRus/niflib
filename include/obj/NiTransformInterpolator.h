@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -16,7 +16,6 @@ All rights reserved.  Please see niflib.h for license. */
 #include "NiKeyBasedInterpolator.h"
 
 // Include structures
-#include "../gen/NiQuatTransform.h"
 #include "../Ref.h"
 namespace Niflib {
 
@@ -30,28 +29,28 @@ class NiTransformInterpolator : public NiKeyBasedInterpolator {
 public:
 	/*! Constructor */
 	NIFLIB_API NiTransformInterpolator();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiTransformInterpolator();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -64,13 +63,37 @@ public:
 	 * Gets the translation value stored in this object.  Perhaps this is the current interpolated value, the value when posed, or at time index 0.
 	 * \return The translation value stored in this object.
 	 */
-	NIFLIB_API NiQuatTransform GetQuatTransformation() const;
+	NIFLIB_API Vector3 GetTranslation() const;
 
 	/*!
 	 * Sets the translation value stored in this object.  Perhaps this is the current interpolated value, the value when posed, or at time index 0.
 	 * \param[in] value The new translation value to store in this object.
 	 */
-	NIFLIB_API void SetQuatTransformation( NiQuatTransform value );
+	NIFLIB_API void SetTranslation( Vector3 value );
+
+	/*!
+	 * Gets the rotation value stored in this object.  Perhaps this is the current interpolated value, the value when posed, or at time index 0.
+	 * \return The rotation value stored in this object.
+	 */
+	NIFLIB_API Quaternion GetRotation() const;
+
+	/*!
+	 * Sets the rotation value stored in this object.  Perhaps this is the current interpolated value, the value when posed, or at time index 0.
+	 * \param[in] value The new rotation value to store in this object.
+	 */
+	NIFLIB_API void SetRotation( Quaternion value );
+
+	/*!
+	 * Gets the scale value stored in this object.  Perhaps this is the current interpolated value, the value when posed, or at time index 0.
+	 * \return The scale value stored in this object.
+	 */
+	NIFLIB_API float GetScale() const;
+
+	/*!
+	 * Sets the scale value stored in this object.  Perhaps this is the current interpolated value, the value when posed, or at time index 0.
+	 * \param[in] value The new scale value to store in this object.
+	 */
+	NIFLIB_API void SetScale( float value );
 
 	/*!
 	 * Gets the NiTransformData object that this interpolator links to, if any.
@@ -98,7 +121,15 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	NiQuatTransform transform;
+	/*! Translate. */
+	Vector3 translation;
+	/*! Rotation. */
+	Quaternion rotation;
+	/*! Scale. */
+	float scale;
+	/*! Unknown. */
+	Niflib::array<3,byte > unknownBytes;
+	/*! Refers to NiTransformData. */
 	Ref<NiTransformData > data;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -116,5 +147,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

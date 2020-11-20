@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiPSysRotationModifier::TYPE("NiPSysRotationModifier", &NiPSysModifier::TYPE );
 
-NiPSysRotationModifier::NiPSysRotationModifier() : rotationSpeed(0.0f), rotationSpeedVariation(0.0f), rotationAngle(0.0f), rotationAngleVariation(0.0f), randomRotSpeedSign(false), randomAxis(1), axis(1.0, 0.0, 0.0) {
+NiPSysRotationModifier::NiPSysRotationModifier() : initialRotationSpeed(0.0f), initialRotationSpeedVariation(0.0f), initialRotationAngle(0.0f), initialRotationAngleVariation(0.0f), randomRotSpeedSign(false), randomInitialAxis(false) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,15 +42,15 @@ void NiPSysRotationModifier::Read( istream& in, list<unsigned int> & link_stack,
 	//--END CUSTOM CODE--//
 
 	NiPSysModifier::Read( in, link_stack, info );
-	NifStream( rotationSpeed, in, info );
-	if ( info.version >= 0x14000002 ) {
-		NifStream( rotationSpeedVariation, in, info );
-		NifStream( rotationAngle, in, info );
-		NifStream( rotationAngleVariation, in, info );
+	NifStream( initialRotationSpeed, in, info );
+	if ( info.version >= 0x14000004 ) {
+		NifStream( initialRotationSpeedVariation, in, info );
+		NifStream( initialRotationAngle, in, info );
+		NifStream( initialRotationAngleVariation, in, info );
 		NifStream( randomRotSpeedSign, in, info );
 	};
-	NifStream( randomAxis, in, info );
-	NifStream( axis, in, info );
+	NifStream( randomInitialAxis, in, info );
+	NifStream( initialAxis, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -61,15 +61,15 @@ void NiPSysRotationModifier::Write( ostream& out, const map<NiObjectRef,unsigned
 	//--END CUSTOM CODE--//
 
 	NiPSysModifier::Write( out, link_map, missing_link_stack, info );
-	NifStream( rotationSpeed, out, info );
-	if ( info.version >= 0x14000002 ) {
-		NifStream( rotationSpeedVariation, out, info );
-		NifStream( rotationAngle, out, info );
-		NifStream( rotationAngleVariation, out, info );
+	NifStream( initialRotationSpeed, out, info );
+	if ( info.version >= 0x14000004 ) {
+		NifStream( initialRotationSpeedVariation, out, info );
+		NifStream( initialRotationAngle, out, info );
+		NifStream( initialRotationAngleVariation, out, info );
 		NifStream( randomRotSpeedSign, out, info );
 	};
-	NifStream( randomAxis, out, info );
-	NifStream( axis, out, info );
+	NifStream( randomInitialAxis, out, info );
+	NifStream( initialAxis, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -81,13 +81,13 @@ std::string NiPSysRotationModifier::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiPSysModifier::asString();
-	out << "  Rotation Speed:  " << rotationSpeed << endl;
-	out << "  Rotation Speed Variation:  " << rotationSpeedVariation << endl;
-	out << "  Rotation Angle:  " << rotationAngle << endl;
-	out << "  Rotation Angle Variation:  " << rotationAngleVariation << endl;
+	out << "  Initial Rotation Speed:  " << initialRotationSpeed << endl;
+	out << "  Initial Rotation Speed Variation:  " << initialRotationSpeedVariation << endl;
+	out << "  Initial Rotation Angle:  " << initialRotationAngle << endl;
+	out << "  Initial Rotation Angle Variation:  " << initialRotationAngleVariation << endl;
 	out << "  Random Rot Speed Sign:  " << randomRotSpeedSign << endl;
-	out << "  Random Axis:  " << randomAxis << endl;
-	out << "  Axis:  " << axis << endl;
+	out << "  Random Initial Axis:  " << randomInitialAxis << endl;
+	out << "  Initial Axis:  " << initialAxis << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

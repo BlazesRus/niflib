@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,36 +19,33 @@ namespace Niflib {
 class NiMaterialProperty;
 typedef Ref<NiMaterialProperty> NiMaterialPropertyRef;
 
-/*!
- * Describes the surface properties of an object e.g. translucency, ambient color,
- * diffuse color, emissive color, and specular color.
- */
+/*! Describes the material shading properties. */
 class NiMaterialProperty : public NiProperty {
 public:
 	/*! Constructor */
 	NIFLIB_API NiMaterialProperty();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiMaterialProperty();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -153,14 +150,15 @@ protected:
 	Color3 specularColor;
 	/*! How much light the material emits. */
 	Color3 emissiveColor;
-	/*! The material glossiness. */
+	/*! The material's glossiness. */
 	float glossiness;
 	/*!
 	 * The material transparency (1=non-transparant). Refer to a NiAlphaProperty object
 	 * in this material's parent NiTriShape object, when alpha is not 1.
 	 */
 	float alpha;
-	float emissiveMult;
+	/*! Unknown */
+	float emitMulti;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -177,5 +175,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

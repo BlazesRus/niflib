@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,12 +14,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiParticlesData.h"
+#include "../../include/obj/NiObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiParticlesData::TYPE("NiParticlesData", &NiGeometryData::TYPE );
 
-NiParticlesData::NiParticlesData() : numParticles((unsigned short)0), particleRadius(0.0f), hasRadii(false), numActive((unsigned short)0), hasSizes(false), hasRotations(false), hasRotationAngles(false), hasRotationAxes(false), hasTextureIndices(false), numSubtextureOffsets((unsigned int)0), aspectRatio(0.0f), aspectFlags((unsigned short)0), speedToAspectAspect2(0.0f), speedToAspectSpeed1(0.0f), speedToAspectSpeed2(0.0f) {
+NiParticlesData::NiParticlesData() : numParticles((unsigned short)0), particleRadius(0.0f), hasRadii(false), numActive((unsigned short)0), hasSizes(false), hasRotations(false), unknownByte1((byte)0), unknownLink(NULL), hasRotationAngles(false), hasRotationAxes(false), hasUvQuadrants(false), numUvQuadrants((byte)0), unknownByte2((byte)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -41,6 +42,7 @@ void NiParticlesData::Read( istream& in, list<unsigned int> & link_stack, const 
 	//--BEGIN PRE-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 
+	unsigned int block_num;
 	NiGeometryData::Read( in, link_stack, info );
 	if ( info.version <= 0x04000002 ) {
 		NifStream( numParticles, in, info );
@@ -51,7 +53,7 @@ void NiParticlesData::Read( istream& in, list<unsigned int> & link_stack, const 
 	if ( info.version >= 0x0A010000 ) {
 		NifStream( hasRadii, in, info );
 	};
-	if ( ( info.version >= 0x0A010000 ) && ( (!((info.version == 0x14020007) && (info.userVersion2 > 0))) ) ) {
+	if ( ( info.version >= 0x0A010000 ) && ( (!((info.version >= 0x14020007) && (info.userVersion >= 11))) ) ) {
 		if ( hasRadii ) {
 			radii.resize(numVertices);
 			for (unsigned int i3 = 0; i3 < radii.size(); i3++) {
@@ -61,7 +63,7 @@ void NiParticlesData::Read( istream& in, list<unsigned int> & link_stack, const 
 	};
 	NifStream( numActive, in, info );
 	NifStream( hasSizes, in, info );
-	if ( (!((info.version == 0x14020007) && (info.userVersion2 > 0))) ) {
+	if ( (!((info.version >= 0x14020007) && (info.userVersion >= 11))) ) {
 		if ( hasSizes ) {
 			sizes.resize(numVertices);
 			for (unsigned int i3 = 0; i3 < sizes.size(); i3++) {
@@ -72,7 +74,7 @@ void NiParticlesData::Read( istream& in, list<unsigned int> & link_stack, const 
 	if ( info.version >= 0x0A000100 ) {
 		NifStream( hasRotations, in, info );
 	};
-	if ( ( info.version >= 0x0A000100 ) && ( (!((info.version == 0x14020007) && (info.userVersion2 > 0))) ) ) {
+	if ( ( info.version >= 0x0A000100 ) && ( (!((info.version >= 0x14020007) && (info.userVersion >= 11))) ) ) {
 		if ( hasRotations ) {
 			rotations.resize(numVertices);
 			for (unsigned int i3 = 0; i3 < rotations.size(); i3++) {
@@ -80,10 +82,15 @@ void NiParticlesData::Read( istream& in, list<unsigned int> & link_stack, const 
 			};
 		};
 	};
+	if ( ((info.version >= 0x14020007) && (info.userVersion >= 12)) ) {
+		NifStream( unknownByte1, in, info );
+		NifStream( block_num, in, info );
+		link_stack.push_back( block_num );
+	};
 	if ( info.version >= 0x14000004 ) {
 		NifStream( hasRotationAngles, in, info );
 	};
-	if ( (!((info.version == 0x14020007) && (info.userVersion2 > 0))) ) {
+	if ( (!((info.version >= 0x14020007) && (info.userVersion >= 11))) ) {
 		if ( hasRotationAngles ) {
 			rotationAngles.resize(numVertices);
 			for (unsigned int i3 = 0; i3 < rotationAngles.size(); i3++) {
@@ -94,7 +101,7 @@ void NiParticlesData::Read( istream& in, list<unsigned int> & link_stack, const 
 	if ( info.version >= 0x14000004 ) {
 		NifStream( hasRotationAxes, in, info );
 	};
-	if ( ( info.version >= 0x14000004 ) && ( (!((info.version == 0x14020007) && (info.userVersion2 > 0))) ) ) {
+	if ( ( info.version >= 0x14000004 ) && ( (!((info.version >= 0x14020007) && (info.userVersion >= 11))) ) ) {
 		if ( hasRotationAxes ) {
 			rotationAxes.resize(numVertices);
 			for (unsigned int i3 = 0; i3 < rotationAxes.size(); i3++) {
@@ -102,27 +109,18 @@ void NiParticlesData::Read( istream& in, list<unsigned int> & link_stack, const 
 			};
 		};
 	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 > 0)) ) {
-		NifStream( hasTextureIndices, in, info );
-	};
-	if ( (info.userVersion2 > 34) ) {
-		NifStream( numSubtextureOffsets, in, info );
-	};
-	if ( ((info.version == 0x14020007) && ((info.userVersion2 <= 34) && (info.userVersion2 > 0))) ) {
-		NifStream( (byte&)numSubtextureOffsets, in, info );
-	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 > 0)) ) {
-		subtextureOffsets.resize(numSubtextureOffsets);
-		for (unsigned int i2 = 0; i2 < subtextureOffsets.size(); i2++) {
-			NifStream( subtextureOffsets[i2], in, info );
+	if ( ((info.version >= 0x14020007) && (info.userVersion == 11)) ) {
+		NifStream( hasUvQuadrants, in, info );
+		NifStream( numUvQuadrants, in, info );
+		if ( hasUvQuadrants ) {
+			uvQuadrants.resize(numUvQuadrants);
+			for (unsigned int i3 = 0; i3 < uvQuadrants.size(); i3++) {
+				NifStream( uvQuadrants[i3], in, info );
+			};
 		};
 	};
-	if ( (info.userVersion2 > 34) ) {
-		NifStream( aspectRatio, in, info );
-		NifStream( aspectFlags, in, info );
-		NifStream( speedToAspectAspect2, in, info );
-		NifStream( speedToAspectSpeed1, in, info );
-		NifStream( speedToAspectSpeed2, in, info );
+	if ( ((info.version == 0x14020007) && (info.userVersion >= 11)) ) {
+		NifStream( unknownByte2, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -134,7 +132,7 @@ void NiParticlesData::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	//--END CUSTOM CODE--//
 
 	NiGeometryData::Write( out, link_map, missing_link_stack, info );
-	numSubtextureOffsets = (unsigned int)(subtextureOffsets.size());
+	numUvQuadrants = (byte)(uvQuadrants.size());
 	if ( info.version <= 0x04000002 ) {
 		NifStream( numParticles, out, info );
 	};
@@ -144,7 +142,7 @@ void NiParticlesData::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	if ( info.version >= 0x0A010000 ) {
 		NifStream( hasRadii, out, info );
 	};
-	if ( ( info.version >= 0x0A010000 ) && ( (!((info.version == 0x14020007) && (info.userVersion2 > 0))) ) ) {
+	if ( ( info.version >= 0x0A010000 ) && ( (!((info.version >= 0x14020007) && (info.userVersion >= 11))) ) ) {
 		if ( hasRadii ) {
 			for (unsigned int i3 = 0; i3 < radii.size(); i3++) {
 				NifStream( radii[i3], out, info );
@@ -153,7 +151,7 @@ void NiParticlesData::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	};
 	NifStream( numActive, out, info );
 	NifStream( hasSizes, out, info );
-	if ( (!((info.version == 0x14020007) && (info.userVersion2 > 0))) ) {
+	if ( (!((info.version >= 0x14020007) && (info.userVersion >= 11))) ) {
 		if ( hasSizes ) {
 			for (unsigned int i3 = 0; i3 < sizes.size(); i3++) {
 				NifStream( sizes[i3], out, info );
@@ -163,17 +161,37 @@ void NiParticlesData::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	if ( info.version >= 0x0A000100 ) {
 		NifStream( hasRotations, out, info );
 	};
-	if ( ( info.version >= 0x0A000100 ) && ( (!((info.version == 0x14020007) && (info.userVersion2 > 0))) ) ) {
+	if ( ( info.version >= 0x0A000100 ) && ( (!((info.version >= 0x14020007) && (info.userVersion >= 11))) ) ) {
 		if ( hasRotations ) {
 			for (unsigned int i3 = 0; i3 < rotations.size(); i3++) {
 				NifStream( rotations[i3], out, info );
 			};
 		};
 	};
+	if ( ((info.version >= 0x14020007) && (info.userVersion >= 12)) ) {
+		NifStream( unknownByte1, out, info );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*unknownLink), out );
+		} else {
+			if ( unknownLink != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(unknownLink) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( unknownLink );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
+	};
 	if ( info.version >= 0x14000004 ) {
 		NifStream( hasRotationAngles, out, info );
 	};
-	if ( (!((info.version == 0x14020007) && (info.userVersion2 > 0))) ) {
+	if ( (!((info.version >= 0x14020007) && (info.userVersion >= 11))) ) {
 		if ( hasRotationAngles ) {
 			for (unsigned int i3 = 0; i3 < rotationAngles.size(); i3++) {
 				NifStream( rotationAngles[i3], out, info );
@@ -183,33 +201,24 @@ void NiParticlesData::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	if ( info.version >= 0x14000004 ) {
 		NifStream( hasRotationAxes, out, info );
 	};
-	if ( ( info.version >= 0x14000004 ) && ( (!((info.version == 0x14020007) && (info.userVersion2 > 0))) ) ) {
+	if ( ( info.version >= 0x14000004 ) && ( (!((info.version >= 0x14020007) && (info.userVersion >= 11))) ) ) {
 		if ( hasRotationAxes ) {
 			for (unsigned int i3 = 0; i3 < rotationAxes.size(); i3++) {
 				NifStream( rotationAxes[i3], out, info );
 			};
 		};
 	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 > 0)) ) {
-		NifStream( hasTextureIndices, out, info );
-	};
-	if ( (info.userVersion2 > 34) ) {
-		NifStream( numSubtextureOffsets, out, info );
-	};
-	if ( ((info.version == 0x14020007) && ((info.userVersion2 <= 34) && (info.userVersion2 > 0))) ) {
-		NifStream( (byte&)numSubtextureOffsets, out, info );
-	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 > 0)) ) {
-		for (unsigned int i2 = 0; i2 < subtextureOffsets.size(); i2++) {
-			NifStream( subtextureOffsets[i2], out, info );
+	if ( ((info.version >= 0x14020007) && (info.userVersion == 11)) ) {
+		NifStream( hasUvQuadrants, out, info );
+		NifStream( numUvQuadrants, out, info );
+		if ( hasUvQuadrants ) {
+			for (unsigned int i3 = 0; i3 < uvQuadrants.size(); i3++) {
+				NifStream( uvQuadrants[i3], out, info );
+			};
 		};
 	};
-	if ( (info.userVersion2 > 34) ) {
-		NifStream( aspectRatio, out, info );
-		NifStream( aspectFlags, out, info );
-		NifStream( speedToAspectAspect2, out, info );
-		NifStream( speedToAspectSpeed1, out, info );
-		NifStream( speedToAspectSpeed2, out, info );
+	if ( ((info.version == 0x14020007) && (info.userVersion >= 11)) ) {
+		NifStream( unknownByte2, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -223,7 +232,7 @@ std::string NiParticlesData::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiGeometryData::asString();
-	numSubtextureOffsets = (unsigned int)(subtextureOffsets.size());
+	numUvQuadrants = (byte)(uvQuadrants.size());
 	out << "  Num Particles:  " << numParticles << endl;
 	out << "  Particle Radius:  " << particleRadius << endl;
 	out << "  Has Radii:  " << hasRadii << endl;
@@ -272,6 +281,8 @@ std::string NiParticlesData::asString( bool verbose ) const {
 			array_output_count++;
 		};
 	};
+	out << "  Unknown Byte 1:  " << unknownByte1 << endl;
+	out << "  Unknown Link:  " << unknownLink << endl;
 	out << "  Has Rotation Angles:  " << hasRotationAngles << endl;
 	if ( hasRotationAngles ) {
 		array_output_count = 0;
@@ -302,25 +313,23 @@ std::string NiParticlesData::asString( bool verbose ) const {
 			array_output_count++;
 		};
 	};
-	out << "  Has Texture Indices:  " << hasTextureIndices << endl;
-	out << "  Num Subtexture Offsets:  " << numSubtextureOffsets << endl;
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < subtextureOffsets.size(); i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
+	out << "  Has UV Quadrants:  " << hasUvQuadrants << endl;
+	out << "  Num UV Quadrants:  " << numUvQuadrants << endl;
+	if ( hasUvQuadrants ) {
+		array_output_count = 0;
+		for (unsigned int i2 = 0; i2 < uvQuadrants.size(); i2++) {
+			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+				out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+				break;
+			};
+			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+				break;
+			};
+			out << "      UV Quadrants[" << i2 << "]:  " << uvQuadrants[i2] << endl;
+			array_output_count++;
 		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Subtexture Offsets[" << i1 << "]:  " << subtextureOffsets[i1] << endl;
-		array_output_count++;
 	};
-	out << "  Aspect Ratio:  " << aspectRatio << endl;
-	out << "  Aspect Flags:  " << aspectFlags << endl;
-	out << "  Speed to Aspect Aspect 2:  " << speedToAspectAspect2 << endl;
-	out << "  Speed to Aspect Speed 1:  " << speedToAspectSpeed1 << endl;
-	out << "  Speed to Aspect Speed 2:  " << speedToAspectSpeed2 << endl;
+	out << "  Unknown Byte 2:  " << unknownByte2 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -332,6 +341,9 @@ void NiParticlesData::FixLinks( const map<unsigned int,NiObjectRef> & objects, l
 	//--END CUSTOM CODE--//
 
 	NiGeometryData::FixLinks( objects, link_stack, missing_link_stack, info );
+	if ( ((info.version >= 0x14020007) && (info.userVersion >= 12)) ) {
+		unknownLink = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
+	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -340,6 +352,8 @@ void NiParticlesData::FixLinks( const map<unsigned int,NiObjectRef> & objects, l
 std::list<NiObjectRef> NiParticlesData::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiGeometryData::GetRefs();
+	if ( unknownLink != NULL )
+		refs.push_back(StaticCast<NiObject>(unknownLink));
 	return refs;
 }
 

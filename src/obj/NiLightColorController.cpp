@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,13 +14,12 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiLightColorController.h"
-#include "../../include/obj/NiPosData.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiLightColorController::TYPE("NiLightColorController", &NiPoint3InterpController::TYPE );
 
-NiLightColorController::NiLightColorController() : targetColor((LightColor)0), data(NULL) {
+NiLightColorController::NiLightColorController() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,15 +41,7 @@ void NiLightColorController::Read( istream& in, list<unsigned int> & link_stack,
 	//--BEGIN PRE-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 
-	unsigned int block_num;
 	NiPoint3InterpController::Read( in, link_stack, info );
-	if ( info.version >= 0x0A010000 ) {
-		NifStream( targetColor, in, info );
-	};
-	if ( info.version <= 0x0A010067 ) {
-		NifStream( block_num, in, info );
-		link_stack.push_back( block_num );
-	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -61,12 +52,6 @@ void NiLightColorController::Write( ostream& out, const map<NiObjectRef,unsigned
 	//--END CUSTOM CODE--//
 
 	NiPoint3InterpController::Write( out, link_map, missing_link_stack, info );
-	if ( info.version >= 0x0A010000 ) {
-		NifStream( targetColor, out, info );
-	};
-	if ( info.version <= 0x0A010067 ) {
-		WriteRef( StaticCast<NiObject>(data), out, info, link_map, missing_link_stack );
-	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -78,8 +63,6 @@ std::string NiLightColorController::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiPoint3InterpController::asString();
-	out << "  Target Color:  " << targetColor << endl;
-	out << "  Data:  " << data << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -91,9 +74,6 @@ void NiLightColorController::FixLinks( const map<unsigned int,NiObjectRef> & obj
 	//--END CUSTOM CODE--//
 
 	NiPoint3InterpController::FixLinks( objects, link_stack, missing_link_stack, info );
-	if ( info.version <= 0x0A010067 ) {
-		data = FixLink<NiPosData>( objects, link_stack, missing_link_stack, info );
-	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -102,8 +82,6 @@ void NiLightColorController::FixLinks( const map<unsigned int,NiObjectRef> & obj
 std::list<NiObjectRef> NiLightColorController::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiPoint3InterpController::GetRefs();
-	if ( data != NULL )
-		refs.push_back(StaticCast<NiObject>(data));
 	return refs;
 }
 

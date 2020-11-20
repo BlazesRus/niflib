@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type bhkBlendCollisionObject::TYPE("bhkBlendCollisionObject", &bhkCollisionObject::TYPE );
 
-bhkBlendCollisionObject::bhkBlendCollisionObject() : heirGain(0.0f), velGain(0.0f) {
+bhkBlendCollisionObject::bhkBlendCollisionObject() : unknownFloat1(0.0f), unknownFloat2(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,8 +42,8 @@ void bhkBlendCollisionObject::Read( istream& in, list<unsigned int> & link_stack
 	//--END CUSTOM CODE--//
 
 	bhkCollisionObject::Read( in, link_stack, info );
-	NifStream( heirGain, in, info );
-	NifStream( velGain, in, info );
+	NifStream( unknownFloat1, in, info );
+	NifStream( unknownFloat2, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -54,8 +54,8 @@ void bhkBlendCollisionObject::Write( ostream& out, const map<NiObjectRef,unsigne
 	//--END CUSTOM CODE--//
 
 	bhkCollisionObject::Write( out, link_map, missing_link_stack, info );
-	NifStream( heirGain, out, info );
-	NifStream( velGain, out, info );
+	NifStream( unknownFloat1, out, info );
+	NifStream( unknownFloat2, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -67,8 +67,8 @@ std::string bhkBlendCollisionObject::asString( bool verbose ) const {
 
 	stringstream out;
 	out << bhkCollisionObject::asString();
-	out << "  Heir Gain:  " << heirGain << endl;
-	out << "  Vel Gain:  " << velGain << endl;
+	out << "  Unknown Float 1:  " << unknownFloat1 << endl;
+	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

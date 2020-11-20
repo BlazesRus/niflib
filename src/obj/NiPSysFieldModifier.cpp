@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -66,7 +66,23 @@ void NiPSysFieldModifier::Write( ostream& out, const map<NiObjectRef,unsigned in
 	//--END CUSTOM CODE--//
 
 	NiPSysModifier::Write( out, link_map, missing_link_stack, info );
-	WriteRef( StaticCast<NiObject>(fieldObject), out, info, link_map, missing_link_stack );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*fieldObject), out );
+	} else {
+		if ( fieldObject != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(fieldObject) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( fieldObject );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 	NifStream( magnitude, out, info );
 	NifStream( attenuation, out, info );
 	NifStream( useMaxDistance, out, info );

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,15 +14,15 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPSysCollider.h"
-#include "../../include/obj/NiAVObject.h"
-#include "../../include/obj/NiPSysColliderManager.h"
+#include "../../include/obj/NiNode.h"
+#include "../../include/obj/NiObject.h"
 #include "../../include/obj/NiPSysSpawnModifier.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiPSysCollider::TYPE("NiPSysCollider", &NiObject::TYPE );
 
-NiPSysCollider::NiPSysCollider() : bounce(1.0f), spawnOnCollide(false), dieOnCollide(false), spawnModifier(NULL), parent(NULL), nextCollider(NULL), colliderObject(NULL) {
+NiPSysCollider::NiPSysCollider() : bounce(0.0f), spawnOnCollide(false), dieOnCollide(false), spawnModifier(NULL), parent(NULL), nextCollider(NULL), colliderObject(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -70,10 +70,74 @@ void NiPSysCollider::Write( ostream& out, const map<NiObjectRef,unsigned int> & 
 	NifStream( bounce, out, info );
 	NifStream( spawnOnCollide, out, info );
 	NifStream( dieOnCollide, out, info );
-	WriteRef( StaticCast<NiObject>(spawnModifier), out, info, link_map, missing_link_stack );
-	WriteRef( StaticCast<NiObject>(parent), out, info, link_map, missing_link_stack );
-	WriteRef( StaticCast<NiObject>(nextCollider), out, info, link_map, missing_link_stack );
-	WriteRef( StaticCast<NiObject>(colliderObject), out, info, link_map, missing_link_stack );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*spawnModifier), out );
+	} else {
+		if ( spawnModifier != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(spawnModifier) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( spawnModifier );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*parent), out );
+	} else {
+		if ( parent != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(parent) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( parent );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*nextCollider), out );
+	} else {
+		if ( nextCollider != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(nextCollider) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( nextCollider );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*colliderObject), out );
+	} else {
+		if ( colliderObject != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(colliderObject) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( colliderObject );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -104,9 +168,9 @@ void NiPSysCollider::FixLinks( const map<unsigned int,NiObjectRef> & objects, li
 
 	NiObject::FixLinks( objects, link_stack, missing_link_stack, info );
 	spawnModifier = FixLink<NiPSysSpawnModifier>( objects, link_stack, missing_link_stack, info );
-	parent = FixLink<NiPSysColliderManager>( objects, link_stack, missing_link_stack, info );
-	nextCollider = FixLink<NiPSysCollider>( objects, link_stack, missing_link_stack, info );
-	colliderObject = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
+	parent = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
+	nextCollider = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
+	colliderObject = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//

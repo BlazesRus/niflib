@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiPSysModifier::TYPE("NiPSysModifier", &NiObject::TYPE );
 
-NiPSysModifier::NiPSysModifier() : order((unsigned int)0), target(NULL), active(1) {
+NiPSysModifier::NiPSysModifier() : order((unsigned int)0), target(NULL), active(false) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -61,7 +61,23 @@ void NiPSysModifier::Write( ostream& out, const map<NiObjectRef,unsigned int> & 
 	NiObject::Write( out, link_map, missing_link_stack, info );
 	NifStream( name, out, info );
 	NifStream( order, out, info );
-	WriteRef( StaticCast<NiObject>(target), out, info, link_map, missing_link_stack );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*target), out );
+	} else {
+		if ( target != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(target) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( target );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 	NifStream( active, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -73,7 +89,6 @@ std::string NiPSysModifier::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	unsigned int array_output_count = 0;
 	out << NiObject::asString();
 	out << "  Name:  " << name << endl;
 	out << "  Order:  " << order << endl;

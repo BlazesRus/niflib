@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiBSplineFloatInterpolator::TYPE("NiBSplineFloatInterpolator", &NiBSplineInterpolator::TYPE );
 
-NiBSplineFloatInterpolator::NiBSplineFloatInterpolator() : value(-3.402823466e+38f), handle((unsigned int)0xFFFF) {
+NiBSplineFloatInterpolator::NiBSplineFloatInterpolator() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,8 +42,6 @@ void NiBSplineFloatInterpolator::Read( istream& in, list<unsigned int> & link_st
 	//--END CUSTOM CODE--//
 
 	NiBSplineInterpolator::Read( in, link_stack, info );
-	NifStream( value, in, info );
-	NifStream( handle, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -54,8 +52,6 @@ void NiBSplineFloatInterpolator::Write( ostream& out, const map<NiObjectRef,unsi
 	//--END CUSTOM CODE--//
 
 	NiBSplineInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( value, out, info );
-	NifStream( handle, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -67,8 +63,6 @@ std::string NiBSplineFloatInterpolator::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiBSplineInterpolator::asString();
-	out << "  Value:  " << value << endl;
-	out << "  Handle:  " << handle << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

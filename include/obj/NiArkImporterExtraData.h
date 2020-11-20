@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -64,9 +64,9 @@ protected:
 	/*! Contains a string like "Gamebryo_1_1" or "4.1.0.12" */
 	IndexString importerName;
 	/*! Unknown. */
-	NifArray<13,byte > unknownBytes;
+	Niflib::array<13,byte > unknownBytes;
 	/*! Unknown. */
-	NifArray<7,float > unknownFloats;
+	Niflib::array<7,float > unknownFloats;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );

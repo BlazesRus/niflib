@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 #ifndef _COMPLEX_SHAPE_H_
@@ -30,10 +30,7 @@ const unsigned int CS_NO_INDEX = 0xFFFFFFFF;
  */
 struct SkinInfluence {
 	/*! Constructor */
-	NIFLIB_API SkinInfluence() : influenceIndex(CS_NO_INDEX) 
-	{
-		weight = 0.0f;
-	}
+	NIFLIB_API SkinInfluence() : influenceIndex(CS_NO_INDEX) {}
 	/*! Destructor */
 	NIFLIB_API ~SkinInfluence() {}
 	/*! 
@@ -61,7 +58,7 @@ struct WeightedVertex {
 
 /*!
  * Used by the ComplexShape::ComplexPoint struct to store a single texture
- * coordinate set/texture coordinate pair of indices.
+ * cooridinate set/texture coordinate pair of indices.
  */
 struct TexCoordIndex {
 	/*! Constructor */
@@ -85,7 +82,7 @@ struct TexCoordIndex {
  * Used by ComplexShape::ComplexFace class to describe a single point in
  * the 3D model.  Points share their data in case of duplication, so all
  * information, such as position, normal vector, texture coordinates, etc.,
- * are stored as indices into the associated data arrays.
+ * are stored as indices into the asociated data arrays.
  */
 struct ComplexPoint {
 	/*! Constructor */
@@ -116,7 +113,7 @@ struct ComplexPoint {
 
 /*! 
  * Used by ComplexShape to describe a single polygon.  Complex shape
- * polygons can have more than three points, unlike the triangles required
+ * polygons can have more than three points, unlike the triangels required
  * within the NIF format.  Each face may also be associated with a
  * different set of NiProperty classes, enabling each face to have unique
  * material settings.
@@ -145,7 +142,7 @@ struct TexCoordSet {
 	 */
 	TexType texType;
 	/*!
-	 * A list of all the texture coordinates for this texture set.
+	 * A list of all the texture cooridnates for this texture set.
 	 */
 	vector<TexCoord> texCoords;
 };
@@ -153,7 +150,7 @@ struct TexCoordSet {
 /*!
  * This class is a helper object to ease the process of converting between the
  * 3D model format of a NIF file, which is optimized for real time display via
- * OpenGL or DirectX, and the more compact, complex format usually preferred by
+ * OpenGL or DirectX, and the more compact, complex format usually prefered by
  * 3D modeling software.
  * 
  * It is capable of mering multiple NiTriShape objects into one multi-material
@@ -190,19 +187,14 @@ public:
 	) const;
 
 	/* 
-
+	 * Merges together multiple NiTriBasedGeom objects and stores their data
+	 * in this ComplexShape object.
+	 * \param root The root NiAVObject to which all of the NiTriBasedGeom
+	 * objects to be merged are attached.  It could be a single NiTribasedGeom
+	 * or a NiNode that is a split mesh proxy.
+	 * \sa NiNode::IsSplitMeshProxy
 	 */
-
-	/// <summary>
-    /// Merges together multiple NiTriBasedGeom objects and stores their data
-    /// in this ComplexShape object.
-	/// </summary>
-	/// <param name="root">
-	///   The root NiAVObject to which all of the NiTriBasedGeom
-    ///   objects to be merged are attached.It could be a single NiTribasedGeom
-	///   or a NiNode that is a split mesh proxy.
-	/// </param>
-	NIFLIB_API void Merge(NiAVObject* root);
+	NIFLIB_API void Merge( NiAVObject * root );
 	
 	/* 
 	 * Clears out all the data stored in this ComplexShape
@@ -258,14 +250,14 @@ public:
 	NIFLIB_API vector<Vector3> GetNormals() const;
 
 	/*
-	 * Sets the texture coordinate data used by the ComplexShape.  This includes a list of UV sets, each with a texture type and texture coordinates.  The coordinate data is referenced by index, so repetition of values within a particular set is not necessary.
+	 * Sets the texture coordinate data used by the ComplexShape.  This includes a list of UV sets, each with a texture type and texture coordiantes.  The coordinate data is referenced by index, so repetition of values within a particular set is not necessary.
 	 * \param[in] n The new texture coordinate sets.  Will replace any existing data.
 	 */
 	NIFLIB_API void SetTexCoordSets( const vector<TexCoordSet> & n );
 
 	/*
 	 * Gets the texture coordinate sets from the ComplexShape.  Each set includes the type of texture and the texture coordinates.
-	 * \return The texture coordinate sets stored in the ComplexShape.
+	 * \return The texture coodinate sets stored in the ComplexShape.
 	 */
 	NIFLIB_API vector<TexCoordSet> GetTexCoordSets() const;
 
@@ -282,13 +274,13 @@ public:
 	NIFLIB_API vector<ComplexFace> GetFaces() const;
 
 	/*
-	 * Sets the property groups used by the Complex Shape.  Each group of NiProperty values can be assigned by vector index to a face in the ComplexShape by index, allowing for material and other properties to be specified on a per-face basis.  If the ComplexShape is split, each property group that is used by faces in the mesh will result in a separate NiTriBasedGeom with the specified properties attached.
+	 * Sets the property groups used by the Complex Shape.  Each group of NiProperty values can be assigned by vector index to a face in the ComplexShape by index, allowing for material and other properties to be specified on a per-face basis.  If the ComplexShape is split, each property group that is used by faces in the mesh will result in a separate NiTriBasedGeom with the specified propreties attached.
 	 * \param[in] n The new property groups.  Will replace any existing data.
 	 */
 	NIFLIB_API void SetPropGroups( const vector< vector< Ref<NiProperty> > > & n ); 
 
 	/*
-	 * Gets the property groups from the ComplexShape.  Each group of NiProperty values can be assigned by vector index to a face in the ComplexShape by index, allowing for material and other properties to be specified on a per-face basis.  If the ComplexShape is split, each property group that is used by faces in the mesh will result in a separate NiTriBasedGeom with the specified properties attached.
+	 * Gets the property groups from the ComplexShape.  Each group of NiProperty values can be assigned by vector index to a face in the ComplexShape by index, allowing for material and other properties to be specified on a per-face basis.  If the ComplexShape is split, each property group that is used by faces in the mesh will result in a separate NiTriBasedGeom with the specified propreties attached.
 	 * \return The property groups stored in the ComplexShape.
 	 */
 	NIFLIB_API vector< vector< Ref<NiProperty> > > GetPropGroups() const;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,7 +18,7 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPSEmitterRotSpeedCtlr::TYPE("NiPSEmitterRotSpeedCtlr", &NiPSEmitterFloatCtlr::TYPE );
+const Type NiPSEmitterRotSpeedCtlr::TYPE("NiPSEmitterRotSpeedCtlr", &NiPSysModifierCtlr::TYPE );
 
 NiPSEmitterRotSpeedCtlr::NiPSEmitterRotSpeedCtlr() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
@@ -45,7 +45,7 @@ void NiPSEmitterRotSpeedCtlr::Read( istream& in, list<unsigned int> & link_stack
 
 	//--END CUSTOM CODE--//
 
-	NiPSEmitterFloatCtlr::Read( in, link_stack, info );
+	NiPSysModifierCtlr::Read( in, link_stack, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -57,7 +57,7 @@ void NiPSEmitterRotSpeedCtlr::Write( ostream& out, const map<NiObjectRef,unsigne
 
 	//--END CUSTOM CODE--//
 
-	NiPSEmitterFloatCtlr::Write( out, link_map, missing_link_stack, info );
+	NiPSysModifierCtlr::Write( out, link_map, missing_link_stack, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -70,7 +70,7 @@ std::string NiPSEmitterRotSpeedCtlr::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiPSEmitterFloatCtlr::asString();
+	out << NiPSysModifierCtlr::asString();
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -83,7 +83,7 @@ void NiPSEmitterRotSpeedCtlr::FixLinks( const map<unsigned int,NiObjectRef> & ob
 
 	//--END CUSTOM CODE--//
 
-	NiPSEmitterFloatCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiPSysModifierCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -92,13 +92,13 @@ void NiPSEmitterRotSpeedCtlr::FixLinks( const map<unsigned int,NiObjectRef> & ob
 
 std::list<NiObjectRef> NiPSEmitterRotSpeedCtlr::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiPSEmitterFloatCtlr::GetRefs();
+	refs = NiPSysModifierCtlr::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> NiPSEmitterRotSpeedCtlr::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiPSEmitterFloatCtlr::GetPtrs();
+	ptrs = NiPSysModifierCtlr::GetPtrs();
 	return ptrs;
 }
 

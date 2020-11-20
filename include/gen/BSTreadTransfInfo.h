@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
@@ -28,7 +28,7 @@ struct BSTreadTransfInfo {
 	/*! Unknown Flag */
 	float unknownFloat1;
 	/*! Data */
-	NifArray<2,BSTreadTransfSubInfo > data;
+	Niflib::array<2,BSTreadTransfSubInfo > data;
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 };

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 #ifndef _NIF_BASIC_TYPES_H_
@@ -6,7 +6,6 @@ All rights reserved.  Please see niflib.h for license. */
 
 #include <string>
 #include <stdarg.h>
-#include <algorithm> // std::max, std::min
 #include "gen/enums.h"
 #include "nif_versions.h"
 
@@ -50,13 +49,6 @@ struct Char8String : public std::string {
 typedef unsigned char	byte;
 #endif
 
-#if defined(_MSC_VER) || defined(NIFLIB_NO_FP16_EXTENSION)
-typedef uint16_t hfloat;
-#else
-// Half-presision float (Require GCC or CLang extension)
-typedef __fp16 hfloat;
-#endif
-
 //--Structures--//
 
 /*! 
@@ -77,24 +69,24 @@ struct NifInfo {
 	/*! Specifies which low-level number storage format to use. Should match the processor type for the target system. */
 	EndianType endian;
 	/*! This is only supported in Oblivion.  It contains the name of the person who created the NIF file. */
-	ShortString author;
+	string creator;
 	/*! This is only supported in Oblivion.  It seems to contain the type of script or program used to export the file. */
-	ShortString processScript;
+	string exportInfo1;
 	/*! This is only supported in Oblivion.  It seems to contain the more specific script or options of the above. */
-	ShortString exportScript;
+	string exportInfo2;
 };
 
 /*! Used to enable static arrays to be members of vectors */
 template<int size, class T>
-struct NifArray {
-	NifArray() {
+struct array {
+	array() {
 		for ( size_t i = 0; i < size; ++i )
 			data[i] = T();
 	}
 // XXX ellipsis does not work when T = float
 // XXX see for instance http://support.microsoft.com/kb/71424
 /*
-	NifArray(size_t n, ...) {
+	array(size_t n, ...) {
 		va_list argptr;
 		va_start(argptr, n);
 		for ( size_t i = 0; i < n && i < size; ++i )
@@ -103,25 +95,25 @@ struct NifArray {
 			data[i] = T();
 	}
 */
-	NifArray(size_t n, T t0) {
+	array(size_t n, T t0) {
 		data[0] = t0;
 		for ( size_t i = 1; i < size; ++i )
 			data[i] = T();
 	}
-	NifArray(size_t n, T t0, T t1) {
+	array(size_t n, T t0, T t1) {
 		data[0] = t0;
 		data[1] = t1;
 		for ( size_t i = 2; i < size; ++i )
 			data[i] = T();
 	}
-	NifArray(size_t n, T t0, T t1, T t2) {
+	array(size_t n, T t0, T t1, T t2) {
 		data[0] = t0;
 		data[1] = t1;
 		data[2] = t2;
 		for ( size_t i = 3; i < size; ++i )
 			data[i] = T();
 	}
-	NifArray(size_t n, T t0, T t1, T t2, T t3) {
+	array(size_t n, T t0, T t1, T t2, T t3) {
 		data[0] = t0;
 		data[1] = t1;
 		data[2] = t2;
@@ -129,7 +121,7 @@ struct NifArray {
 		for ( size_t i = 4; i < size; ++i )
 			data[i] = T();
 	}
-	NifArray(size_t n, T t0, T t1, T t2, T t3, T t4) {
+	array(size_t n, T t0, T t1, T t2, T t3, T t4) {
 		data[0] = t0;
 		data[1] = t1;
 		data[2] = t2;
@@ -138,7 +130,7 @@ struct NifArray {
 		for ( size_t i = 5; i < size; ++i )
 			data[i] = T();
 	}
-	NifArray(size_t n, T t0, T t1, T t2, T t3, T t4, T t5) {
+	array(size_t n, T t0, T t1, T t2, T t3, T t4, T t5) {
 		data[0] = t0;
 		data[1] = t1;
 		data[2] = t2;
@@ -148,7 +140,7 @@ struct NifArray {
 		for ( size_t i = 6; i < size; ++i )
 			data[i] = T();
 	}
-	NifArray(size_t n, T t0, T t1, T t2, T t3, T t4, T t5, T t6) {
+  array(size_t n, T t0, T t1, T t2, T t3, T t4, T t5, T t6) {
 		data[0] = t0;
 		data[1] = t1;
 		data[2] = t2;
@@ -159,7 +151,7 @@ struct NifArray {
 		for ( size_t i = 7; i < size; ++i )
 			data[i] = T();
 	}
-	~NifArray() {}
+	~array() {}
 	T & operator[]( unsigned int index ) {
 		return data[index];
 	}

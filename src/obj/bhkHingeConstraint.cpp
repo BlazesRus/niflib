@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -52,13 +52,13 @@ void bhkHingeConstraint::Read( istream& in, list<unsigned int> & link_stack, con
 	};
 	if ( info.version >= 0x14020007 ) {
 		NifStream( hinge.axleA, in, info );
-		NifStream( (Vector4&)hinge.perp2AxleInA1, in, info );
-		NifStream( (Vector4&)hinge.perp2AxleInA2, in, info );
-		NifStream( (Vector4&)hinge.pivotA, in, info );
-		NifStream( (Vector4&)hinge.axleB, in, info );
+		NifStream( hinge.perp2AxleInA1, in, info );
+		NifStream( hinge.perp2AxleInA2, in, info );
+		NifStream( hinge.pivotA, in, info );
+		NifStream( hinge.axleB, in, info );
 		NifStream( hinge.perp2AxleInB1, in, info );
 		NifStream( hinge.perp2AxleInB2, in, info );
-		NifStream( (Vector4&)hinge.pivotB, in, info );
+		NifStream( hinge.pivotB, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -79,13 +79,13 @@ void bhkHingeConstraint::Write( ostream& out, const map<NiObjectRef,unsigned int
 	};
 	if ( info.version >= 0x14020007 ) {
 		NifStream( hinge.axleA, out, info );
-		NifStream( (Vector4&)hinge.perp2AxleInA1, out, info );
-		NifStream( (Vector4&)hinge.perp2AxleInA2, out, info );
-		NifStream( (Vector4&)hinge.pivotA, out, info );
-		NifStream( (Vector4&)hinge.axleB, out, info );
+		NifStream( hinge.perp2AxleInA1, out, info );
+		NifStream( hinge.perp2AxleInA2, out, info );
+		NifStream( hinge.pivotA, out, info );
+		NifStream( hinge.axleB, out, info );
 		NifStream( hinge.perp2AxleInB1, out, info );
 		NifStream( hinge.perp2AxleInB2, out, info );
-		NifStream( (Vector4&)hinge.pivotB, out, info );
+		NifStream( hinge.pivotB, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//

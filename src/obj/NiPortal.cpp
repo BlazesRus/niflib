@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,7 +21,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiPortal::TYPE("NiPortal", &NiAVObject::TYPE );
 
-NiPortal::NiPortal() : portalFlags((unsigned short)0), planeCount((unsigned short)0), numVertices((unsigned short)0), adjoiner(NULL) {
+NiPortal::NiPortal() : unknownFlags((unsigned short)0), unknownShort2((short)0), numVertices((unsigned short)0), target(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -48,8 +48,8 @@ void NiPortal::Read( istream& in, list<unsigned int> & link_stack, const NifInfo
 
 	unsigned int block_num;
 	NiAVObject::Read( in, link_stack, info );
-	NifStream( portalFlags, in, info );
-	NifStream( planeCount, in, info );
+	NifStream( unknownFlags, in, info );
+	NifStream( unknownShort2, in, info );
 	NifStream( numVertices, in, info );
 	vertices.resize(numVertices);
 	for (unsigned int i1 = 0; i1 < vertices.size(); i1++) {
@@ -70,13 +70,29 @@ void NiPortal::Write( ostream& out, const map<NiObjectRef,unsigned int> & link_m
 
 	NiAVObject::Write( out, link_map, missing_link_stack, info );
 	numVertices = (unsigned short)(vertices.size());
-	NifStream( portalFlags, out, info );
-	NifStream( planeCount, out, info );
+	NifStream( unknownFlags, out, info );
+	NifStream( unknownShort2, out, info );
 	NifStream( numVertices, out, info );
 	for (unsigned int i1 = 0; i1 < vertices.size(); i1++) {
 		NifStream( vertices[i1], out, info );
 	};
-	WriteRef( StaticCast<NiObject>(adjoiner), out, info, link_map, missing_link_stack );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*target), out );
+	} else {
+		if ( target != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(target) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( target );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -92,8 +108,8 @@ std::string NiPortal::asString( bool verbose ) const {
 	unsigned int array_output_count = 0;
 	out << NiAVObject::asString();
 	numVertices = (unsigned short)(vertices.size());
-	out << "  Portal Flags:  " << portalFlags << endl;
-	out << "  Plane Count:  " << planeCount << endl;
+	out << "  Unknown Flags:  " << unknownFlags << endl;
+	out << "  Unknown Short 2:  " << unknownShort2 << endl;
 	out << "  Num Vertices:  " << numVertices << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < vertices.size(); i1++) {
@@ -107,7 +123,7 @@ std::string NiPortal::asString( bool verbose ) const {
 		out << "    Vertices[" << i1 << "]:  " << vertices[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Adjoiner:  " << adjoiner << endl;
+	out << "  Target:  " << target << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -121,7 +137,7 @@ void NiPortal::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<uns
 	//--END CUSTOM CODE--//
 
 	NiAVObject::FixLinks( objects, link_stack, missing_link_stack, info );
-	adjoiner = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
+	target = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -137,8 +153,8 @@ std::list<NiObjectRef> NiPortal::GetRefs() const {
 std::list<NiObject *> NiPortal::GetPtrs() const {
 	list<NiObject *> ptrs;
 	ptrs = NiAVObject::GetPtrs();
-	if ( adjoiner != NULL )
-		ptrs.push_back((NiObject *)(adjoiner));
+	if ( target != NULL )
+		ptrs.push_back((NiObject *)(target));
 	return ptrs;
 }
 

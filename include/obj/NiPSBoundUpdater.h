@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,33 +20,33 @@ namespace Niflib {
 class NiPSBoundUpdater;
 typedef Ref<NiPSBoundUpdater> NiPSBoundUpdaterRef;
 
-/*! Updates the bounding volume for an NiPSParticleSystem object. */
+/*!  */
 class NiPSBoundUpdater : public NiObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiPSBoundUpdater();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiPSBoundUpdater();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -57,11 +57,10 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*!
-	 * Number of particle bounds to skip updating every frame. Higher = more updates
-	 * each frame.
-	 */
-	unsigned short updateSkip;
+	/*! Unknown. */
+	byte unknown1;
+	/*! Unknown. */
+	byte unknown2;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -79,5 +78,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

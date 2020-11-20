@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiBSplinePoint3Interpolator::TYPE("NiBSplinePoint3Interpolator", &NiBSplineInterpolator::TYPE );
 
-NiBSplinePoint3Interpolator::NiBSplinePoint3Interpolator() : value(-3.402823466e+38, -3.402823466e+38, -3.402823466e+38), handle((unsigned int)0xFFFF) {
+NiBSplinePoint3Interpolator::NiBSplinePoint3Interpolator() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,8 +42,9 @@ void NiBSplinePoint3Interpolator::Read( istream& in, list<unsigned int> & link_s
 	//--END CUSTOM CODE--//
 
 	NiBSplineInterpolator::Read( in, link_stack, info );
-	NifStream( value, in, info );
-	NifStream( handle, in, info );
+	for (unsigned int i1 = 0; i1 < 6; i1++) {
+		NifStream( unknownFloats[i1], in, info );
+	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -54,8 +55,9 @@ void NiBSplinePoint3Interpolator::Write( ostream& out, const map<NiObjectRef,uns
 	//--END CUSTOM CODE--//
 
 	NiBSplineInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( value, out, info );
-	NifStream( handle, out, info );
+	for (unsigned int i1 = 0; i1 < 6; i1++) {
+		NifStream( unknownFloats[i1], out, info );
+	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -66,9 +68,20 @@ std::string NiBSplinePoint3Interpolator::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
+	unsigned int array_output_count = 0;
 	out << NiBSplineInterpolator::asString();
-	out << "  Value:  " << value << endl;
-	out << "  Handle:  " << handle << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < 6; i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Unknown Floats[" << i1 << "]:  " << unknownFloats[i1] << endl;
+		array_output_count++;
+	};
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

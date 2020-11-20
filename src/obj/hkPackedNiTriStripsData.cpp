@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,10 +14,8 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/hkPackedNiTriStripsData.h"
-#include "../../include/gen/HavokFilter.h"
-#include "../../include/gen/HavokMaterial.h"
+#include "../../include/gen/hkTriangle.h"
 #include "../../include/gen/OblivionSubShape.h"
-#include "../../include/gen/TriangleData.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
@@ -67,27 +65,11 @@ void hkPackedNiTriStripsData::Read( istream& in, list<unsigned int> & link_stack
 		NifStream( numSubShapes, in, info );
 		subShapes.resize(numSubShapes);
 		for (unsigned int i2 = 0; i2 < subShapes.size(); i2++) {
-			if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
-				NifStream( subShapes[i2].havokFilter.layer_ob, in, info );
-			};
-			if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
-				NifStream( subShapes[i2].havokFilter.layer_fo, in, info );
-			};
-			if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
-				NifStream( subShapes[i2].havokFilter.layer_sk, in, info );
-			};
-			NifStream( subShapes[i2].havokFilter.flagsAndPartNumber, in, info );
-			NifStream( subShapes[i2].havokFilter.group, in, info );
+			NifStream( subShapes[i2].layer, in, info );
+			NifStream( subShapes[i2].colFilter, in, info );
+			NifStream( subShapes[i2].unknownShort, in, info );
 			NifStream( subShapes[i2].numVertices, in, info );
-			if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
-				NifStream( subShapes[i2].material.material_ob, in, info );
-			};
-			if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
-				NifStream( subShapes[i2].material.material_fo, in, info );
-			};
-			if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
-				NifStream( subShapes[i2].material.material_sk, in, info );
-			};
+			NifStream( subShapes[i2].material, in, info );
 		};
 	};
 
@@ -121,27 +103,11 @@ void hkPackedNiTriStripsData::Write( ostream& out, const map<NiObjectRef,unsigne
 	if ( info.version >= 0x14020007 ) {
 		NifStream( numSubShapes, out, info );
 		for (unsigned int i2 = 0; i2 < subShapes.size(); i2++) {
-			if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
-				NifStream( subShapes[i2].havokFilter.layer_ob, out, info );
-			};
-			if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
-				NifStream( subShapes[i2].havokFilter.layer_fo, out, info );
-			};
-			if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
-				NifStream( subShapes[i2].havokFilter.layer_sk, out, info );
-			};
-			NifStream( subShapes[i2].havokFilter.flagsAndPartNumber, out, info );
-			NifStream( subShapes[i2].havokFilter.group, out, info );
+			NifStream( subShapes[i2].layer, out, info );
+			NifStream( subShapes[i2].colFilter, out, info );
+			NifStream( subShapes[i2].unknownShort, out, info );
 			NifStream( subShapes[i2].numVertices, out, info );
-			if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
-				NifStream( subShapes[i2].material.material_ob, out, info );
-			};
-			if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
-				NifStream( subShapes[i2].material.material_fo, out, info );
-			};
-			if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
-				NifStream( subShapes[i2].material.material_sk, out, info );
-			};
+			NifStream( subShapes[i2].material, out, info );
 		};
 	};
 
@@ -191,15 +157,11 @@ std::string hkPackedNiTriStripsData::asString( bool verbose ) const {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
 		};
-		out << "    Layer:  " << subShapes[i1].havokFilter.layer_ob << endl;
-		out << "    Layer:  " << subShapes[i1].havokFilter.layer_fo << endl;
-		out << "    Layer:  " << subShapes[i1].havokFilter.layer_sk << endl;
-		out << "    Flags and Part Number:  " << subShapes[i1].havokFilter.flagsAndPartNumber << endl;
-		out << "    Group:  " << subShapes[i1].havokFilter.group << endl;
+		out << "    Layer:  " << subShapes[i1].layer << endl;
+		out << "    Col Filter:  " << subShapes[i1].colFilter << endl;
+		out << "    Unknown Short:  " << subShapes[i1].unknownShort << endl;
 		out << "    Num Vertices:  " << subShapes[i1].numVertices << endl;
-		out << "    Material:  " << subShapes[i1].material.material_ob << endl;
-		out << "    Material:  " << subShapes[i1].material.material_fo << endl;
-		out << "    Material:  " << subShapes[i1].material.material_sk << endl;
+		out << "    Material:  " << subShapes[i1].material << endl;
 	};
 	return out.str();
 
@@ -243,11 +205,11 @@ vector<Triangle> hkPackedNiTriStripsData::GetTriangles() const {
 	return good_triangles;
 }
 
-vector<TriangleData> hkPackedNiTriStripsData::GetHavokTriangles() const {
+vector<hkTriangle> hkPackedNiTriStripsData::GetHavokTriangles() const {
 	//Remove any bad triangles
-	vector<TriangleData> good_triangles;
+	vector<hkTriangle> good_triangles;
 	for ( unsigned i = 0; i < triangles.size(); ++i ) {
-		const TriangleData & t = triangles[i];
+		const hkTriangle & t = triangles[i];
 		if ( t.triangle.v1 != t.triangle.v2 && t.triangle.v2 != t.triangle.v3 && t.triangle.v1 != t.triangle.v3 ) {
 			good_triangles.push_back(t);
 		}
@@ -293,7 +255,7 @@ void hkPackedNiTriStripsData::SetTriangles( const vector<Triangle> & in ) {
 	}
 }
 
-void hkPackedNiTriStripsData::SetHavokTriangles( const vector<TriangleData> & in ) {
+void hkPackedNiTriStripsData::SetHavokTriangles( const vector<hkTriangle> & in ) {
 	if ( in.size() > 65535 || in.size() < 0 ) {
 		throw runtime_error("Invalid Face Count: must be between 0 and 65535.");
 	}

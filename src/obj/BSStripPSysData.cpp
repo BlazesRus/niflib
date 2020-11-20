@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type BSStripPSysData::TYPE("BSStripPSysData", &NiPSysData::TYPE );
 
-BSStripPSysData::BSStripPSysData() : maxPointCount((unsigned short)0), startCapSize(0.0f), endCapSize(0.0f), doZPrepass(false) {
+BSStripPSysData::BSStripPSysData() : unknownShort5((short)0), unknownByte6((byte)0), unknownInt7((int)0), unknownFloat8(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,10 +46,10 @@ void BSStripPSysData::Read( istream& in, list<unsigned int> & link_stack, const 
 	//--END CUSTOM CODE--//
 
 	NiPSysData::Read( in, link_stack, info );
-	NifStream( maxPointCount, in, info );
-	NifStream( startCapSize, in, info );
-	NifStream( endCapSize, in, info );
-	NifStream( doZPrepass, in, info );
+	NifStream( unknownShort5, in, info );
+	NifStream( unknownByte6, in, info );
+	NifStream( unknownInt7, in, info );
+	NifStream( unknownFloat8, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -62,10 +62,10 @@ void BSStripPSysData::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	//--END CUSTOM CODE--//
 
 	NiPSysData::Write( out, link_map, missing_link_stack, info );
-	NifStream( maxPointCount, out, info );
-	NifStream( startCapSize, out, info );
-	NifStream( endCapSize, out, info );
-	NifStream( doZPrepass, out, info );
+	NifStream( unknownShort5, out, info );
+	NifStream( unknownByte6, out, info );
+	NifStream( unknownInt7, out, info );
+	NifStream( unknownFloat8, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -79,10 +79,10 @@ std::string BSStripPSysData::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiPSysData::asString();
-	out << "  Max Point Count:  " << maxPointCount << endl;
-	out << "  Start Cap Size:  " << startCapSize << endl;
-	out << "  End Cap Size:  " << endCapSize << endl;
-	out << "  Do Z Prepass:  " << doZPrepass << endl;
+	out << "  Unknown Short 5:  " << unknownShort5 << endl;
+	out << "  Unknown Byte 6:  " << unknownByte6 << endl;
+	out << "  Unknown Int 7:  " << unknownInt7 << endl;
+	out << "  Unknown Float 8:  " << unknownFloat8 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

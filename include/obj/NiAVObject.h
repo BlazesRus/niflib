@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ namespace Niflib {
 
 // Include structures
 #include "../Ref.h"
-#include "../gen/BoundingVolume.h"
+#include "../gen/BoundingBox.h"
 namespace Niflib {
 
 // Forward define of referenced NIF objects
@@ -29,36 +29,33 @@ class NiCollisionObject;
 class NiAVObject;
 typedef Ref<NiAVObject> NiAVObjectRef;
 
-/*!
- * Abstract audio-visual base class from which all of Gamebryo's scene graph
- * objects inherit.
- */
+/*! Generic node object. */
 class NiAVObject : public NiObjectNET {
 public:
 	/*! Constructor */
 	NIFLIB_API NiAVObject();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiAVObject();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -70,26 +67,26 @@ public:
 	/*!
 	 * Clears all embedded bounding box information.  Older NIF files can have a bounding box specified in them which will be used for collision detection instead of evaluating the triangles.
 	 */
-	NIFLIB_API void ClearBoundingVolume();
+	NIFLIB_API void ClearBoundingBox();
 
 	/*!
-	 * Returns any embedded bounding volume information.  NiAVObject::HasBoundingVolume should be called first, as this function will throw an exception if there is no bounding volume information in this object.  Older NIF files can have a bounding volume specified in them which will be used for collision detection instead of evaluating the triangles.
-	 * \return The embedded bounding volume dimentions.
-	 * \sa NiAVObject::HasBoundingVolume
+	 * Returns any embedded bounding box information.  NiAVObject::HasBoundingBox should be called first, as this function will throw an exception if there is no bounding box information in this object.  Older NIF files can have a bounding box specified in them which will be used for collision detection instead of evaluating the triangles.
+	 * \return The embedded bounding box dimentions.
+	 * \sa NiAVObject::HasBoundingBox
 	 */
-	NIFLIB_API BoundingVolume GetBoundingVolume() const;
+	NIFLIB_API BoundingBox GetBoundingBox() const;
 
 	/*!
-	 * Sets new embedded bounding volume information.  Older NIF files can have a bounding volume specified in them which will be used for collision detection instead of evaluating the triangles.
-	 * \param[in] n The new bounding volume dimentions.
+	 * Sets new embedded bounding box information.  Older NIF files can have a bounding box specified in them which will be used for collision detection instead of evaluating the triangles.
+	 * \param[in] n The new bounding box dimentions.
 	 */
-	NIFLIB_API void SetBoundingVolume( const BoundingVolume & n );
+	NIFLIB_API void SetBoundingBox( const BoundingBox & n );
 
 	/*!
-	 * Determines whether this object has embedded bounding volume information.  Older NIF files can have a bounding volume specified in them which will be used for collision detection instead of evaluating the triangles.
-	 * \return True if this object has an embedded bounding volume, false otherwise.
+	 * Determines whether this object has embedded bounding box information.  Older NIF files can have a bounding box specified in them which will be used for collision detection instead of evaluating the triangles.
+	 * \return True if this object has an embedded bounding box, false otherwise.
 	 */
-	NIFLIB_API bool HasBoundingVolume() const;
+	NIFLIB_API bool HasBoundingBox() const;
 	
 	/*! 
 	 * This is a conveniance function that allows you to retrieve the full 4x4 matrix transform of a node.  It accesses the "Rotation," "Translation," and "Scale" attributes and builds a complete 4x4 transformation matrix from them.
@@ -270,8 +267,10 @@ protected:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Basic flags for AV objects. For Bethesda streams above 26 only. */
-	unsigned int flags;
+	/*! Some flags; commonly 0x000C or 0x000A. */
+	unsigned short flags;
+	/*! Unknown Flag */
+	unsigned short unknownShort1;
 	/*! The translation vector. */
 	Vector3 translation;
 	/*! The rotation part of the transformation matrix. */
@@ -280,15 +279,22 @@ protected:
 	float scale;
 	/*! Unknown function. Always seems to be (0, 0, 0) */
 	Vector3 velocity;
+	/*! The number of property objects referenced. */
 	mutable unsigned int numProperties;
-	/*! All rendering properties attached to this object. */
+	/*! List of node properties. */
 	vector<Ref<NiProperty > > properties;
 	/*! Always 2,0,2,0. */
-	Niflib::NifArray<4,unsigned int > unknown1;
+	Niflib::array<4,unsigned int > unknown1;
 	/*! 0 or 1. */
 	byte unknown2;
-	bool hasBoundingVolume;
-	BoundingVolume boundingVolume;
+	/*! Do we have a bounding box? */
+	bool hasBoundingBox;
+	/*! The bounding box. */
+	BoundingBox boundingBox;
+	/*!
+	 * Refers to NiCollisionObject, which is usually a bounding box or other simple
+	 * collision shape.  In Oblivion this links the Havok objects.
+	 */
 	Ref<NiCollisionObject > collisionObject;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -306,5 +312,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,36 +19,33 @@ namespace Niflib {
 class NiFogProperty;
 typedef Ref<NiFogProperty> NiFogPropertyRef;
 
-/*!
- * NiFogProperty allows the application to enable, disable and control the
- * appearance of fog.
- */
+/*! Describes... fog? */
 class NiFogProperty : public NiProperty {
 public:
 	/*! Constructor */
 	NIFLIB_API NiFogProperty();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiFogProperty();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -96,18 +93,15 @@ public:
 	//--END CUSTOM CODE--//
 protected:
 	/*!
-	 * Bit 0: Enables Fog
-	 *             Bit 1: Sets Fog Function to FOG_RANGE_SQ
-	 *             Bit 2: Sets Fog Function to FOG_VERTEX_ALPHA
+	 * 1's bit: Enables Fog
+	 *             2's bit: Sets Fog Function to FOG_RANGE_SQ
+	 *             4's bit: Sets Fog Function to FOG_VERTEX_ALPHA
 	 * 
-	 *             If Bit 1 and Bit 2 are not set, but fog is enabled, Fog function is
+	 *             If 2's and 4's bit are not set, but fog is enabled, Fog function is
 	 * FOG_Z_LINEAR.
 	 */
 	unsigned short flags;
-	/*!
-	 * Depth of the fog in normalized units. 1.0 = begins at near plane. 0.5 = begins
-	 * halfway between the near and far planes.
-	 */
+	/*! The thickness of the fog?  Default is 1.0 */
 	float fogDepth;
 	/*! The color of the fog. */
 	Color3 fogColor;
@@ -127,5 +121,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

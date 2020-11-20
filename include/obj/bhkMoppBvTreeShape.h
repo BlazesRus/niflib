@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -29,28 +29,28 @@ class bhkMoppBvTreeShape : public bhkBvTreeShape {
 public:
 	/*! Constructor */
 	NIFLIB_API bhkMoppBvTreeShape();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~bhkMoppBvTreeShape();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -70,6 +70,18 @@ public:
 	 * \param[in] value The new shape object for this body to use.
 	 */
 	NIFLIB_API void SetShape( bhkShape * value );
+
+	/*!
+	 * Get the shape's material.  This determines the type of noises the object makes as it collides in Oblivion.
+	 * \return The Oblivion material used by this collision shape.
+	 */
+	NIFLIB_API HavokMaterial GetMaterial() const;
+
+	/*!
+	 * Sets the shape's material.  This determines the type of noises the object makes as it collides in Oblivion.
+	 * \param[in] value The new material for this shape to use.
+	 */
+	NIFLIB_API void SetMaterial( HavokMaterial value );
 
 	/*!
 	* Get the shape's bounding volume code.  The code is specific to the Havok Physics engine.
@@ -132,10 +144,6 @@ public:
 
 	NIFLIB_API void SetBuildType(MoppDataBuildType value);
 
-	NIFLIB_API float GetShapeScale();
-	NIFLIB_API void SetShapeScale(float value);
-
-	NIFLIB_API unsigned int GetMoppDataSize();
 
 private:
 	unsigned int moppDataSizeCalc(const NifInfo & info) const {
@@ -146,10 +154,14 @@ private:
 protected:
 	/*! The shape. */
 	Ref<bhkShape > shape;
-	/*! Garbage data from memory. Referred to as User Data, Shape Collection, and Code. */
-	Niflib::NifArray<3,unsigned int > unused;
-	/*! Scale. */
-	float shapeScale;
+	/*! The shape's material. */
+	HavokMaterial material;
+	/*! The shape's material. */
+	SkyrimHavokMaterial skyrimMaterial;
+	/*! Unknown bytes. */
+	Niflib::array<8,byte > unknown8Bytes;
+	/*! Unknown float, might be scale. */
+	float unknownFloat;
 	/*! Number of bytes for MOPP data. */
 	mutable unsigned int moppDataSize;
 	/*!
@@ -169,10 +181,11 @@ protected:
 	 * script).
 	 */
 	vector<byte > oldMoppData;
-	/*! Tells if MOPP Data was organized into smaller chunks (PS3) or not (PC) */
-	MoppDataBuildType buildType;
+	/*! Defines wether moppData is organized into chunks (PS3) or not (PC) */
+	MoppDataBuildType	buildType;
 	/*! The tree of bounding volume data. */
 	vector<byte > moppData;
+
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -189,5 +202,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

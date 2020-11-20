@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,9 +18,9 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type BSLightingShaderPropertyColorController::TYPE("BSLightingShaderPropertyColorController", &NiPoint3InterpController::TYPE );
+const Type BSLightingShaderPropertyColorController::TYPE("BSLightingShaderPropertyColorController", &NiFloatInterpController::TYPE );
 
-BSLightingShaderPropertyColorController::BSLightingShaderPropertyColorController() : typeOfControlledColor((LightingShaderControlledColor)0) {
+BSLightingShaderPropertyColorController::BSLightingShaderPropertyColorController() : targetColor(LSCC_SPECULAR_COLOR) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,8 +45,8 @@ void BSLightingShaderPropertyColorController::Read( istream& in, list<unsigned i
 
 	//--END CUSTOM CODE--//
 
-	NiPoint3InterpController::Read( in, link_stack, info );
-	NifStream( typeOfControlledColor, in, info );
+	NiFloatInterpController::Read( in, link_stack, info );
+	NifStream( targetColor, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -58,8 +58,8 @@ void BSLightingShaderPropertyColorController::Write( ostream& out, const map<NiO
 
 	//--END CUSTOM CODE--//
 
-	NiPoint3InterpController::Write( out, link_map, missing_link_stack, info );
-	NifStream( typeOfControlledColor, out, info );
+	NiFloatInterpController::Write( out, link_map, missing_link_stack, info );
+	NifStream( targetColor, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -72,8 +72,8 @@ std::string BSLightingShaderPropertyColorController::asString( bool verbose ) co
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiPoint3InterpController::asString();
-	out << "  Type of Controlled Color:  " << typeOfControlledColor << endl;
+	out << NiFloatInterpController::asString();
+	out << "  targetColor:  " << targetColor << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -86,7 +86,7 @@ void BSLightingShaderPropertyColorController::FixLinks( const map<unsigned int,N
 
 	//--END CUSTOM CODE--//
 
-	NiPoint3InterpController::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiFloatInterpController::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -95,13 +95,13 @@ void BSLightingShaderPropertyColorController::FixLinks( const map<unsigned int,N
 
 std::list<NiObjectRef> BSLightingShaderPropertyColorController::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiPoint3InterpController::GetRefs();
+	refs = NiFloatInterpController::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> BSLightingShaderPropertyColorController::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiPoint3InterpController::GetPtrs();
+	ptrs = NiFloatInterpController::GetPtrs();
 	return ptrs;
 }
 

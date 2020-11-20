@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type BSPSysLODModifier::TYPE("BSPSysLODModifier", &NiPSysModifier::TYPE );
 
-BSPSysLODModifier::BSPSysLODModifier() : lodBeginDistance(0.1f), lodEndDistance(0.7f), endEmitScale(0.2f), endSize(1.0f) {
+BSPSysLODModifier::BSPSysLODModifier() : uknownFloat1(0.0f), uknownFloat2(0.0f), uknownFloat3(0.0f), uknownFloat4(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,10 +46,10 @@ void BSPSysLODModifier::Read( istream& in, list<unsigned int> & link_stack, cons
 	//--END CUSTOM CODE--//
 
 	NiPSysModifier::Read( in, link_stack, info );
-	NifStream( lodBeginDistance, in, info );
-	NifStream( lodEndDistance, in, info );
-	NifStream( endEmitScale, in, info );
-	NifStream( endSize, in, info );
+	NifStream( uknownFloat1, in, info );
+	NifStream( uknownFloat2, in, info );
+	NifStream( uknownFloat3, in, info );
+	NifStream( uknownFloat4, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -62,10 +62,10 @@ void BSPSysLODModifier::Write( ostream& out, const map<NiObjectRef,unsigned int>
 	//--END CUSTOM CODE--//
 
 	NiPSysModifier::Write( out, link_map, missing_link_stack, info );
-	NifStream( lodBeginDistance, out, info );
-	NifStream( lodEndDistance, out, info );
-	NifStream( endEmitScale, out, info );
-	NifStream( endSize, out, info );
+	NifStream( uknownFloat1, out, info );
+	NifStream( uknownFloat2, out, info );
+	NifStream( uknownFloat3, out, info );
+	NifStream( uknownFloat4, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -79,10 +79,10 @@ std::string BSPSysLODModifier::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiPSysModifier::asString();
-	out << "  LOD Begin Distance:  " << lodBeginDistance << endl;
-	out << "  LOD End Distance:  " << lodEndDistance << endl;
-	out << "  End Emit Scale:  " << endEmitScale << endl;
-	out << "  End Size:  " << endSize << endl;
+	out << "  Uknown Float 1:  " << uknownFloat1 << endl;
+	out << "  Uknown Float 2:  " << uknownFloat2 << endl;
+	out << "  Uknown Float 3:  " << uknownFloat3 << endl;
+	out << "  Uknown Float 4:  " << uknownFloat4 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

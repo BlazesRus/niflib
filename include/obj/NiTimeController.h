@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -24,36 +24,33 @@ class NiObjectNET;
 class NiTimeController;
 typedef Ref<NiTimeController> NiTimeControllerRef;
 
-/*!
- * Abstract base class that provides the base timing and update functionality for
- * all the Gamebryo animation controllers.
- */
+/*! A generic time controller object. */
 class NiTimeController : public NiObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiTimeController();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiTimeController();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -161,14 +158,11 @@ protected:
 	/*! Index of the next controller. */
 	Ref<NiTimeController > nextController;
 	/*!
-	 * Controller flags.
+	 * Controller flags (usually 0x000C). Probably controls loops.
 	 *             Bit 0 : Anim type, 0=APP_TIME 1=APP_INIT
-	 *             Bit 1-2 : Cycle type, 00=Loop 01=Reverse 10=Clamp
+	 *             Bit 1-2 : Cycle type  00=Loop 01=Reverse 10=Loop
 	 *             Bit 3 : Active
 	 *             Bit 4 : Play backwards
-	 *             Bit 5 : Is manager controlled
-	 *             Bit 6 : Always seems to be set in Skyrim and Fallout NIFs, unknown
-	 * function
 	 */
 	unsigned short flags;
 	/*! Frequency (is usually 1.0). */
@@ -202,5 +196,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

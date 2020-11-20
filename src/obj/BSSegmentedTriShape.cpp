@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,8 +15,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/BSSegmentedTriShape.h"
-#include "../../include/gen/BSGeometrySegmentData.h"
-#include "../../include/gen/BSGeometrySubSegment.h"
+#include "../../include/gen/BSSegment.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
@@ -51,24 +50,9 @@ void BSSegmentedTriShape::Read( istream& in, list<unsigned int> & link_stack, co
 	NifStream( numSegments, in, info );
 	segment.resize(numSegments);
 	for (unsigned int i1 = 0; i1 < segment.size(); i1++) {
-		if ( (info.userVersion2 < 130) ) {
-			NifStream( segment[i1].flags, in, info );
-			NifStream( segment[i1].index, in, info );
-			NifStream( segment[i1].numTrisInSegment, in, info );
-		};
-		if ( info.userVersion2 == 130 ) {
-			NifStream( segment[i1].startIndex, in, info );
-			NifStream( segment[i1].numPrimitives, in, info );
-			NifStream( segment[i1].parentArrayIndex, in, info );
-			NifStream( segment[i1].numSubSegments, in, info );
-			segment[i1].subSegment.resize(segment[i1].numSubSegments);
-			for (unsigned int i3 = 0; i3 < segment[i1].subSegment.size(); i3++) {
-				NifStream( segment[i1].subSegment[i3].startIndex, in, info );
-				NifStream( segment[i1].subSegment[i3].numPrimitives, in, info );
-				NifStream( segment[i1].subSegment[i3].parentArrayIndex, in, info );
-				NifStream( segment[i1].subSegment[i3].unused, in, info );
-			};
-		};
+		NifStream( segment[i1].internalIndex, in, info );
+		NifStream( segment[i1].flags, in, info );
+		NifStream( segment[i1].unknownByte1, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -85,24 +69,9 @@ void BSSegmentedTriShape::Write( ostream& out, const map<NiObjectRef,unsigned in
 	numSegments = (int)(segment.size());
 	NifStream( numSegments, out, info );
 	for (unsigned int i1 = 0; i1 < segment.size(); i1++) {
-		segment[i1].numSubSegments = (unsigned int)(segment[i1].subSegment.size());
-		if ( (info.userVersion2 < 130) ) {
-			NifStream( segment[i1].flags, out, info );
-			NifStream( segment[i1].index, out, info );
-			NifStream( segment[i1].numTrisInSegment, out, info );
-		};
-		if ( info.userVersion2 == 130 ) {
-			NifStream( segment[i1].startIndex, out, info );
-			NifStream( segment[i1].numPrimitives, out, info );
-			NifStream( segment[i1].parentArrayIndex, out, info );
-			NifStream( segment[i1].numSubSegments, out, info );
-			for (unsigned int i3 = 0; i3 < segment[i1].subSegment.size(); i3++) {
-				NifStream( segment[i1].subSegment[i3].startIndex, out, info );
-				NifStream( segment[i1].subSegment[i3].numPrimitives, out, info );
-				NifStream( segment[i1].subSegment[i3].parentArrayIndex, out, info );
-				NifStream( segment[i1].subSegment[i3].unused, out, info );
-			};
-		};
+		NifStream( segment[i1].internalIndex, out, info );
+		NifStream( segment[i1].flags, out, info );
+		NifStream( segment[i1].unknownByte1, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -126,25 +95,9 @@ std::string BSSegmentedTriShape::asString( bool verbose ) const {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
 		};
-		segment[i1].numSubSegments = (unsigned int)(segment[i1].subSegment.size());
+		out << "    Internal index:  " << segment[i1].internalIndex << endl;
 		out << "    Flags:  " << segment[i1].flags << endl;
-		out << "    Index:  " << segment[i1].index << endl;
-		out << "    Num Tris in Segment:  " << segment[i1].numTrisInSegment << endl;
-		out << "    Start Index:  " << segment[i1].startIndex << endl;
-		out << "    Num Primitives:  " << segment[i1].numPrimitives << endl;
-		out << "    Parent Array Index:  " << segment[i1].parentArrayIndex << endl;
-		out << "    Num Sub Segments:  " << segment[i1].numSubSegments << endl;
-		array_output_count = 0;
-		for (unsigned int i2 = 0; i2 < segment[i1].subSegment.size(); i2++) {
-			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-				out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-				break;
-			};
-			out << "      Start Index:  " << segment[i1].subSegment[i2].startIndex << endl;
-			out << "      Num Primitives:  " << segment[i1].subSegment[i2].numPrimitives << endl;
-			out << "      Parent Array Index:  " << segment[i1].subSegment[i2].parentArrayIndex << endl;
-			out << "      Unused:  " << segment[i1].subSegment[i2].unused << endl;
-		};
+		out << "    Unknown Byte 1:  " << segment[i1].unknownByte1 << endl;
 	};
 	return out.str();
 

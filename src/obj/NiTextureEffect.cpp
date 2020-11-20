@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,7 +14,6 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiTextureEffect.h"
-#include "../../include/gen/NiPlane.h"
 #include "../../include/obj/NiImage.h"
 #include "../../include/obj/NiSourceTexture.h"
 using namespace Niflib;
@@ -22,7 +21,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiTextureEffect::TYPE("NiTextureEffect", &NiDynamicEffect::TYPE );
 
-NiTextureEffect::NiTextureEffect() : textureFiltering((TexFilterMode)FILTER_TRILERP), maxAnisotropy((unsigned short)0), textureClamping((TexClampMode)WRAP_S_WRAP_T), textureType((TextureType)TEX_ENVIRONMENT_MAP), coordinateGenerationType((CoordGenType)CG_SPHERE_MAP), image(NULL), sourceTexture(NULL), enablePlane((byte)0), ps2L((short)0), ps2K((short)-75), unknownShort((unsigned short)0) {
+NiTextureEffect::NiTextureEffect() : textureFiltering((TexFilterMode)FILTER_TRILERP), textureClamping((TexClampMode)WRAP_S_WRAP_T), unknown((short)0), textureType((EffectType)EFFECT_ENVIRONMENT_MAP), coordinateGenerationType((CoordGenType)CG_SPHERE_MAP), image(NULL), sourceTexture(NULL), clippingPlane((byte)0), unknownVector(1.0, 0.0, 0.0), unknownFloat(0.0f), ps2L((short)0), ps2K((short)-75), unknownShort((unsigned short)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -49,10 +48,10 @@ void NiTextureEffect::Read( istream& in, list<unsigned int> & link_stack, const 
 	NifStream( modelProjectionMatrix, in, info );
 	NifStream( modelProjectionTransform, in, info );
 	NifStream( textureFiltering, in, info );
-	if ( info.version >= 0x14050004 ) {
-		NifStream( maxAnisotropy, in, info );
-	};
 	NifStream( textureClamping, in, info );
+	if ( info.version >= 0x14060000 ) {
+		NifStream( unknown, in, info );
+	};
 	NifStream( textureType, in, info );
 	NifStream( coordinateGenerationType, in, info );
 	if ( info.version <= 0x03010000 ) {
@@ -63,9 +62,9 @@ void NiTextureEffect::Read( istream& in, list<unsigned int> & link_stack, const 
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	NifStream( enablePlane, in, info );
-	NifStream( plane.normal, in, info );
-	NifStream( plane.constant, in, info );
+	NifStream( clippingPlane, in, info );
+	NifStream( unknownVector, in, info );
+	NifStream( unknownFloat, in, info );
 	if ( info.version <= 0x0A020000 ) {
 		NifStream( ps2L, in, info );
 		NifStream( ps2K, in, info );
@@ -86,21 +85,53 @@ void NiTextureEffect::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	NifStream( modelProjectionMatrix, out, info );
 	NifStream( modelProjectionTransform, out, info );
 	NifStream( textureFiltering, out, info );
-	if ( info.version >= 0x14050004 ) {
-		NifStream( maxAnisotropy, out, info );
-	};
 	NifStream( textureClamping, out, info );
+	if ( info.version >= 0x14060000 ) {
+		NifStream( unknown, out, info );
+	};
 	NifStream( textureType, out, info );
 	NifStream( coordinateGenerationType, out, info );
 	if ( info.version <= 0x03010000 ) {
-		WriteRef( StaticCast<NiObject>(image), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*image), out );
+		} else {
+			if ( image != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(image) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( image );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
 	if ( info.version >= 0x04000000 ) {
-		WriteRef( StaticCast<NiObject>(sourceTexture), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*sourceTexture), out );
+		} else {
+			if ( sourceTexture != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(sourceTexture) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( sourceTexture );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
-	NifStream( enablePlane, out, info );
-	NifStream( plane.normal, out, info );
-	NifStream( plane.constant, out, info );
+	NifStream( clippingPlane, out, info );
+	NifStream( unknownVector, out, info );
+	NifStream( unknownFloat, out, info );
 	if ( info.version <= 0x0A020000 ) {
 		NifStream( ps2L, out, info );
 		NifStream( ps2K, out, info );
@@ -122,15 +153,15 @@ std::string NiTextureEffect::asString( bool verbose ) const {
 	out << "  Model Projection Matrix:  " << modelProjectionMatrix << endl;
 	out << "  Model Projection Transform:  " << modelProjectionTransform << endl;
 	out << "  Texture Filtering:  " << textureFiltering << endl;
-	out << "  Max Anisotropy:  " << maxAnisotropy << endl;
 	out << "  Texture Clamping:  " << textureClamping << endl;
+	out << "  Unknown:  " << unknown << endl;
 	out << "  Texture Type:  " << textureType << endl;
 	out << "  Coordinate Generation Type:  " << coordinateGenerationType << endl;
 	out << "  Image:  " << image << endl;
 	out << "  Source Texture:  " << sourceTexture << endl;
-	out << "  Enable Plane:  " << enablePlane << endl;
-	out << "  Normal:  " << plane.normal << endl;
-	out << "  Constant:  " << plane.constant << endl;
+	out << "  Clipping Plane:  " << clippingPlane << endl;
+	out << "  Unknown Vector:  " << unknownVector << endl;
+	out << "  Unknown Float:  " << unknownFloat << endl;
 	out << "  PS2 L:  " << ps2L << endl;
 	out << "  PS2 K:  " << ps2K << endl;
 	out << "  Unknown Short:  " << unknownShort << endl;
@@ -206,11 +237,11 @@ void NiTextureEffect::SetTextureClamping( TexClampMode value ) {
 	textureClamping = value;
 }
 
-TextureType NiTextureEffect::GetTextureType() const {
+EffectType NiTextureEffect::GetTextureType() const {
 	return textureType;
 }
 
-void NiTextureEffect::SetTextureType( TextureType value ) {
+void NiTextureEffect::SetTextureType( EffectType value ) {
 	textureType = value;
 }
 
@@ -230,6 +261,14 @@ void NiTextureEffect::SetSourceTexture( Ref<NiSourceTexture > value ) {
 	sourceTexture = value;
 }
 
+byte NiTextureEffect::GetClippingPlane() const {
+	return clippingPlane;
+}
+
+void NiTextureEffect::SetClippingPlane( byte value ) {
+	clippingPlane = value;
+}
+
 unsigned short NiTextureEffect::GetPs2L() const {
 	return ps2L;
 }
@@ -244,52 +283,6 @@ unsigned short NiTextureEffect::GetPs2K() const {
 
 void NiTextureEffect::SetPs2K( unsigned short value ) {
 	ps2K = value;
-}
-
-unsigned short Niflib::NiTextureEffect::GetMaxAnisotropy() const
-{
-	return maxAnisotropy;
-}
-
-void Niflib::NiTextureEffect::SetMaxAnisotropy(unsigned short value)
-{
-	maxAnisotropy = value;
-}
-
-TexClampMode Niflib::NiTextureEffect::GetTextureClampMode() const
-{
-	return textureClamping;
-}
-
-void Niflib::NiTextureEffect::SetTextureClampMode(TexClampMode value)
-{
-	textureClamping = value;
-}
-
-Ref<NiImage> Niflib::NiTextureEffect::GetImageIndex() const
-{
-	return image;
-}
-
-void Niflib::NiTextureEffect::SetImageIndex(Ref<NiImage> value)
-{
-	image = value;
-}
-
-byte Niflib::NiTextureEffect::GetHasPlane() const
-{
-	return enablePlane;
-}
-
-NiPlane Niflib::NiTextureEffect::GetPlane() const
-{
-	return plane;
-}
-
-void Niflib::NiTextureEffect::SetPlane(NiPlane value)
-{
-	plane = value;
-	enablePlane = 1;
 }
 
 //--END CUSTOM CODE--//

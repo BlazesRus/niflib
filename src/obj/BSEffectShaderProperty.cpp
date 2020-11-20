@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,9 +18,9 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type BSEffectShaderProperty::TYPE("BSEffectShaderProperty", &BSShaderProperty::TYPE );
+const Type BSEffectShaderProperty::TYPE("BSEffectShaderProperty", &NiProperty::TYPE );
 
-BSEffectShaderProperty::BSEffectShaderProperty() : shaderFlags1_sk((SkyrimShaderPropertyFlags1)2147483648), shaderFlags2_sk((SkyrimShaderPropertyFlags2)32), shaderFlags1_fo4((Fallout4ShaderPropertyFlags1)2147483648), shaderFlags2_fo4((Fallout4ShaderPropertyFlags2)32), uvScale(1.0, 1.0), textureClampMode((byte)0), lightingInfluence((byte)0), envMapMinLod((byte)0), unknownByte((byte)0), falloffStartAngle(1.0f), falloffStopAngle(1.0f), falloffStartOpacity(0.0f), falloffStopOpacity(0.0f), emissiveMultiple(0.0f), softFalloffDepth(0.0f), environmentMapScale(0.0f) {
+BSEffectShaderProperty::BSEffectShaderProperty() : shaderFlags1((SkyrimShaderPropertyFlags1)0), shaderFlags2((SkyrimShaderPropertyFlags2)0), uvScale(1.0, 1.0), textureClampMode((unsigned int)0), falloffStartAngle(1.0f), falloffStopAngle(1.0f), falloffStartOpacity(0.0f), falloffStopOpacity(0.0f), emissiveMultiple(0.0f), softFalloffDepth(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,22 +45,13 @@ void BSEffectShaderProperty::Read( istream& in, list<unsigned int> & link_stack,
 
 	//--END CUSTOM CODE--//
 
-	BSShaderProperty::Read( in, link_stack, info );
-	if ( (info.userVersion2 != 130) ) {
-		NifStream( shaderFlags1_sk, in, info );
-		NifStream( shaderFlags2_sk, in, info );
-	};
-	if ( (info.userVersion2 == 130) ) {
-		NifStream( shaderFlags1_fo4, in, info );
-		NifStream( shaderFlags2_fo4, in, info );
-	};
+	NiProperty::Read( in, link_stack, info );
+	NifStream( shaderFlags1, in, info );
+	NifStream( shaderFlags2, in, info );
 	NifStream( uvOffset, in, info );
 	NifStream( uvScale, in, info );
 	NifStream( sourceTexture, in, info );
 	NifStream( textureClampMode, in, info );
-	NifStream( lightingInfluence, in, info );
-	NifStream( envMapMinLod, in, info );
-	NifStream( unknownByte, in, info );
 	NifStream( falloffStartAngle, in, info );
 	NifStream( falloffStopAngle, in, info );
 	NifStream( falloffStartOpacity, in, info );
@@ -69,12 +60,6 @@ void BSEffectShaderProperty::Read( istream& in, list<unsigned int> & link_stack,
 	NifStream( emissiveMultiple, in, info );
 	NifStream( softFalloffDepth, in, info );
 	NifStream( greyscaleTexture, in, info );
-	if ( (info.userVersion2 == 130) ) {
-		NifStream( envMapTexture, in, info );
-		NifStream( normalTexture, in, info );
-		NifStream( envMaskTexture, in, info );
-		NifStream( environmentMapScale, in, info );
-	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -86,22 +71,13 @@ void BSEffectShaderProperty::Write( ostream& out, const map<NiObjectRef,unsigned
 
 	//--END CUSTOM CODE--//
 
-	BSShaderProperty::Write( out, link_map, missing_link_stack, info );
-	if ( (info.userVersion2 != 130) ) {
-		NifStream( shaderFlags1_sk, out, info );
-		NifStream( shaderFlags2_sk, out, info );
-	};
-	if ( (info.userVersion2 == 130) ) {
-		NifStream( shaderFlags1_fo4, out, info );
-		NifStream( shaderFlags2_fo4, out, info );
-	};
+	NiProperty::Write( out, link_map, missing_link_stack, info );
+	NifStream( shaderFlags1, out, info );
+	NifStream( shaderFlags2, out, info );
 	NifStream( uvOffset, out, info );
 	NifStream( uvScale, out, info );
 	NifStream( sourceTexture, out, info );
 	NifStream( textureClampMode, out, info );
-	NifStream( lightingInfluence, out, info );
-	NifStream( envMapMinLod, out, info );
-	NifStream( unknownByte, out, info );
 	NifStream( falloffStartAngle, out, info );
 	NifStream( falloffStopAngle, out, info );
 	NifStream( falloffStartOpacity, out, info );
@@ -110,12 +86,6 @@ void BSEffectShaderProperty::Write( ostream& out, const map<NiObjectRef,unsigned
 	NifStream( emissiveMultiple, out, info );
 	NifStream( softFalloffDepth, out, info );
 	NifStream( greyscaleTexture, out, info );
-	if ( (info.userVersion2 == 130) ) {
-		NifStream( envMapTexture, out, info );
-		NifStream( normalTexture, out, info );
-		NifStream( envMaskTexture, out, info );
-		NifStream( environmentMapScale, out, info );
-	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -128,19 +98,13 @@ std::string BSEffectShaderProperty::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	unsigned int array_output_count = 0;
-	out << BSShaderProperty::asString();
-	out << "  Shader Flags 1:  " << shaderFlags1_sk << endl;
-	out << "  Shader Flags 2:  " << shaderFlags2_sk << endl;
-	out << "  Shader Flags 1:  " << shaderFlags1_fo4 << endl;
-	out << "  Shader Flags 2:  " << shaderFlags2_fo4 << endl;
+	out << NiProperty::asString();
+	out << "  Shader Flags 1:  " << shaderFlags1 << endl;
+	out << "  Shader Flags 2:  " << shaderFlags2 << endl;
 	out << "  UV Offset:  " << uvOffset << endl;
 	out << "  UV Scale:  " << uvScale << endl;
 	out << "  Source Texture:  " << sourceTexture << endl;
 	out << "  Texture Clamp Mode:  " << textureClampMode << endl;
-	out << "  Lighting Influence:  " << lightingInfluence << endl;
-	out << "  Env Map Min LOD:  " << envMapMinLod << endl;
-	out << "  Unknown Byte:  " << unknownByte << endl;
 	out << "  Falloff Start Angle:  " << falloffStartAngle << endl;
 	out << "  Falloff Stop Angle:  " << falloffStopAngle << endl;
 	out << "  Falloff Start Opacity:  " << falloffStartOpacity << endl;
@@ -149,10 +113,6 @@ std::string BSEffectShaderProperty::asString( bool verbose ) const {
 	out << "  Emissive Multiple:  " << emissiveMultiple << endl;
 	out << "  Soft Falloff Depth:  " << softFalloffDepth << endl;
 	out << "  Greyscale Texture:  " << greyscaleTexture << endl;
-	out << "  Env Map Texture:  " << envMapTexture << endl;
-	out << "  Normal Texture:  " << normalTexture << endl;
-	out << "  Env Mask Texture:  " << envMaskTexture << endl;
-	out << "  Environment Map Scale:  " << environmentMapScale << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -165,7 +125,7 @@ void BSEffectShaderProperty::FixLinks( const map<unsigned int,NiObjectRef> & obj
 
 	//--END CUSTOM CODE--//
 
-	BSShaderProperty::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiProperty::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -174,13 +134,13 @@ void BSEffectShaderProperty::FixLinks( const map<unsigned int,NiObjectRef> & obj
 
 std::list<NiObjectRef> BSEffectShaderProperty::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = BSShaderProperty::GetRefs();
+	refs = NiProperty::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> BSEffectShaderProperty::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = BSShaderProperty::GetPtrs();
+	ptrs = NiProperty::GetPtrs();
 	return ptrs;
 }
 

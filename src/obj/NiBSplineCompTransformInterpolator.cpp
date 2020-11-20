@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -26,7 +26,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiBSplineCompTransformInterpolator::TYPE("NiBSplineCompTransformInterpolator", &NiBSplineTransformInterpolator::TYPE );
 
-NiBSplineCompTransformInterpolator::NiBSplineCompTransformInterpolator() : translationOffset(3.402823466e+38f), translationHalfRange(3.402823466e+38f), rotationOffset(3.402823466e+38f), rotationHalfRange(3.402823466e+38f), scaleOffset(3.402823466e+38f), scaleHalfRange(3.402823466e+38f) {
+NiBSplineCompTransformInterpolator::NiBSplineCompTransformInterpolator() : translationBias(0.0f), translationMultiplier(0.0f), rotationBias(0.0f), rotationMultiplier(0.0f), scaleBias(0.0f), scaleMultiplier(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -49,12 +49,12 @@ void NiBSplineCompTransformInterpolator::Read( istream& in, list<unsigned int> &
 	//--END CUSTOM CODE--//
 
 	NiBSplineTransformInterpolator::Read( in, link_stack, info );
-	NifStream( translationOffset, in, info );
-	NifStream( translationHalfRange, in, info );
-	NifStream( rotationOffset, in, info );
-	NifStream( rotationHalfRange, in, info );
-	NifStream( scaleOffset, in, info );
-	NifStream( scaleHalfRange, in, info );
+	NifStream( translationBias, in, info );
+	NifStream( translationMultiplier, in, info );
+	NifStream( rotationBias, in, info );
+	NifStream( rotationMultiplier, in, info );
+	NifStream( scaleBias, in, info );
+	NifStream( scaleMultiplier, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -65,12 +65,12 @@ void NiBSplineCompTransformInterpolator::Write( ostream& out, const map<NiObject
 	//--END CUSTOM CODE--//
 
 	NiBSplineTransformInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( translationOffset, out, info );
-	NifStream( translationHalfRange, out, info );
-	NifStream( rotationOffset, out, info );
-	NifStream( rotationHalfRange, out, info );
-	NifStream( scaleOffset, out, info );
-	NifStream( scaleHalfRange, out, info );
+	NifStream( translationBias, out, info );
+	NifStream( translationMultiplier, out, info );
+	NifStream( rotationBias, out, info );
+	NifStream( rotationMultiplier, out, info );
+	NifStream( scaleBias, out, info );
+	NifStream( scaleMultiplier, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -82,12 +82,12 @@ std::string NiBSplineCompTransformInterpolator::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiBSplineTransformInterpolator::asString();
-	out << "  Translation Offset:  " << translationOffset << endl;
-	out << "  Translation Half Range:  " << translationHalfRange << endl;
-	out << "  Rotation Offset:  " << rotationOffset << endl;
-	out << "  Rotation Half Range:  " << rotationHalfRange << endl;
-	out << "  Scale Offset:  " << scaleOffset << endl;
-	out << "  Scale Half Range:  " << scaleHalfRange << endl;
+	out << "  Translation Bias:  " << translationBias << endl;
+	out << "  Translation Multiplier:  " << translationMultiplier << endl;
+	out << "  Rotation Bias:  " << rotationBias << endl;
+	out << "  Rotation Multiplier:  " << rotationMultiplier << endl;
+	out << "  Scale Bias:  " << scaleBias << endl;
+	out << "  Scale Multiplier:  " << scaleMultiplier << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

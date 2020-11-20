@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -13,38 +13,42 @@ All rights reserved.  Please see niflib.h for license. */
 //--BEGIN FILE HEAD CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-#include "NiTexturingProperty.h"
+#include "NiProperty.h"
+
+// Include structures
+#include "../gen/MultiTextureElement.h"
 namespace Niflib {
 
 class NiMultiTextureProperty;
 typedef Ref<NiMultiTextureProperty> NiMultiTexturePropertyRef;
 
-class NiMultiTextureProperty : public NiTexturingProperty {
+/*! (note: not quite complete yet... but already reads most of the DAoC ones) */
+class NiMultiTextureProperty : public NiProperty {
 public:
 	/*! Constructor */
 	NIFLIB_API NiMultiTextureProperty();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiMultiTextureProperty();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -53,6 +57,19 @@ public:
 
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//
+protected:
+	/*! Property flags. */
+	unsigned short flags;
+	/*!
+	 * Unknown. Always 5 for DAoC files, and always 6 for Bridge Commander.  Seems to
+	 * have nothing to do with the number of Texture Element slots that follow.
+	 */
+	unsigned int unknownInt;
+	/*!
+	 * Describes the various textures used by this mutli-texture property.  Each slot
+	 * probably has special meaning like thoes in NiTexturingProperty.
+	 */
+	Niflib::array<5,MultiTextureElement > textureElements;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -69,5 +86,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

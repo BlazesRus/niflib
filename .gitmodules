@@ -1,6 +1,6 @@
 [submodule "qhull"]
 	path = qhull
-	url = https://github.com/qhull/qhull
+	url = git://github.com/qhull/qhull.git
 [submodule "NifGen"]
 	path = NifGen
 	url = https://github.com/BlazesRus/NifLibGenerator

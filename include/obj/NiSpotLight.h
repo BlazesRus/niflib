@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -24,28 +24,28 @@ class NiSpotLight : public NiPointLight {
 public:
 	/*! Constructor */
 	NIFLIB_API NiSpotLight();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiSpotLight();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -55,28 +55,16 @@ public:
 	//--BEGIN MISC CUSTOM CODE--//
 
 	/*!
-	 * Retrieves the inner angle of the spot light.
-	 * \return The inner spot angle.
+	 * Retrieves the opening angle of the spot light.
+	 * \return The cutoff angle.
 	 */
-	NIFLIB_API float GetInnerSpotAngle() const;
+	NIFLIB_API float GetCutoffAngle() const;
 
 	/*!
-	 * Sets the inner angle of the spot light.
-	 * \param[in] value The new inner spot angle.
+	 * Sets the opening angle of the spot light.
+	 * \param[in] value The new cutoff angle.
 	 */
-	NIFLIB_API void SetInnerSpotAngle( float value );
-
-		/*!
-	 * Retrieves the outer angle of the spot light.
-	 * \return The outer spot angle.
-	 */
-	NIFLIB_API float GetOuterSpotAngle() const;
-
-	/*!
-	 * Sets the outer angle of the spot light.
-	 * \param[in] value The new outer spot angle.
-	 */
-	NIFLIB_API void SetOuterSpotAngle( float value );
+	NIFLIB_API void SetCutoffAngle( float value );
 
 	/*!
 	 * Retrieves the exponent of this spot light.  This describes the distribution of light.  See glLight in OpenGL.
@@ -92,8 +80,10 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	float outerSpotAngle;
-	float innerSpotAngle;
+	/*! The opening angle of the spot. */
+	float cutoffAngle;
+	/*! Unknown */
+	float unknownFloat;
 	/*! Describes the distribution of light. (see: glLight) */
 	float exponent;
 public:
@@ -112,5 +102,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

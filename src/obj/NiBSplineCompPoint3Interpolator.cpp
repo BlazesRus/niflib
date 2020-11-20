@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiBSplineCompPoint3Interpolator::TYPE("NiBSplineCompPoint3Interpolator", &NiBSplinePoint3Interpolator::TYPE );
 
-NiBSplineCompPoint3Interpolator::NiBSplineCompPoint3Interpolator() : positionOffset(3.402823466e+38f), positionHalfRange(3.402823466e+38f) {
+NiBSplineCompPoint3Interpolator::NiBSplineCompPoint3Interpolator() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,8 +42,6 @@ void NiBSplineCompPoint3Interpolator::Read( istream& in, list<unsigned int> & li
 	//--END CUSTOM CODE--//
 
 	NiBSplinePoint3Interpolator::Read( in, link_stack, info );
-	NifStream( positionOffset, in, info );
-	NifStream( positionHalfRange, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -54,8 +52,6 @@ void NiBSplineCompPoint3Interpolator::Write( ostream& out, const map<NiObjectRef
 	//--END CUSTOM CODE--//
 
 	NiBSplinePoint3Interpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( positionOffset, out, info );
-	NifStream( positionHalfRange, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -67,8 +63,6 @@ std::string NiBSplineCompPoint3Interpolator::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiBSplinePoint3Interpolator::asString();
-	out << "  Position Offset:  " << positionOffset << endl;
-	out << "  Position Half Range:  " << positionHalfRange << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -70,7 +70,6 @@ std::string NiStringExtraData::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	unsigned int array_output_count = 0;
 	out << NiExtraData::asString();
 	out << "  Bytes Remaining:  " << bytesRemaining << endl;
 	out << "  String Data:  " << stringData << endl;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,17 +15,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPSParticleSystem.h"
-#include "../../include/gen/PSSpawnRateKey.h"
-#include "../../include/obj/NiPSBoundUpdater.h"
-#include "../../include/obj/NiPSEmitter.h"
-#include "../../include/obj/NiPSSimulator.h"
-#include "../../include/obj/NiPSSpawner.h"
+#include "../../include/obj/NiObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPSParticleSystem::TYPE("NiPSParticleSystem", &NiMesh::TYPE );
+const Type NiPSParticleSystem::TYPE("NiPSParticleSystem", &NiAVObject::TYPE );
 
-NiPSParticleSystem::NiPSParticleSystem() : simulator(NULL), generator(NULL), numEmitters((unsigned int)0), numSpawners((unsigned int)0), deathSpawner(NULL), maxNumParticles((unsigned int)0), hasColors(false), hasRotations(false), hasRotationAxes(false), hasAnimatedTextures(false), worldSpace(false), normalMethod((AlignMethod)0), upMethod((AlignMethod)0), livingSpawner(NULL), numSpawnRateKeys((byte)0), pre_rpi(false) {
+NiPSParticleSystem::NiPSParticleSystem() : unknown3((int)0), unknown4((int)0), unknown5((int)0), unknown6((int)0), unknown7((int)0), unknown8((int)0), unknown9((int)0), unknown10(0.0f), unknown11((int)0), unknown12((int)0), simulator(NULL), generator(NULL), unknown15((int)0), unknown16((int)0), unknown17((int)0), emitter(NULL), unknown19((int)0), unknown20((int)0), unknown21((int)0), unknown27((int)0), unknown28((int)0), unknown29((int)0), unknown30((int)0), unknown31((int)0), unknown32((int)0), unknown33((int)0), unknown34((int)0), unknown35((byte)0), unknown36((int)0), unknown37((short)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -51,47 +47,54 @@ void NiPSParticleSystem::Read( istream& in, list<unsigned int> & link_stack, con
 	//--END CUSTOM CODE--//
 
 	unsigned int block_num;
-	NiMesh::Read( in, link_stack, info );
+	NiAVObject::Read( in, link_stack, info );
+	NifStream( unknown3, in, info );
+	unknown38.resize(unknown3);
+	for (unsigned int i1 = 0; i1 < unknown38.size(); i1++) {
+		NifStream( unknown38[i1], in, info );
+	};
+	NifStream( unknown4, in, info );
+	NifStream( unknown5, in, info );
+	unknown39.resize(unknown3);
+	for (unsigned int i1 = 0; i1 < unknown39.size(); i1++) {
+		NifStream( unknown39[i1], in, info );
+	};
+	NifStream( unknown6, in, info );
+	NifStream( unknown7, in, info );
+	NifStream( unknown8, in, info );
+	NifStream( unknown9, in, info );
+	NifStream( unknown10, in, info );
+	NifStream( unknown11, in, info );
+	NifStream( unknown12, in, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
-	NifStream( block_num, in, info );
-	link_stack.push_back( block_num );
-	NifStream( numEmitters, in, info );
-	emitters.resize(numEmitters);
-	for (unsigned int i1 = 0; i1 < emitters.size(); i1++) {
+	if ( (unknown12 > 1) ) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	NifStream( numSpawners, in, info );
-	spawners.resize(numSpawners);
-	for (unsigned int i1 = 0; i1 < spawners.size(); i1++) {
-		NifStream( block_num, in, info );
-		link_stack.push_back( block_num );
-	};
+	NifStream( unknown15, in, info );
+	NifStream( unknown16, in, info );
+	NifStream( unknown17, in, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
-	NifStream( maxNumParticles, in, info );
-	NifStream( hasColors, in, info );
-	NifStream( hasRotations, in, info );
-	NifStream( hasRotationAxes, in, info );
-	if ( info.version >= 0x14060100 ) {
-		NifStream( hasAnimatedTextures, in, info );
+	NifStream( unknown19, in, info );
+	NifStream( unknown20, in, info );
+	NifStream( unknown21, in, info );
+	for (unsigned int i1 = 0; i1 < 4; i1++) {
+		NifStream( unknown22[i1], in, info );
 	};
-	NifStream( worldSpace, in, info );
-	if ( info.version >= 0x14060100 ) {
-		NifStream( normalMethod, in, info );
-		NifStream( normalDirection, in, info );
-		NifStream( upMethod, in, info );
-		NifStream( upDirection, in, info );
-		NifStream( block_num, in, info );
-		link_stack.push_back( block_num );
-		NifStream( numSpawnRateKeys, in, info );
-		spawnRateKeys.resize(numSpawnRateKeys);
-		for (unsigned int i2 = 0; i2 < spawnRateKeys.size(); i2++) {
-			NifStream( spawnRateKeys[i2].value, in, info );
-			NifStream( spawnRateKeys[i2].time, in, info );
-		};
-		NifStream( pre_rpi, in, info );
+	if ( info.version >= 0x1E000002 ) {
+		NifStream( unknown27, in, info );
+		NifStream( unknown28, in, info );
+		NifStream( unknown29, in, info );
+		NifStream( unknown30, in, info );
+		NifStream( unknown31, in, info );
+		NifStream( unknown32, in, info );
+		NifStream( unknown33, in, info );
+		NifStream( unknown34, in, info );
+		NifStream( unknown35, in, info );
+		NifStream( unknown36, in, info );
+		NifStream( unknown37, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -104,41 +107,98 @@ void NiPSParticleSystem::Write( ostream& out, const map<NiObjectRef,unsigned int
 
 	//--END CUSTOM CODE--//
 
-	NiMesh::Write( out, link_map, missing_link_stack, info );
-	numSpawnRateKeys = (byte)(spawnRateKeys.size());
-	numSpawners = (unsigned int)(spawners.size());
-	numEmitters = (unsigned int)(emitters.size());
-	WriteRef( StaticCast<NiObject>(simulator), out, info, link_map, missing_link_stack );
-	WriteRef( StaticCast<NiObject>(generator), out, info, link_map, missing_link_stack );
-	NifStream( numEmitters, out, info );
-	for (unsigned int i1 = 0; i1 < emitters.size(); i1++) {
-		WriteRef( StaticCast<NiObject>(emitters[i1]), out, info, link_map, missing_link_stack );
+	NiAVObject::Write( out, link_map, missing_link_stack, info );
+	unknown3 = (int)(unknown38.size());
+	NifStream( unknown3, out, info );
+	for (unsigned int i1 = 0; i1 < unknown38.size(); i1++) {
+		NifStream( unknown38[i1], out, info );
 	};
-	NifStream( numSpawners, out, info );
-	for (unsigned int i1 = 0; i1 < spawners.size(); i1++) {
-		WriteRef( StaticCast<NiObject>(spawners[i1]), out, info, link_map, missing_link_stack );
+	NifStream( unknown4, out, info );
+	NifStream( unknown5, out, info );
+	for (unsigned int i1 = 0; i1 < unknown39.size(); i1++) {
+		NifStream( unknown39[i1], out, info );
 	};
-	WriteRef( StaticCast<NiObject>(deathSpawner), out, info, link_map, missing_link_stack );
-	NifStream( maxNumParticles, out, info );
-	NifStream( hasColors, out, info );
-	NifStream( hasRotations, out, info );
-	NifStream( hasRotationAxes, out, info );
-	if ( info.version >= 0x14060100 ) {
-		NifStream( hasAnimatedTextures, out, info );
+	NifStream( unknown6, out, info );
+	NifStream( unknown7, out, info );
+	NifStream( unknown8, out, info );
+	NifStream( unknown9, out, info );
+	NifStream( unknown10, out, info );
+	NifStream( unknown11, out, info );
+	NifStream( unknown12, out, info );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*simulator), out );
+	} else {
+		if ( simulator != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(simulator) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( simulator );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+	if ( (unknown12 > 1) ) {
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*generator), out );
+		} else {
+			if ( generator != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(generator) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( generator );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
-	NifStream( worldSpace, out, info );
-	if ( info.version >= 0x14060100 ) {
-		NifStream( normalMethod, out, info );
-		NifStream( normalDirection, out, info );
-		NifStream( upMethod, out, info );
-		NifStream( upDirection, out, info );
-		WriteRef( StaticCast<NiObject>(livingSpawner), out, info, link_map, missing_link_stack );
-		NifStream( numSpawnRateKeys, out, info );
-		for (unsigned int i2 = 0; i2 < spawnRateKeys.size(); i2++) {
-			NifStream( spawnRateKeys[i2].value, out, info );
-			NifStream( spawnRateKeys[i2].time, out, info );
-		};
-		NifStream( pre_rpi, out, info );
+	NifStream( unknown15, out, info );
+	NifStream( unknown16, out, info );
+	NifStream( unknown17, out, info );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*emitter), out );
+	} else {
+		if ( emitter != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(emitter) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( emitter );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+	NifStream( unknown19, out, info );
+	NifStream( unknown20, out, info );
+	NifStream( unknown21, out, info );
+	for (unsigned int i1 = 0; i1 < 4; i1++) {
+		NifStream( unknown22[i1], out, info );
+	};
+	if ( info.version >= 0x1E000002 ) {
+		NifStream( unknown27, out, info );
+		NifStream( unknown28, out, info );
+		NifStream( unknown29, out, info );
+		NifStream( unknown30, out, info );
+		NifStream( unknown31, out, info );
+		NifStream( unknown32, out, info );
+		NifStream( unknown33, out, info );
+		NifStream( unknown34, out, info );
+		NifStream( unknown35, out, info );
+		NifStream( unknown36, out, info );
+		NifStream( unknown37, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -153,15 +213,55 @@ std::string NiPSParticleSystem::asString( bool verbose ) const {
 
 	stringstream out;
 	unsigned int array_output_count = 0;
-	out << NiMesh::asString();
-	numSpawnRateKeys = (byte)(spawnRateKeys.size());
-	numSpawners = (unsigned int)(spawners.size());
-	numEmitters = (unsigned int)(emitters.size());
+	out << NiAVObject::asString();
+	unknown3 = (int)(unknown38.size());
+	out << "  Unknown 3:  " << unknown3 << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < unknown38.size(); i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Unknown 38[" << i1 << "]:  " << unknown38[i1] << endl;
+		array_output_count++;
+	};
+	out << "  Unknown 4:  " << unknown4 << endl;
+	out << "  Unknown 5:  " << unknown5 << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < unknown39.size(); i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Unknown 39[" << i1 << "]:  " << unknown39[i1] << endl;
+		array_output_count++;
+	};
+	out << "  Unknown 6:  " << unknown6 << endl;
+	out << "  Unknown 7:  " << unknown7 << endl;
+	out << "  Unknown 8:  " << unknown8 << endl;
+	out << "  Unknown 9:  " << unknown9 << endl;
+	out << "  Unknown 10:  " << unknown10 << endl;
+	out << "  Unknown 11:  " << unknown11 << endl;
+	out << "  Unknown 12:  " << unknown12 << endl;
 	out << "  Simulator:  " << simulator << endl;
-	out << "  Generator:  " << generator << endl;
-	out << "  Num Emitters:  " << numEmitters << endl;
+	if ( (unknown12 > 1) ) {
+		out << "    Generator:  " << generator << endl;
+	};
+	out << "  Unknown 15:  " << unknown15 << endl;
+	out << "  Unknown 16:  " << unknown16 << endl;
+	out << "  Unknown 17:  " << unknown17 << endl;
+	out << "  Emitter:  " << emitter << endl;
+	out << "  Unknown 19:  " << unknown19 << endl;
+	out << "  Unknown 20:  " << unknown20 << endl;
+	out << "  Unknown 21:  " << unknown21 << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < emitters.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < 4; i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -169,45 +269,20 @@ std::string NiPSParticleSystem::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Emitters[" << i1 << "]:  " << emitters[i1] << endl;
+		out << "    Unknown 22[" << i1 << "]:  " << unknown22[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Num Spawners:  " << numSpawners << endl;
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < spawners.size(); i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
-		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Spawners[" << i1 << "]:  " << spawners[i1] << endl;
-		array_output_count++;
-	};
-	out << "  Death Spawner:  " << deathSpawner << endl;
-	out << "  Max Num Particles:  " << maxNumParticles << endl;
-	out << "  Has Colors:  " << hasColors << endl;
-	out << "  Has Rotations:  " << hasRotations << endl;
-	out << "  Has Rotation Axes:  " << hasRotationAxes << endl;
-	out << "  Has Animated Textures:  " << hasAnimatedTextures << endl;
-	out << "  World Space:  " << worldSpace << endl;
-	out << "  Normal Method:  " << normalMethod << endl;
-	out << "  Normal Direction:  " << normalDirection << endl;
-	out << "  Up Method:  " << upMethod << endl;
-	out << "  Up Direction:  " << upDirection << endl;
-	out << "  Living Spawner:  " << livingSpawner << endl;
-	out << "  Num Spawn Rate Keys:  " << numSpawnRateKeys << endl;
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < spawnRateKeys.size(); i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
-		};
-		out << "    Value:  " << spawnRateKeys[i1].value << endl;
-		out << "    Time:  " << spawnRateKeys[i1].time << endl;
-	};
-	out << "  Pre-RPI:  " << pre_rpi << endl;
+	out << "  Unknown 27:  " << unknown27 << endl;
+	out << "  Unknown 28:  " << unknown28 << endl;
+	out << "  Unknown 29:  " << unknown29 << endl;
+	out << "  Unknown 30:  " << unknown30 << endl;
+	out << "  Unknown 31:  " << unknown31 << endl;
+	out << "  Unknown 32:  " << unknown32 << endl;
+	out << "  Unknown 33:  " << unknown33 << endl;
+	out << "  Unknown 34:  " << unknown34 << endl;
+	out << "  Unknown 35:  " << unknown35 << endl;
+	out << "  Unknown 36:  " << unknown36 << endl;
+	out << "  Unknown 37:  " << unknown37 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -220,19 +295,12 @@ void NiPSParticleSystem::FixLinks( const map<unsigned int,NiObjectRef> & objects
 
 	//--END CUSTOM CODE--//
 
-	NiMesh::FixLinks( objects, link_stack, missing_link_stack, info );
-	simulator = FixLink<NiPSSimulator>( objects, link_stack, missing_link_stack, info );
-	generator = FixLink<NiPSBoundUpdater>( objects, link_stack, missing_link_stack, info );
-	for (unsigned int i1 = 0; i1 < emitters.size(); i1++) {
-		emitters[i1] = FixLink<NiPSEmitter>( objects, link_stack, missing_link_stack, info );
+	NiAVObject::FixLinks( objects, link_stack, missing_link_stack, info );
+	simulator = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
+	if ( (unknown12 > 1) ) {
+		generator = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
 	};
-	for (unsigned int i1 = 0; i1 < spawners.size(); i1++) {
-		spawners[i1] = FixLink<NiPSSpawner>( objects, link_stack, missing_link_stack, info );
-	};
-	deathSpawner = FixLink<NiPSSpawner>( objects, link_stack, missing_link_stack, info );
-	if ( info.version >= 0x14060100 ) {
-		livingSpawner = FixLink<NiPSSpawner>( objects, link_stack, missing_link_stack, info );
-	};
+	emitter = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -241,33 +309,19 @@ void NiPSParticleSystem::FixLinks( const map<unsigned int,NiObjectRef> & objects
 
 std::list<NiObjectRef> NiPSParticleSystem::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiMesh::GetRefs();
+	refs = NiAVObject::GetRefs();
 	if ( simulator != NULL )
 		refs.push_back(StaticCast<NiObject>(simulator));
 	if ( generator != NULL )
 		refs.push_back(StaticCast<NiObject>(generator));
-	for (unsigned int i1 = 0; i1 < emitters.size(); i1++) {
-		if ( emitters[i1] != NULL )
-			refs.push_back(StaticCast<NiObject>(emitters[i1]));
-	};
-	for (unsigned int i1 = 0; i1 < spawners.size(); i1++) {
-		if ( spawners[i1] != NULL )
-			refs.push_back(StaticCast<NiObject>(spawners[i1]));
-	};
-	if ( deathSpawner != NULL )
-		refs.push_back(StaticCast<NiObject>(deathSpawner));
-	if ( livingSpawner != NULL )
-		refs.push_back(StaticCast<NiObject>(livingSpawner));
+	if ( emitter != NULL )
+		refs.push_back(StaticCast<NiObject>(emitter));
 	return refs;
 }
 
 std::list<NiObject *> NiPSParticleSystem::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiMesh::GetPtrs();
-	for (unsigned int i1 = 0; i1 < emitters.size(); i1++) {
-	};
-	for (unsigned int i1 = 0; i1 < spawners.size(); i1++) {
-	};
+	ptrs = NiAVObject::GetPtrs();
 	return ptrs;
 }
 

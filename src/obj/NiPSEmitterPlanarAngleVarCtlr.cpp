@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,7 +18,7 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPSEmitterPlanarAngleVarCtlr::TYPE("NiPSEmitterPlanarAngleVarCtlr", &NiPSEmitterFloatCtlr::TYPE );
+const Type NiPSEmitterPlanarAngleVarCtlr::TYPE("NiPSEmitterPlanarAngleVarCtlr", &NiPSEmitterPlanarAngleCtlr::TYPE );
 
 NiPSEmitterPlanarAngleVarCtlr::NiPSEmitterPlanarAngleVarCtlr() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
@@ -45,7 +45,7 @@ void NiPSEmitterPlanarAngleVarCtlr::Read( istream& in, list<unsigned int> & link
 
 	//--END CUSTOM CODE--//
 
-	NiPSEmitterFloatCtlr::Read( in, link_stack, info );
+	NiPSEmitterPlanarAngleCtlr::Read( in, link_stack, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -57,7 +57,7 @@ void NiPSEmitterPlanarAngleVarCtlr::Write( ostream& out, const map<NiObjectRef,u
 
 	//--END CUSTOM CODE--//
 
-	NiPSEmitterFloatCtlr::Write( out, link_map, missing_link_stack, info );
+	NiPSEmitterPlanarAngleCtlr::Write( out, link_map, missing_link_stack, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -70,7 +70,7 @@ std::string NiPSEmitterPlanarAngleVarCtlr::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiPSEmitterFloatCtlr::asString();
+	out << NiPSEmitterPlanarAngleCtlr::asString();
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -83,7 +83,7 @@ void NiPSEmitterPlanarAngleVarCtlr::FixLinks( const map<unsigned int,NiObjectRef
 
 	//--END CUSTOM CODE--//
 
-	NiPSEmitterFloatCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiPSEmitterPlanarAngleCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -92,13 +92,13 @@ void NiPSEmitterPlanarAngleVarCtlr::FixLinks( const map<unsigned int,NiObjectRef
 
 std::list<NiObjectRef> NiPSEmitterPlanarAngleVarCtlr::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiPSEmitterFloatCtlr::GetRefs();
+	refs = NiPSEmitterPlanarAngleCtlr::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> NiPSEmitterPlanarAngleVarCtlr::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiPSEmitterFloatCtlr::GetPtrs();
+	ptrs = NiPSEmitterPlanarAngleCtlr::GetPtrs();
 	return ptrs;
 }
 

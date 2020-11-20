@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,11 +15,10 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiCollisionData.h"
 #include "../../include/gen/BoundingVolume.h"
+#include "../../include/gen/SphereBV.h"
 #include "../../include/gen/BoxBV.h"
 #include "../../include/gen/CapsuleBV.h"
 #include "../../include/gen/HalfSpaceBV.h"
-#include "../../include/gen/NiBound.h"
-#include "../../include/gen/NiPlane.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
@@ -64,18 +63,19 @@ void NiCollisionData::Read( istream& in, list<unsigned int> & link_stack, const 
 			for (unsigned int i3 = 0; i3 < 3; i3++) {
 				NifStream( boundingVolume.box.axis[i3], in, info );
 			};
-			NifStream( boundingVolume.box.extent, in, info );
+			for (unsigned int i3 = 0; i3 < 3; i3++) {
+				NifStream( boundingVolume.box.extent[i3], in, info );
+			};
 		};
 		if ( (boundingVolume.collisionType == 2) ) {
 			NifStream( boundingVolume.capsule.center, in, info );
 			NifStream( boundingVolume.capsule.origin, in, info );
-			NifStream( boundingVolume.capsule.extent, in, info );
-			NifStream( boundingVolume.capsule.radius, in, info );
+			NifStream( boundingVolume.capsule.unknownFloat1, in, info );
+			NifStream( boundingVolume.capsule.unknownFloat2, in, info );
 		};
 		if ( (boundingVolume.collisionType == 5) ) {
-			NifStream( boundingVolume.halfSpace.plane.normal, in, info );
-			NifStream( boundingVolume.halfSpace.plane.constant, in, info );
-			NifStream( boundingVolume.halfSpace.center, in, info );
+			NifStream( boundingVolume.halfspace.normal, in, info );
+			NifStream( boundingVolume.halfspace.center, in, info );
 		};
 	};
 
@@ -104,18 +104,19 @@ void NiCollisionData::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 			for (unsigned int i3 = 0; i3 < 3; i3++) {
 				NifStream( boundingVolume.box.axis[i3], out, info );
 			};
-			NifStream( boundingVolume.box.extent, out, info );
+			for (unsigned int i3 = 0; i3 < 3; i3++) {
+				NifStream( boundingVolume.box.extent[i3], out, info );
+			};
 		};
 		if ( (boundingVolume.collisionType == 2) ) {
 			NifStream( boundingVolume.capsule.center, out, info );
 			NifStream( boundingVolume.capsule.origin, out, info );
-			NifStream( boundingVolume.capsule.extent, out, info );
-			NifStream( boundingVolume.capsule.radius, out, info );
+			NifStream( boundingVolume.capsule.unknownFloat1, out, info );
+			NifStream( boundingVolume.capsule.unknownFloat2, out, info );
 		};
 		if ( (boundingVolume.collisionType == 5) ) {
-			NifStream( boundingVolume.halfSpace.plane.normal, out, info );
-			NifStream( boundingVolume.halfSpace.plane.constant, out, info );
-			NifStream( boundingVolume.halfSpace.center, out, info );
+			NifStream( boundingVolume.halfspace.normal, out, info );
+			NifStream( boundingVolume.halfspace.center, out, info );
 		};
 	};
 
@@ -153,18 +154,28 @@ std::string NiCollisionData::asString( bool verbose ) const {
 				out << "        Axis[" << i3 << "]:  " << boundingVolume.box.axis[i3] << endl;
 				array_output_count++;
 			};
-			out << "      Extent:  " << boundingVolume.box.extent << endl;
+			array_output_count = 0;
+			for (unsigned int i3 = 0; i3 < 3; i3++) {
+				if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+					out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+					break;
+				};
+				if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+					break;
+				};
+				out << "        Extent[" << i3 << "]:  " << boundingVolume.box.extent[i3] << endl;
+				array_output_count++;
+			};
 		};
 		if ( (boundingVolume.collisionType == 2) ) {
 			out << "      Center:  " << boundingVolume.capsule.center << endl;
 			out << "      Origin:  " << boundingVolume.capsule.origin << endl;
-			out << "      Extent:  " << boundingVolume.capsule.extent << endl;
-			out << "      Radius:  " << boundingVolume.capsule.radius << endl;
+			out << "      Unknown Float 1:  " << boundingVolume.capsule.unknownFloat1 << endl;
+			out << "      Unknown Float 2:  " << boundingVolume.capsule.unknownFloat2 << endl;
 		};
 		if ( (boundingVolume.collisionType == 5) ) {
-			out << "      Normal:  " << boundingVolume.halfSpace.plane.normal << endl;
-			out << "      Constant:  " << boundingVolume.halfSpace.plane.constant << endl;
-			out << "      Center:  " << boundingVolume.halfSpace.center << endl;
+			out << "      Normal:  " << boundingVolume.halfspace.normal << endl;
+			out << "      Center:  " << boundingVolume.halfspace.center << endl;
 		};
 	};
 	return out.str();

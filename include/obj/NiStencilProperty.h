@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -24,28 +24,28 @@ class NiStencilProperty : public NiProperty {
 public:
 	/*! Constructor */
 	NIFLIB_API NiStencilProperty();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiStencilProperty();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -154,13 +154,13 @@ public:
 	 * Used to determine whether the front, back, or both sides of triangles will be drawn.   This isn't related to the stencil buffer, but happens to be included in this propery, probably for conveniance.
 	 * \return The current face drawing mode.
 	 */
-	NIFLIB_API StencilDrawMode GetStencilDrawMode() const;
+	NIFLIB_API FaceDrawMode GetFaceDrawMode() const;
 
 	/*!
 	 * Sets whether the front, back, or both sides of triangles will be drawn.   This isn't related to the stencil buffer, but happens to be included in this propery, probably for conveniance.
 	 * \param[in] value The new face drawing mode.
 	 */
-	NIFLIB_API void SetStencilDrawMode( StencilDrawMode value );
+	NIFLIB_API void SetFaceDrawMode( FaceDrawMode value );
 
 	//--END CUSTOM CODE--//
 protected:
@@ -170,14 +170,18 @@ protected:
 	byte stencilEnabled;
 	/*! Selects the compare mode function (see: glStencilFunc). */
 	StencilCompareMode stencilFunction;
+	/*! Unknown.  Default is 0. */
 	unsigned int stencilRef;
 	/*! A bit mask. The default is 0xffffffff. */
 	unsigned int stencilMask;
+	/*! Unknown. */
 	StencilAction failAction;
+	/*! Unknown. */
 	StencilAction zFailAction;
+	/*! Unknown. */
 	StencilAction passAction;
 	/*! Used to enabled double sided faces. Default is 3 (DRAW_BOTH). */
-	StencilDrawMode drawMode;
+	FaceDrawMode drawMode;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -194,5 +198,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

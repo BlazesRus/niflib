@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,7 +14,6 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiParticles.h"
-#include "../../include/gen/BSVertexDesc.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
@@ -43,15 +42,6 @@ void NiParticles::Read( istream& in, list<unsigned int> & link_stack, const NifI
 	//--END CUSTOM CODE--//
 
 	NiGeometry::Read( in, link_stack, info );
-	if ( (info.userVersion2 >= 100) ) {
-		NifStream( vertexDesc.vf1, in, info );
-		NifStream( vertexDesc.vf2, in, info );
-		NifStream( vertexDesc.vf3, in, info );
-		NifStream( vertexDesc.vf4, in, info );
-		NifStream( vertexDesc.vf5, in, info );
-		NifStream( vertexDesc.vertexAttributes, in, info );
-		NifStream( vertexDesc.vf8, in, info );
-	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -62,15 +52,6 @@ void NiParticles::Write( ostream& out, const map<NiObjectRef,unsigned int> & lin
 	//--END CUSTOM CODE--//
 
 	NiGeometry::Write( out, link_map, missing_link_stack, info );
-	if ( (info.userVersion2 >= 100) ) {
-		NifStream( vertexDesc.vf1, out, info );
-		NifStream( vertexDesc.vf2, out, info );
-		NifStream( vertexDesc.vf3, out, info );
-		NifStream( vertexDesc.vf4, out, info );
-		NifStream( vertexDesc.vf5, out, info );
-		NifStream( vertexDesc.vertexAttributes, out, info );
-		NifStream( vertexDesc.vf8, out, info );
-	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -82,13 +63,6 @@ std::string NiParticles::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiGeometry::asString();
-	out << "  VF1:  " << vertexDesc.vf1 << endl;
-	out << "  VF2:  " << vertexDesc.vf2 << endl;
-	out << "  VF3:  " << vertexDesc.vf3 << endl;
-	out << "  VF4:  " << vertexDesc.vf4 << endl;
-	out << "  VF5:  " << vertexDesc.vf5 << endl;
-	out << "  Vertex Attributes:  " << vertexDesc.vertexAttributes << endl;
-	out << "  VF8:  " << vertexDesc.vf8 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

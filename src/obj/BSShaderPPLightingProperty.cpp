@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,7 +21,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type BSShaderPPLightingProperty::TYPE("BSShaderPPLightingProperty", &BSShaderLightingProperty::TYPE );
 
-BSShaderPPLightingProperty::BSShaderPPLightingProperty() : textureSet(NULL), refractionStrength(0.0f), refractionFirePeriod((int)0), parallaxMaxPasses(4.0f), parallaxScale(1.0f) {
+BSShaderPPLightingProperty::BSShaderPPLightingProperty() : textureSet(NULL), unknownFloat2(0.0f), refractionPeriod((int)0), unknownFloat4(4.0f), unknownFloat5(1.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -50,15 +50,15 @@ void BSShaderPPLightingProperty::Read( istream& in, list<unsigned int> & link_st
 	BSShaderLightingProperty::Read( in, link_stack, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
-	if ( (info.userVersion2 > 14) ) {
-		NifStream( refractionStrength, in, info );
-		NifStream( refractionFirePeriod, in, info );
+	if ( ((info.userVersion == 11) && (info.userVersion2 > 14)) ) {
+		NifStream( unknownFloat2, in, info );
+		NifStream( refractionPeriod, in, info );
 	};
-	if ( (info.userVersion2 > 24) ) {
-		NifStream( parallaxMaxPasses, in, info );
-		NifStream( parallaxScale, in, info );
+	if ( ((info.userVersion == 11) && (info.userVersion2 > 24)) ) {
+		NifStream( unknownFloat4, in, info );
+		NifStream( unknownFloat5, in, info );
 	};
-	if ( (info.userVersion2 > 34) ) {
+	if ( (info.userVersion >= 12) ) {
 		NifStream( emissiveColor, in, info );
 	};
 
@@ -73,16 +73,32 @@ void BSShaderPPLightingProperty::Write( ostream& out, const map<NiObjectRef,unsi
 	//--END CUSTOM CODE--//
 
 	BSShaderLightingProperty::Write( out, link_map, missing_link_stack, info );
-	WriteRef( StaticCast<NiObject>(textureSet), out, info, link_map, missing_link_stack );
-	if ( (info.userVersion2 > 14) ) {
-		NifStream( refractionStrength, out, info );
-		NifStream( refractionFirePeriod, out, info );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*textureSet), out );
+	} else {
+		if ( textureSet != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(textureSet) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( textureSet );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+	if ( ((info.userVersion == 11) && (info.userVersion2 > 14)) ) {
+		NifStream( unknownFloat2, out, info );
+		NifStream( refractionPeriod, out, info );
 	};
-	if ( (info.userVersion2 > 24) ) {
-		NifStream( parallaxMaxPasses, out, info );
-		NifStream( parallaxScale, out, info );
+	if ( ((info.userVersion == 11) && (info.userVersion2 > 24)) ) {
+		NifStream( unknownFloat4, out, info );
+		NifStream( unknownFloat5, out, info );
 	};
-	if ( (info.userVersion2 > 34) ) {
+	if ( (info.userVersion >= 12) ) {
 		NifStream( emissiveColor, out, info );
 	};
 
@@ -99,10 +115,10 @@ std::string BSShaderPPLightingProperty::asString( bool verbose ) const {
 	stringstream out;
 	out << BSShaderLightingProperty::asString();
 	out << "  Texture Set:  " << textureSet << endl;
-	out << "  Refraction Strength:  " << refractionStrength << endl;
-	out << "  Refraction Fire Period:  " << refractionFirePeriod << endl;
-	out << "  Parallax Max Passes:  " << parallaxMaxPasses << endl;
-	out << "  Parallax Scale:  " << parallaxScale << endl;
+	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
+	out << "  Refraction Period:  " << refractionPeriod << endl;
+	out << "  Unknown Float 4:  " << unknownFloat4 << endl;
+	out << "  Unknown Float 5:  " << unknownFloat5 << endl;
 	out << "  Emissive Color:  " << emissiveColor << endl;
 	return out.str();
 

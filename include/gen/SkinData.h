@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
@@ -36,7 +36,7 @@ struct SkinData {
 	/*! Radius for bounding sphere holding all vertices. */
 	float boundingSphereRadius;
 	/*! Unknown, always 0? */
-	NifArray<13,short > unknown13Shorts;
+	Niflib::array<13,short > unknown13Shorts;
 	/*! Number of weighted vertices. */
 	mutable unsigned short numVertices;
 	/*! The vertex weights. */

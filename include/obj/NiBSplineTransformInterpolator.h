@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,46 +14,38 @@ All rights reserved.  Please see niflib.h for license. */
 //--END CUSTOM CODE--//
 
 #include "NiBSplineInterpolator.h"
-
-// Include structures
-#include "../gen/NiQuatTransform.h"
 namespace Niflib {
 
 class NiBSplineTransformInterpolator;
 typedef Ref<NiBSplineTransformInterpolator> NiBSplineTransformInterpolatorRef;
 
-/*!
- * Supports the animation of position, rotation, and scale using an
- * NiQuatTransform.
- *         The NiQuatTransform can be an unchanging pose or interpolated from
- * B-Spline control point channels.
- */
+/*! An interpolator for storing transform keyframes via a B-spline. */
 class NiBSplineTransformInterpolator : public NiBSplineInterpolator {
 public:
 	/*! Constructor */
 	NIFLIB_API NiBSplineTransformInterpolator();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiBSplineTransformInterpolator();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -184,13 +176,18 @@ public:
 	NIFLIB_API virtual int GetNumControlPoints() const;
 	//--END CUSTOM CODE--//
 protected:
-	NiQuatTransform transform;
-	/*! Handle into the translation data. (USHRT_MAX for invalid handle.) */
-	unsigned int translationHandle;
-	/*! Handle into the rotation data. (USHRT_MAX for invalid handle.) */
-	unsigned int rotationHandle;
-	/*! Handle into the scale data. (USHRT_MAX for invalid handle.) */
-	unsigned int scaleHandle;
+	/*! Base translation when translate curve not defined. */
+	Vector3 translation;
+	/*! Base rotation when rotation curve not defined. */
+	Quaternion rotation;
+	/*! Base scale when scale curve not defined. */
+	float scale;
+	/*! Starting offset for the translation data. (USHRT_MAX for no data.) */
+	unsigned int translationOffset;
+	/*! Starting offset for the rotation data. (USHRT_MAX for no data.) */
+	unsigned int rotationOffset;
+	/*! Starting offset for the scale data. (USHRT_MAX for no data.) */
+	unsigned int scaleOffset;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -207,5 +204,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

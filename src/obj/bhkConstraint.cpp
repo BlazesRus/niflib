@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -64,7 +64,23 @@ void bhkConstraint::Write( ostream& out, const map<NiObjectRef,unsigned int> & l
 	numEntities = (unsigned int)(entities.size());
 	NifStream( numEntities, out, info );
 	for (unsigned int i1 = 0; i1 < entities.size(); i1++) {
-		WriteRef( StaticCast<NiObject>(entities[i1]), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*entities[i1]), out );
+		} else {
+			if ( entities[i1] != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(entities[i1]) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( entities[i1] );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
 	NifStream( priority, out, info );
 

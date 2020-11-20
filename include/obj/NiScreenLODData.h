@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,44 +14,38 @@ All rights reserved.  Please see niflib.h for license. */
 //--END CUSTOM CODE--//
 
 #include "NiLODData.h"
-
-// Include structures
-#include "../gen/NiBound.h"
 namespace Niflib {
 
 class NiScreenLODData;
 typedef Ref<NiScreenLODData> NiScreenLODDataRef;
 
-/*!
- * NiScreenLODData controls switching LOD levels based on proportion of the screen
- * that a bound would include.
- */
+/*! Describes levels of detail based on size of object on screen? */
 class NiScreenLODData : public NiLODData {
 public:
 	/*! Constructor */
 	NIFLIB_API NiScreenLODData();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiScreenLODData();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -61,28 +55,52 @@ public:
 	//--BEGIN MISC CUSTOM CODE--//
 
 	/*!
-	 * Get the bounding sphere
-	 * \return the bounding sphere
+	 * Get the center of the bounding sphere?
+	 * \return The center of the bounding sphere?
 	 */
-	NIFLIB_API NiBound GetBound() const;
+	NIFLIB_API Vector3 GetBoundCenter() const;
 
 	/*!
-	 * Set the bounding sphere
-	 * \param[in] bound_center The new  bounding sphere
+	 * Set the center of the bounding sphere?
+	 * \param[in] bound_center The new center of the bounding sphere?
 	 */
-	NIFLIB_API void SetBound( const NiBound & bound_center );
+	NIFLIB_API void SetBoundCenter( const Vector3 & bound_center );
 
 	/*!
-	 * Get the bounding sphere in world space
-	 * \return The bounding sphere in world space
+	 * Get the radius of the bounding sphere?
+	 * \return The radius of the bounding sphere?
 	 */
-	NIFLIB_API NiBound GetWorldBound() const;
+	NIFLIB_API float GetBoundRadius() const;
 
 	/*!
-	 * Set the bounding sphere in world space
-	 * \param[in] value The new cbounding sphere in world space
+	 * Set the radius of the bounding sphere?
+	 * \param[in] value The new radius of the bounding sphere?
 	 */
-	NIFLIB_API void SetWorldBound( const NiBound & value );
+	NIFLIB_API void SetBoundRadius( float value );
+
+	/*!
+	 * Get the center of the bounding sphere in world space?
+	 * \return The center of the bounding sphere in world space?
+	 */
+	NIFLIB_API Vector3 GetWorldCenter() const;
+
+	/*!
+	 * Set the center of the bounding sphere in world space?
+	 * \param[in] value The new center of the bounding sphere in world space?
+	 */
+	NIFLIB_API void SetWorldCenter( const Vector3 & value );
+
+	/*!
+	 * Get the radius of the bounding sphere in world space?
+	 * \return The radius of the bounding sphere in world space?
+	 */
+	NIFLIB_API float GetWorldRadius() const;
+
+	/*!
+	 * Set the radius of the bounding sphere in world space?
+	 * \param[in] value The new radius of the bounding sphere in world space?
+	 */
+	NIFLIB_API void SetWorldRadius( float value );
 
 	/*!
 	 * Get the LOD levels based on proportion of screen size?
@@ -98,9 +116,17 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	NiBound bound;
-	NiBound worldBound;
-	mutable unsigned int numProportions;
+	/*! The center of the bounding sphere? */
+	Vector3 boundCenter;
+	/*! The radius of the bounding sphere? */
+	float boundRadius;
+	/*! The center of the bounding sphere in world space? */
+	Vector3 worldCenter;
+	/*! The radius of the bounding sphere in world space? */
+	float worldRadius;
+	/*! The number of screen size based LOD levels. */
+	mutable unsigned int proportionCount;
+	/*! The LOD levels based on proportion of screen size? */
 	vector<float > proportionLevels;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -118,5 +144,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

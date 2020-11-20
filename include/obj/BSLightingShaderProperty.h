@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,7 +14,7 @@ All rights reserved.  Please see niflib.h for license. */
 
 //--END CUSTOM CODE--//
 
-#include "BSShaderProperty.h"
+#include "NiProperty.h"
 
 // Include structures
 #include "../Ref.h"
@@ -25,33 +25,33 @@ class BSShaderTextureSet;
 class BSLightingShaderProperty;
 typedef Ref<BSLightingShaderProperty> BSLightingShaderPropertyRef;
 
-/*! Bethesda shader property for Skyrim and later. */
-class BSLightingShaderProperty : public BSShaderProperty {
+/*! Skyrim PP shader for assigning material/shader/texture. */
+class BSLightingShaderProperty : public NiProperty {
 public:
 	/*! Constructor */
 	NIFLIB_API BSLightingShaderProperty();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~BSLightingShaderProperty();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -64,25 +64,25 @@ public:
 	 * Shader flags used by Skyrim
 	 * \return The value of the shader flags
 	 */
-	NIFLIB_API SkyrimShaderPropertyFlags1 GetSkyrimShaderFlags1() const;
+	NIFLIB_API SkyrimShaderPropertyFlags1 GetShaderFlags1() const;
 
 	/*!
 	 * Sets the value of the shader flags used by Skyrim
 	 * \param[in] The new value of the shader flags
 	 */
-	NIFLIB_API void SetSkyrimShaderFlags1(SkyrimShaderPropertyFlags1 value);
+	NIFLIB_API void SetShaderFlags1(SkyrimShaderPropertyFlags1 value);
 
 	/*!
 	 * Gets the second set of shader flags used by Skyrim
 	 * \return The value of the second set of flags
 	 */
-	NIFLIB_API SkyrimShaderPropertyFlags2 GetSkyrimShaderFlags2() const;
+	NIFLIB_API SkyrimShaderPropertyFlags2 GetShaderFlags2() const;
 
 	/*!
 	 * Sets the value of the second set of skyrim shader flags
 	 * \param[in] the value of the second set of flags
 	 */
-	NIFLIB_API void SetSkyrimShaderFlags2(SkyrimShaderPropertyFlags2 value); 
+	NIFLIB_API void SetShaderFlags2(SkyrimShaderPropertyFlags2 value); 
 
 	/*!
 	 * Used to reposition the texture coordinates of the uv's
@@ -167,6 +167,20 @@ public:
 	 * \param[in] The new alpha value
 	 */
 	NIFLIB_API void SetAlpha(float value);
+
+	/*!
+	 * Get the unknown float2 of the material
+	 * WARNING: API not stable
+	 * \return The unknown float2 value
+	 */
+	NIFLIB_API float GetUnknownFloat2() const;
+
+	/*!
+	 * Sets the unknown float2 of the material
+	 * WARNING: API not stable
+	 * \param[in] The new unknown float2 value
+	 */
+	 NIFLIB_API void SetUnknownFloat2(float value);
 
 	/*!
 	 * Gets the glossiness of the material
@@ -352,64 +366,12 @@ public:
 	 */
 	NIFLIB_API void SetRightEyeReflectionCenter( const Vector3 & value);
 
-	NIFLIB_API IndexString GetWetMaterial() const;
-	NIFLIB_API void SetWetMaterial( IndexString value );
-
-	NIFLIB_API float GetRefractionStrength() const;
-	NIFLIB_API void SetRefractionStrength( float value );
-
-	NIFLIB_API float GetSmoothness() const;
-	NIFLIB_API void SetSmoothness( float value );
-
-	NIFLIB_API float GetSubsurfaceRolloff() const;
-	NIFLIB_API void SetSubsurfaceRolloff( float value );
-
-	NIFLIB_API float GetRimlightPower() const;
-	NIFLIB_API void SetRimlightPower( float value );
-
-	NIFLIB_API float GetBacklightPower() const;
-	NIFLIB_API void SetBacklightPower( float value );
-
-	NIFLIB_API float GetGrayscaleToPaletteScale() const;
-	NIFLIB_API void SetGrayscaleToPaletteScale( float value );
-
-	NIFLIB_API float GetFresnelPower() const;
-	NIFLIB_API void SetFresnelPower( float value );
-
-	NIFLIB_API float GetWetnessSpecScale() const;
-	NIFLIB_API void SetWetnessSpecScale( float value );
-
-	NIFLIB_API float GetWetnessSpecPower() const;
-	NIFLIB_API void SetWetnessSpecPower( float value );
-
-	NIFLIB_API float GetWetnessMinVar() const;
-	NIFLIB_API void SetWetnessMinVar( float value );
-
-	NIFLIB_API float GetWetnessEnvMapScale() const;
-	NIFLIB_API void SetWetnessEnvMapScale( float value );
-
-	NIFLIB_API float GetWetnessFresnelPower() const;
-	NIFLIB_API void SetWetnessFresnelPower( float value );
-
-	NIFLIB_API float GetWetnessMetalness() const;
-	NIFLIB_API void SetWetnessMetalness( float value );
-
 	//--END CUSTOM CODE--//
 protected:
 	/*! Skyrim Shader Flags for setting render/shader options. */
-	SkyrimShaderPropertyFlags1 shaderFlags1_sk;
+	SkyrimShaderPropertyFlags1 shaderFlags1;
 	/*! Skyrim Shader Flags for setting render/shader options. */
-	SkyrimShaderPropertyFlags2 shaderFlags2_sk;
-	/*!
-	 * Fallout 4 Shader Flags. Mostly overridden if "Name" is a path to a BGSM/BGEM
-	 * file.
-	 */
-	Fallout4ShaderPropertyFlags1 shaderFlags1_fo4;
-	/*!
-	 * Fallout 4 Shader Flags. Mostly overridden if "Name" is a path to a BGSM/BGEM
-	 * file.
-	 */
-	Fallout4ShaderPropertyFlags2 shaderFlags2_fo4;
+	SkyrimShaderPropertyFlags2 shaderFlags2;
 	/*! Offset UVs */
 	TexCoord uvOffset;
 	/*! Offset UV Scale to repeat tiling textures, see above. */
@@ -420,20 +382,14 @@ protected:
 	Color3 emissiveColor;
 	/*! Multiplied emissive colors */
 	float emissiveMultiple;
-	IndexString wetMaterial;
 	/*! How to handle texture borders. */
 	TexClampMode textureClampMode;
-	/*! The material opacity (1=non-transparent). */
+	/*! The materials opacity (1=non-transparent). */
 	float alpha;
-	/*!
-	 * The amount of distortion. **Not based on physically accurate refractive index**
-	 * (0=none) (0-1)
-	 */
-	float refractionStrength;
-	/*! The material specular power, or glossiness (0-999). */
+	/*! Unknown */
+	float unknownFloat2;
+	/*! The material's specular power, or glossiness (0-999). */
 	float glossiness;
-	/*! The base roughness (0.0-1.0), multiplied by the smoothness map. */
-	float smoothness;
 	/*! Adds a colored highlight. */
 	Color3 specularColor;
 	/*! Brightness of specular highlight. (0=not visible) (0-999) */
@@ -442,25 +398,10 @@ protected:
 	float lightingEffect1;
 	/*! Controls strength for envmap/backlight/rim/softlight lighting effect? */
 	float lightingEffect2;
-	float subsurfaceRolloff;
-	float rimlightPower;
-	float backlightPower;
-	float grayscaleToPaletteScale;
-	float fresnelPower;
-	float wetnessSpecScale;
-	float wetnessSpecPower;
-	float wetnessMinVar;
-	float wetnessEnvMapScale;
-	float wetnessFresnelPower;
-	float wetnessMetalness;
-	/*! Scales the intensity of the environment/cube map. (0-1) */
+	/*! Scales the environment/cube map. (0-??) */
 	float environmentMapScale;
-	/*! Unknown. */
-	unsigned short unknownEnvMapShort;
 	/*! Tints the base texture. Overridden by game settings. */
 	Color3 skinTintColor;
-	/*! Unknown. */
-	unsigned int unknownSkinTintInt;
 	/*! Tints the base texture. Overridden by game settings. */
 	Color3 hairTintColor;
 	/*! Max Passes */
@@ -475,7 +416,7 @@ protected:
 	TexCoord parallaxInnerLayerTextureScale;
 	/*! How strong the environment/cube map is. (0-??) */
 	float parallaxEnvmapStrength;
-	/*! CK lists "snow material" when used. */
+	/*! Unknown/unused?  CK lists "snow material" when used. */
 	Vector4 sparkleParameters;
 	/*! Eye cubemap scale */
 	float eyeCubemapScale;
@@ -500,5 +441,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 #include "../include/ComplexShape.h"
@@ -23,19 +23,6 @@ All rights reserved.  Please see niflib.h for license. */
 
 #include <stdlib.h>
 
-/**
-	Niflib v0.9 updating note:
-		
-		Old method (pre 0.9)
-		NifArray<2, NiPropertyRef> bs_properties;
-		bs_properties[0] = shader_property;
-		bs_properties[1] = alpha_property;
-		shapes[shape_num]->SetBSProperties(bs_properties);
-
-		New method (0.9)
-		Ref<BSShaderProperty > shader_property;
-		Ref<NiAlphaProperty > alpha_property;
-**/
 
 
 
@@ -271,14 +258,12 @@ void ComplexShape::Merge( NiAVObject * root ) {
 		vector<NiPropertyRef> current_property_group =  (*geom)->GetProperties();
 
 		//Special code to handle the Bethesda Skyrim properties
-
-		BSShaderPropertyRef shader_property = (*geom)->GetBSShader();
-		NiAlphaPropertyRef alpha_property = (*geom)->GetAlphaProperty();
-		if(shader_property != NULL) {
-			current_property_group.push_back(Niflib::DynamicCast<NiProperty>(shader_property));
+		Niflib::array<2, NiPropertyRef> bs_properties = (*geom)->GetBSProperties();
+		if(bs_properties[0] != NULL) {
+			current_property_group.push_back(bs_properties[0]);
 		}
-		if(alpha_property != NULL) {
-			current_property_group.push_back(Niflib::DynamicCast<NiProperty>(alpha_property));
+		if(bs_properties[1] != NULL) {
+			current_property_group.push_back(bs_properties[1]);
 		}
 	
 		//Get properties of this shape
@@ -411,14 +396,14 @@ void ComplexShape::Merge( NiAVObject * root ) {
 		if(niProp != NULL) {
 			bsTexProp = DynamicCast<BSShaderTextureSet>(niProp);
 		}
-		niProp = (*geom)->GetBSShader();
+		niProp = (*geom)->GetBSProperties()[0];
 		if(niProp != NULL &&  niProp->GetType().IsSameType(BSLightingShaderProperty::TYPE)) {
 			BSLightingShaderPropertyRef bs_shader = DynamicCast<BSLightingShaderProperty>(niProp);
 			if(bs_shader->GetTextureSet() != NULL) {
 				bsTexProp = bs_shader->GetTextureSet();
 			}
 		}
-		niProp = (*geom)->GetAlphaProperty();
+		niProp = (*geom)->GetBSProperties()[1];
 		if(niProp != NULL &&  niProp->GetType().IsSameType(BSLightingShaderProperty::TYPE)) {
 			BSLightingShaderPropertyRef bs_shader = DynamicCast<BSLightingShaderProperty>(niProp);
 			if(bs_shader->GetTextureSet() != NULL) {
@@ -545,7 +530,7 @@ void ComplexShape::Merge( NiAVObject * root ) {
 				vector<NiNodeRef> shapeBones = skinInst->GetBones();
 
 				//Get weights
-				vector<BoneVertData> shapeWeights;
+				vector<SkinWeight> shapeWeights;
 				for ( unsigned int b = 0; b < shapeBones.size(); ++b ) {
 					shapeWeights = skinData->GetBoneWeights(b);
 					for ( unsigned int w = 0; w < shapeWeights.size(); ++w ) {
@@ -964,8 +949,10 @@ Ref<NiAVObject> ComplexShape::Split( NiNode * parent, Matrix44 & transform, int 
 						alpha_property = DynamicCast<NiAlphaProperty>((*prop));
 					}						
 				}
-				shapes[shape_num]->SetBSShader(Niflib::DynamicCast<BSShaderProperty>(shader_property));
-				shapes[shape_num]->SetAlphaProperty(Niflib::DynamicCast<NiAlphaProperty>(alpha_property));
+				Niflib::array<2, NiPropertyRef> bs_properties;
+				bs_properties[0] = shader_property;
+				bs_properties[1] = alpha_property;
+				shapes[shape_num]->SetBSProperties(bs_properties);
 			}
 		}
 

@@ -1,9 +1,9 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
 
-// To change this file, alter the gen_niflib.py script.
+//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
 
 #ifndef _SKINPARTITION_H_
 #define _SKINPARTITION_H_
@@ -11,7 +11,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../NIF_IO.h"
 
 // Include structures
-#include "BSVertexDesc.h"
+#include "SkinPartitionUnknownItem1.h"
 namespace Niflib {
 
 
@@ -69,8 +69,20 @@ struct SkinPartition {
 	vector< vector<byte > > boneIndices;
 	/*! Unknown */
 	unsigned short unknownShort;
-	BSVertexDesc vertexDesc;
-	vector<Triangle > trianglesCopy;
+	/*! Unknown. */
+	unsigned short unknown83C3;
+	/*! Unknown. */
+	unsigned short unknown00001;
+	/*! Unknown. */
+	mutable unsigned short numVertices2;
+	/*! Unknown. */
+	unsigned short unknown00002;
+	/*! Unknown. */
+	unsigned short unknown00003;
+	/*! Unknown. */
+	unsigned short unknown00004;
+	/*! Unknown. */
+	vector<SkinPartitionUnknownItem1 > unknownArr1;
 	//--BEGIN MISC CUSTOM CODE--//
 	/*! Calculate proper value of numTriangles field. */
 	unsigned short numTrianglesCalc() const;

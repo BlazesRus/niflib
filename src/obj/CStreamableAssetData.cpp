@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -65,7 +65,23 @@ void CStreamableAssetData::Write( ostream& out, const map<NiObjectRef,unsigned i
 	//--END CUSTOM CODE--//
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
-	WriteRef( StaticCast<NiObject>(root), out, info, link_map, missing_link_stack );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*root), out );
+	} else {
+		if ( root != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(root) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( root );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 	for (unsigned int i1 = 0; i1 < 5; i1++) {
 		NifStream( unknownBytes[i1], out, info );
 	};

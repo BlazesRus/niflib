@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,13 +15,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiMorphWeightsController.h"
-#include "../../include/obj/NiInterpolator.h"
+#include "../../include/obj/NiObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiMorphWeightsController::TYPE("NiMorphWeightsController", &NiInterpController::TYPE );
 
-NiMorphWeightsController::NiMorphWeightsController() : count((unsigned int)0), numInterpolators((unsigned int)0), numTargets((unsigned int)0) {
+NiMorphWeightsController::NiMorphWeightsController() : unknown2((int)0), numInterpolators((unsigned int)0), numTargets((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -48,7 +48,7 @@ void NiMorphWeightsController::Read( istream& in, list<unsigned int> & link_stac
 
 	unsigned int block_num;
 	NiInterpController::Read( in, link_stack, info );
-	NifStream( count, in, info );
+	NifStream( unknown2, in, info );
 	NifStream( numInterpolators, in, info );
 	interpolators.resize(numInterpolators);
 	for (unsigned int i1 = 0; i1 < interpolators.size(); i1++) {
@@ -74,10 +74,26 @@ void NiMorphWeightsController::Write( ostream& out, const map<NiObjectRef,unsign
 	NiInterpController::Write( out, link_map, missing_link_stack, info );
 	numTargets = (unsigned int)(targetNames.size());
 	numInterpolators = (unsigned int)(interpolators.size());
-	NifStream( count, out, info );
+	NifStream( unknown2, out, info );
 	NifStream( numInterpolators, out, info );
 	for (unsigned int i1 = 0; i1 < interpolators.size(); i1++) {
-		WriteRef( StaticCast<NiObject>(interpolators[i1]), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*interpolators[i1]), out );
+		} else {
+			if ( interpolators[i1] != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(interpolators[i1]) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( interpolators[i1] );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
 	NifStream( numTargets, out, info );
 	for (unsigned int i1 = 0; i1 < targetNames.size(); i1++) {
@@ -99,7 +115,7 @@ std::string NiMorphWeightsController::asString( bool verbose ) const {
 	out << NiInterpController::asString();
 	numTargets = (unsigned int)(targetNames.size());
 	numInterpolators = (unsigned int)(interpolators.size());
-	out << "  Count:  " << count << endl;
+	out << "  Unknown 2:  " << unknown2 << endl;
 	out << "  Num Interpolators:  " << numInterpolators << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < interpolators.size(); i1++) {
@@ -140,7 +156,7 @@ void NiMorphWeightsController::FixLinks( const map<unsigned int,NiObjectRef> & o
 
 	NiInterpController::FixLinks( objects, link_stack, missing_link_stack, info );
 	for (unsigned int i1 = 0; i1 < interpolators.size(); i1++) {
-		interpolators[i1] = FixLink<NiInterpolator>( objects, link_stack, missing_link_stack, info );
+		interpolators[i1] = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
 	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//

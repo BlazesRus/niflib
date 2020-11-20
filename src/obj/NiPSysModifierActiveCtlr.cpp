@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -44,7 +44,7 @@ void NiPSysModifierActiveCtlr::Read( istream& in, list<unsigned int> & link_stac
 
 	unsigned int block_num;
 	NiPSysModifierBoolCtlr::Read( in, link_stack, info );
-	if ( info.version <= 0x0A010067 ) {
+	if ( info.version <= 0x0A010000 ) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
@@ -58,8 +58,24 @@ void NiPSysModifierActiveCtlr::Write( ostream& out, const map<NiObjectRef,unsign
 	//--END CUSTOM CODE--//
 
 	NiPSysModifierBoolCtlr::Write( out, link_map, missing_link_stack, info );
-	if ( info.version <= 0x0A010067 ) {
-		WriteRef( StaticCast<NiObject>(data), out, info, link_map, missing_link_stack );
+	if ( info.version <= 0x0A010000 ) {
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*data), out );
+		} else {
+			if ( data != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(data) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( data );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -84,7 +100,7 @@ void NiPSysModifierActiveCtlr::FixLinks( const map<unsigned int,NiObjectRef> & o
 	//--END CUSTOM CODE--//
 
 	NiPSysModifierBoolCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
-	if ( info.version <= 0x0A010067 ) {
+	if ( info.version <= 0x0A010000 ) {
 		data = FixLink<NiVisData>( objects, link_stack, missing_link_stack, info );
 	};
 

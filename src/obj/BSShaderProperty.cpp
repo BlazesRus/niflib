@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,9 +18,9 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type BSShaderProperty::TYPE("BSShaderProperty", &NiShadeProperty::TYPE );
+const Type BSShaderProperty::TYPE("BSShaderProperty", &NiProperty::TYPE );
 
-BSShaderProperty::BSShaderProperty() : shaderType((BSShaderType)SHADER_DEFAULT), shaderFlags((BSShaderFlags)0x82000000), shaderFlags2((BSShaderFlags2)1), environmentMapScale(1.0f) {
+BSShaderProperty::BSShaderProperty() : flags((unsigned short)1), shaderType((BSShaderType)SHADER_DEFAULT), shaderFlags((BSShaderFlags)0x82000000), unknownInt2((int)1), envmapScale(1.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,12 +45,13 @@ void BSShaderProperty::Read( istream& in, list<unsigned int> & link_stack, const
 
 	//--END CUSTOM CODE--//
 
-	NiShadeProperty::Read( in, link_stack, info );
-	if ( (info.userVersion2 <= 34) ) {
-		NifStream( shaderType, in, info );
-		NifStream( shaderFlags, in, info );
-		NifStream( shaderFlags2, in, info );
-		NifStream( environmentMapScale, in, info );
+	NiProperty::Read( in, link_stack, info );
+	NifStream( flags, in, info );
+	NifStream( shaderType, in, info );
+	NifStream( shaderFlags, in, info );
+	NifStream( unknownInt2, in, info );
+	if ( (info.userVersion == 11) ) {
+		NifStream( envmapScale, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -63,12 +64,13 @@ void BSShaderProperty::Write( ostream& out, const map<NiObjectRef,unsigned int> 
 
 	//--END CUSTOM CODE--//
 
-	NiShadeProperty::Write( out, link_map, missing_link_stack, info );
-	if ( (info.userVersion2 <= 34) ) {
-		NifStream( shaderType, out, info );
-		NifStream( shaderFlags, out, info );
-		NifStream( shaderFlags2, out, info );
-		NifStream( environmentMapScale, out, info );
+	NiProperty::Write( out, link_map, missing_link_stack, info );
+	NifStream( flags, out, info );
+	NifStream( shaderType, out, info );
+	NifStream( shaderFlags, out, info );
+	NifStream( unknownInt2, out, info );
+	if ( (info.userVersion == 11) ) {
+		NifStream( envmapScale, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -82,11 +84,12 @@ std::string BSShaderProperty::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiShadeProperty::asString();
+	out << NiProperty::asString();
+	out << "  Flags:  " << flags << endl;
 	out << "  Shader Type:  " << shaderType << endl;
 	out << "  Shader Flags:  " << shaderFlags << endl;
-	out << "  Shader Flags 2:  " << shaderFlags2 << endl;
-	out << "  Environment Map Scale:  " << environmentMapScale << endl;
+	out << "  Unknown Int 2:  " << unknownInt2 << endl;
+	out << "  Envmap Scale:  " << envmapScale << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -99,7 +102,7 @@ void BSShaderProperty::FixLinks( const map<unsigned int,NiObjectRef> & objects, 
 
 	//--END CUSTOM CODE--//
 
-	NiShadeProperty::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiProperty::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -108,13 +111,13 @@ void BSShaderProperty::FixLinks( const map<unsigned int,NiObjectRef> & objects, 
 
 std::list<NiObjectRef> BSShaderProperty::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiShadeProperty::GetRefs();
+	refs = NiProperty::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> BSShaderProperty::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiShadeProperty::GetPtrs();
+	ptrs = NiProperty::GetPtrs();
 	return ptrs;
 }
 
@@ -145,11 +148,11 @@ void BSShaderProperty::SetShaderFlags( const BSShaderFlags & value ) {
 }
 
 float BSShaderProperty::GetEnvmapScale() const {
-   return environmentMapScale;
+   return envmapScale;
 }
 
 void BSShaderProperty::SetEnvmapScale( float value ) {
-   environmentMapScale = value;
+   envmapScale = value;
 }
 
 //--END CUSTOM CODE--//

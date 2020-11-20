@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,9 +18,9 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type SkyShaderProperty::TYPE("SkyShaderProperty", &BSShaderLightingProperty::TYPE );
+const Type SkyShaderProperty::TYPE("SkyShaderProperty", &BSShaderProperty::TYPE );
 
-SkyShaderProperty::SkyShaderProperty() : skyObjectType((SkyObjectType)0) {
+SkyShaderProperty::SkyShaderProperty() : unknownInt4((int)0), unknownInt5((int)3) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,9 +45,10 @@ void SkyShaderProperty::Read( istream& in, list<unsigned int> & link_stack, cons
 
 	//--END CUSTOM CODE--//
 
-	BSShaderLightingProperty::Read( in, link_stack, info );
+	BSShaderProperty::Read( in, link_stack, info );
+	NifStream( unknownInt4, in, info );
 	NifStream( fileName, in, info );
-	NifStream( skyObjectType, in, info );
+	NifStream( unknownInt5, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -59,9 +60,10 @@ void SkyShaderProperty::Write( ostream& out, const map<NiObjectRef,unsigned int>
 
 	//--END CUSTOM CODE--//
 
-	BSShaderLightingProperty::Write( out, link_map, missing_link_stack, info );
+	BSShaderProperty::Write( out, link_map, missing_link_stack, info );
+	NifStream( unknownInt4, out, info );
 	NifStream( fileName, out, info );
-	NifStream( skyObjectType, out, info );
+	NifStream( unknownInt5, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -74,10 +76,10 @@ std::string SkyShaderProperty::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	unsigned int array_output_count = 0;
-	out << BSShaderLightingProperty::asString();
+	out << BSShaderProperty::asString();
+	out << "  Unknown Int 4:  " << unknownInt4 << endl;
 	out << "  File Name:  " << fileName << endl;
-	out << "  Sky Object Type:  " << skyObjectType << endl;
+	out << "  Unknown Int 5:  " << unknownInt5 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -90,7 +92,7 @@ void SkyShaderProperty::FixLinks( const map<unsigned int,NiObjectRef> & objects,
 
 	//--END CUSTOM CODE--//
 
-	BSShaderLightingProperty::FixLinks( objects, link_stack, missing_link_stack, info );
+	BSShaderProperty::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -99,13 +101,13 @@ void SkyShaderProperty::FixLinks( const map<unsigned int,NiObjectRef> & objects,
 
 std::list<NiObjectRef> SkyShaderProperty::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = BSShaderLightingProperty::GetRefs();
+	refs = BSShaderProperty::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> SkyShaderProperty::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = BSShaderLightingProperty::GetPtrs();
+	ptrs = BSShaderProperty::GetPtrs();
 	return ptrs;
 }
 

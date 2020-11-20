@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,15 +15,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkConvexListShape.h"
-#include "../../include/gen/HavokMaterial.h"
-#include "../../include/gen/hkWorldObjCinfoProperty.h"
 #include "../../include/obj/bhkConvexShape.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type bhkConvexListShape::TYPE("bhkConvexListShape", &bhkShape::TYPE );
 
-bhkConvexListShape::bhkConvexListShape() : numSubShapes((unsigned int)0), radius(0.0f), unknownInt1((unsigned int)0), unknownFloat1(0.0f), unknownByte1((byte)0), unknownFloat2(0.0f) {
+bhkConvexListShape::bhkConvexListShape() : numSubShapes((unsigned int)0), material((HavokMaterial)0), skyrimMaterial((SkyrimHavokMaterial)0), unknownFloats(6,(float)0.0,(float)0.0,(float)-0.0,(float)0.0,(float)0.0,(float)-0.0), unknownByte1((byte)0), unknownFloat1(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -56,23 +54,17 @@ void bhkConvexListShape::Read( istream& in, list<unsigned int> & link_stack, con
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
-		NifStream( material.material_ob, in, info );
+	if ( (info.userVersion < 12) ) {
+		NifStream( material, in, info );
 	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
-		NifStream( material.material_fo, in, info );
+	if ( (info.userVersion >= 12) ) {
+		NifStream( skyrimMaterial, in, info );
 	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
-		NifStream( material.material_sk, in, info );
+	for (unsigned int i1 = 0; i1 < 6; i1++) {
+		NifStream( unknownFloats[i1], in, info );
 	};
-	NifStream( radius, in, info );
-	NifStream( unknownInt1, in, info );
-	NifStream( unknownFloat1, in, info );
-	NifStream( childShapeProperty.data, in, info );
-	NifStream( childShapeProperty.size, in, info );
-	NifStream( childShapeProperty.capacityAndFlags, in, info );
 	NifStream( unknownByte1, in, info );
-	NifStream( unknownFloat2, in, info );
+	NifStream( unknownFloat1, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -88,25 +80,35 @@ void bhkConvexListShape::Write( ostream& out, const map<NiObjectRef,unsigned int
 	numSubShapes = (unsigned int)(subShapes.size());
 	NifStream( numSubShapes, out, info );
 	for (unsigned int i1 = 0; i1 < subShapes.size(); i1++) {
-		WriteRef( StaticCast<NiObject>(subShapes[i1]), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*subShapes[i1]), out );
+		} else {
+			if ( subShapes[i1] != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(subShapes[i1]) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( subShapes[i1] );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
-	if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
-		NifStream( material.material_ob, out, info );
+	if ( (info.userVersion < 12) ) {
+		NifStream( material, out, info );
 	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
-		NifStream( material.material_fo, out, info );
+	if ( (info.userVersion >= 12) ) {
+		NifStream( skyrimMaterial, out, info );
 	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
-		NifStream( material.material_sk, out, info );
+	for (unsigned int i1 = 0; i1 < 6; i1++) {
+		NifStream( unknownFloats[i1], out, info );
 	};
-	NifStream( radius, out, info );
-	NifStream( unknownInt1, out, info );
-	NifStream( unknownFloat1, out, info );
-	NifStream( childShapeProperty.data, out, info );
-	NifStream( childShapeProperty.size, out, info );
-	NifStream( childShapeProperty.capacityAndFlags, out, info );
 	NifStream( unknownByte1, out, info );
-	NifStream( unknownFloat2, out, info );
+	NifStream( unknownFloat1, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -135,17 +137,22 @@ std::string bhkConvexListShape::asString( bool verbose ) const {
 		out << "    Sub Shapes[" << i1 << "]:  " << subShapes[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Material:  " << material.material_ob << endl;
-	out << "  Material:  " << material.material_fo << endl;
-	out << "  Material:  " << material.material_sk << endl;
-	out << "  Radius:  " << radius << endl;
-	out << "  Unknown Int 1:  " << unknownInt1 << endl;
-	out << "  Unknown Float 1:  " << unknownFloat1 << endl;
-	out << "  Data:  " << childShapeProperty.data << endl;
-	out << "  Size:  " << childShapeProperty.size << endl;
-	out << "  Capacity and Flags:  " << childShapeProperty.capacityAndFlags << endl;
+	out << "  Material:  " << material << endl;
+	out << "  Skyrim Material:  " << skyrimMaterial << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < 6; i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Unknown Floats[" << i1 << "]:  " << unknownFloats[i1] << endl;
+		array_output_count++;
+	};
 	out << "  Unknown Byte 1:  " << unknownByte1 << endl;
-	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
+	out << "  Unknown Float 1:  " << unknownFloat1 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

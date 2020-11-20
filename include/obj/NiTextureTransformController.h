@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -25,39 +25,35 @@ class NiTextureTransformController;
 typedef Ref<NiTextureTransformController> NiTextureTransformControllerRef;
 
 /*!
- * Used to animate a single member of an NiTextureTransform.
- *         NiInterpController::GetCtlrID() string formats:
- *             ['%1-%2-TT_TRANSLATE_U', '%1-%2-TT_TRANSLATE_V', '%1-%2-TT_ROTATE',
- * '%1-%2-TT_SCALE_U', '%1-%2-TT_SCALE_V']
- *         (Depending on "Operation" enumeration, %1 = Value of "Shader Map", %2 =
- * Value of "Texture Slot")
+ * Texture transformation controller. The target texture slot should have "Has
+ * Texture Transform" enabled.
  */
 class NiTextureTransformController : public NiFloatInterpController {
 public:
 	/*! Constructor */
 	NIFLIB_API NiTextureTransformController();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiTextureTransformController();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -82,13 +78,13 @@ public:
 	 * Retreives the type of texture transformation that this controller applies.
 	 * \return The way this controller will animate the target texture.
 	 */
-	NIFLIB_API TransformMember GetTextureTransformMember();
+	NIFLIB_API TexTransform GetTextureTransformType();
 
 	/*
 	 * Sets the type of texture transformation that this controller applies.
 	 * \param[in] n The new way that this controller will animate the target texture.
 	 */
-	NIFLIB_API void SetTextureTransformMember( TransformMember n );
+	NIFLIB_API void SetTextureTransformType( TexTransform n );
 
 	/*!
 	 * Retrives the float data used by this controller.
@@ -112,12 +108,13 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*! Is the target map a shader map? */
-	bool shaderMap;
+	/*! Unknown. */
+	byte unknown2;
 	/*! The target texture slot. */
 	TexType textureSlot;
-	/*! Controls which aspect of the texture transform to modify. */
-	TransformMember operation;
+	/*! Determines how this controller animates the UV Coordinates. */
+	TexTransform operation;
+	/*! Link to NiFloatData. */
 	Ref<NiFloatData > data;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -135,5 +132,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

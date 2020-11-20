@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -42,9 +42,6 @@ void NiExtraDataController::Read( istream& in, list<unsigned int> & link_stack, 
 	//--END CUSTOM CODE--//
 
 	NiSingleInterpController::Read( in, link_stack, info );
-	if ( info.version >= 0x0A020000 ) {
-		NifStream( extraDataName, in, info );
-	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -55,9 +52,6 @@ void NiExtraDataController::Write( ostream& out, const map<NiObjectRef,unsigned 
 	//--END CUSTOM CODE--//
 
 	NiSingleInterpController::Write( out, link_map, missing_link_stack, info );
-	if ( info.version >= 0x0A020000 ) {
-		NifStream( extraDataName, out, info );
-	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -68,9 +62,7 @@ std::string NiExtraDataController::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	unsigned int array_output_count = 0;
 	out << NiSingleInterpController::asString();
-	out << "  Extra Data Name:  " << extraDataName << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

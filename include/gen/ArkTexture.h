@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
@@ -36,7 +36,7 @@ struct ArkTexture {
 	/*! Unknown. */
 	Ref<NiTexturingProperty > texturingProperty;
 	/*! Unknown. */
-	NifArray<9,byte > unknownBytes;
+	Niflib::array<9,byte > unknownBytes;
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 };

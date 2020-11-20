@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -126,7 +126,7 @@ vector<float> NiVertWeightsExtraData::GetData() const {
 }
 	
 void NiVertWeightsExtraData::SetData( const vector<float> & n ) {
-	numVertices = (unsigned short)(n.size());
+	numVertices = (unsigned int)(n.size());
 	numBytes = numVertices + 2;
 	weight = n;
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,7 +21,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiDefaultAVObjectPalette::TYPE("NiDefaultAVObjectPalette", &NiAVObjectPalette::TYPE );
 
-NiDefaultAVObjectPalette::NiDefaultAVObjectPalette() : scene(NULL), numObjs((unsigned int)0) {
+NiDefaultAVObjectPalette::NiDefaultAVObjectPalette() : unknownInt((unsigned int)0), numObjs((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -45,8 +45,7 @@ void NiDefaultAVObjectPalette::Read( istream& in, list<unsigned int> & link_stac
 
 	unsigned int block_num;
 	NiAVObjectPalette::Read( in, link_stack, info );
-	NifStream( block_num, in, info );
-	link_stack.push_back( block_num );
+	NifStream( unknownInt, in, info );
 	NifStream( numObjs, in, info );
 	objs.resize(numObjs);
 	for (unsigned int i1 = 0; i1 < objs.size(); i1++) {
@@ -65,11 +64,27 @@ void NiDefaultAVObjectPalette::Write( ostream& out, const map<NiObjectRef,unsign
 
 	NiAVObjectPalette::Write( out, link_map, missing_link_stack, info );
 	numObjs = (unsigned int)(objs.size());
-	WriteRef( StaticCast<NiObject>(scene), out, info, link_map, missing_link_stack );
+	NifStream( unknownInt, out, info );
 	NifStream( numObjs, out, info );
 	for (unsigned int i1 = 0; i1 < objs.size(); i1++) {
 		NifStream( objs[i1].name, out, info );
-		WriteRef( StaticCast<NiObject>(objs[i1].avObject), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*objs[i1].avObject), out );
+		} else {
+			if ( objs[i1].avObject != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(objs[i1].avObject) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( objs[i1].avObject );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -84,7 +99,7 @@ std::string NiDefaultAVObjectPalette::asString( bool verbose ) const {
 	unsigned int array_output_count = 0;
 	out << NiAVObjectPalette::asString();
 	numObjs = (unsigned int)(objs.size());
-	out << "  Scene:  " << scene << endl;
+	out << "  Unknown Int:  " << unknownInt << endl;
 	out << "  Num Objs:  " << numObjs << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < objs.size(); i1++) {
@@ -106,7 +121,6 @@ void NiDefaultAVObjectPalette::FixLinks( const map<unsigned int,NiObjectRef> & o
 	//--END CUSTOM CODE--//
 
 	NiAVObjectPalette::FixLinks( objects, link_stack, missing_link_stack, info );
-	scene = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
 	for (unsigned int i1 = 0; i1 < objs.size(); i1++) {
 		objs[i1].avObject = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
 	};
@@ -126,8 +140,6 @@ std::list<NiObjectRef> NiDefaultAVObjectPalette::GetRefs() const {
 std::list<NiObject *> NiDefaultAVObjectPalette::GetPtrs() const {
 	list<NiObject *> ptrs;
 	ptrs = NiAVObjectPalette::GetPtrs();
-	if ( scene != NULL )
-		ptrs.push_back((NiObject *)(scene));
 	for (unsigned int i1 = 0; i1 < objs.size(); i1++) {
 		if ( objs[i1].avObject != NULL )
 			ptrs.push_back((NiObject *)(objs[i1].avObject));

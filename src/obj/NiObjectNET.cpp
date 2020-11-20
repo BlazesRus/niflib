@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -51,7 +51,7 @@ void NiObjectNET::Read( istream& in, list<unsigned int> & link_stack, const NifI
 
 	unsigned int block_num;
 	NiObject::Read( in, link_stack, info );
-	if ( (info.userVersion2 >= 83) ) {
+	if ( (info.userVersion >= 12) ) {
 		if ( IsDerivedType(BSLightingShaderProperty::TYPE) ) {
 			NifStream( skyrimShaderType, in, info );
 		};
@@ -93,7 +93,7 @@ void NiObjectNET::Write( ostream& out, const map<NiObjectRef,unsigned int> & lin
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
 	numExtraDataList = (unsigned int)(extraDataList.size());
-	if ( (info.userVersion2 >= 83) ) {
+	if ( (info.userVersion >= 12) ) {
 		if ( IsDerivedType(BSLightingShaderProperty::TYPE) ) {
 			NifStream( skyrimShaderType, out, info );
 		};
@@ -109,16 +109,64 @@ void NiObjectNET::Write( ostream& out, const map<NiObjectRef,unsigned int> & lin
 		NifStream( unknownByte, out, info );
 	};
 	if ( ( info.version >= 0x03000000 ) && ( info.version <= 0x04020200 ) ) {
-		WriteRef( StaticCast<NiObject>(extraData), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*extraData), out );
+		} else {
+			if ( extraData != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(extraData) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( extraData );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
 	if ( info.version >= 0x0A000100 ) {
 		NifStream( numExtraDataList, out, info );
 		for (unsigned int i2 = 0; i2 < extraDataList.size(); i2++) {
-			WriteRef( StaticCast<NiObject>(extraDataList[i2]), out, info, link_map, missing_link_stack );
+			if ( info.version < VER_3_3_0_13 ) {
+				WritePtr32( &(*extraDataList[i2]), out );
+			} else {
+				if ( extraDataList[i2] != NULL ) {
+					map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(extraDataList[i2]) );
+					if (it != link_map.end()) {
+						NifStream( it->second, out, info );
+						missing_link_stack.push_back( NULL );
+					} else {
+						NifStream( 0xFFFFFFFF, out, info );
+						missing_link_stack.push_back( extraDataList[i2] );
+					}
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( NULL );
+				}
+			}
 		};
 	};
 	if ( info.version >= 0x03000000 ) {
-		WriteRef( StaticCast<NiObject>(controller), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*controller), out );
+		} else {
+			if ( controller != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(controller) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( controller );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//

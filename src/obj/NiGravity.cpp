@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -42,7 +42,7 @@ void NiGravity::Read( istream& in, list<unsigned int> & link_stack, const NifInf
 	//--END CUSTOM CODE--//
 
 	NiParticleModifier::Read( in, link_stack, info );
-	if ( info.version >= 0x0303000D ) {
+	if ( info.version >= 0x04000002 ) {
 		NifStream( unknownFloat1, in, info );
 	};
 	NifStream( force, in, info );
@@ -59,7 +59,7 @@ void NiGravity::Write( ostream& out, const map<NiObjectRef,unsigned int> & link_
 	//--END CUSTOM CODE--//
 
 	NiParticleModifier::Write( out, link_map, missing_link_stack, info );
-	if ( info.version >= 0x0303000D ) {
+	if ( info.version >= 0x04000002 ) {
 		NifStream( unknownFloat1, out, info );
 	};
 	NifStream( force, out, info );

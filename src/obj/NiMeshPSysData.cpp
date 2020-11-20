@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiMeshPSysData::TYPE("NiMeshPSysData", &NiPSysData::TYPE );
 
-NiMeshPSysData::NiMeshPSysData() : defaultPoolSize((unsigned int)0), fillPoolsOnLoad(false), numGenerations((unsigned int)0), particleMeshes(NULL) {
+NiMeshPSysData::NiMeshPSysData() : unknownInt2((unsigned int)0), unknownByte3((byte)0), numUnknownInts1((unsigned int)0), unknownNode(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -45,12 +45,12 @@ void NiMeshPSysData::Read( istream& in, list<unsigned int> & link_stack, const N
 	unsigned int block_num;
 	NiPSysData::Read( in, link_stack, info );
 	if ( info.version >= 0x0A020000 ) {
-		NifStream( defaultPoolSize, in, info );
-		NifStream( fillPoolsOnLoad, in, info );
-		NifStream( numGenerations, in, info );
-		generations.resize(numGenerations);
-		for (unsigned int i2 = 0; i2 < generations.size(); i2++) {
-			NifStream( generations[i2], in, info );
+		NifStream( unknownInt2, in, info );
+		NifStream( unknownByte3, in, info );
+		NifStream( numUnknownInts1, in, info );
+		unknownInts1.resize(numUnknownInts1);
+		for (unsigned int i2 = 0; i2 < unknownInts1.size(); i2++) {
+			NifStream( unknownInts1[i2], in, info );
 		};
 	};
 	NifStream( block_num, in, info );
@@ -65,16 +65,32 @@ void NiMeshPSysData::Write( ostream& out, const map<NiObjectRef,unsigned int> & 
 	//--END CUSTOM CODE--//
 
 	NiPSysData::Write( out, link_map, missing_link_stack, info );
-	numGenerations = (unsigned int)(generations.size());
+	numUnknownInts1 = (unsigned int)(unknownInts1.size());
 	if ( info.version >= 0x0A020000 ) {
-		NifStream( defaultPoolSize, out, info );
-		NifStream( fillPoolsOnLoad, out, info );
-		NifStream( numGenerations, out, info );
-		for (unsigned int i2 = 0; i2 < generations.size(); i2++) {
-			NifStream( generations[i2], out, info );
+		NifStream( unknownInt2, out, info );
+		NifStream( unknownByte3, out, info );
+		NifStream( numUnknownInts1, out, info );
+		for (unsigned int i2 = 0; i2 < unknownInts1.size(); i2++) {
+			NifStream( unknownInts1[i2], out, info );
 		};
 	};
-	WriteRef( StaticCast<NiObject>(particleMeshes), out, info, link_map, missing_link_stack );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*unknownNode), out );
+	} else {
+		if ( unknownNode != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(unknownNode) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( unknownNode );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -87,12 +103,12 @@ std::string NiMeshPSysData::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiPSysData::asString();
-	numGenerations = (unsigned int)(generations.size());
-	out << "  Default Pool Size:  " << defaultPoolSize << endl;
-	out << "  Fill Pools On Load:  " << fillPoolsOnLoad << endl;
-	out << "  Num Generations:  " << numGenerations << endl;
+	numUnknownInts1 = (unsigned int)(unknownInts1.size());
+	out << "  Unknown Int 2:  " << unknownInt2 << endl;
+	out << "  Unknown Byte 3:  " << unknownByte3 << endl;
+	out << "  Num Unknown Ints 1:  " << numUnknownInts1 << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < generations.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < unknownInts1.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -100,10 +116,10 @@ std::string NiMeshPSysData::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Generations[" << i1 << "]:  " << generations[i1] << endl;
+		out << "    Unknown Ints 1[" << i1 << "]:  " << unknownInts1[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Particle Meshes:  " << particleMeshes << endl;
+	out << "  Unknown Node:  " << unknownNode << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -115,7 +131,7 @@ void NiMeshPSysData::FixLinks( const map<unsigned int,NiObjectRef> & objects, li
 	//--END CUSTOM CODE--//
 
 	NiPSysData::FixLinks( objects, link_stack, missing_link_stack, info );
-	particleMeshes = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
+	unknownNode = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -124,8 +140,8 @@ void NiMeshPSysData::FixLinks( const map<unsigned int,NiObjectRef> & objects, li
 std::list<NiObjectRef> NiMeshPSysData::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiPSysData::GetRefs();
-	if ( particleMeshes != NULL )
-		refs.push_back(StaticCast<NiObject>(particleMeshes));
+	if ( unknownNode != NULL )
+		refs.push_back(StaticCast<NiObject>(unknownNode));
 	return refs;
 }
 

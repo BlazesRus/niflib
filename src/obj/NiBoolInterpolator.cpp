@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiBoolInterpolator::TYPE("NiBoolInterpolator", &NiKeyBasedInterpolator::TYPE );
 
-NiBoolInterpolator::NiBoolInterpolator() : value(2), data(NULL) {
+NiBoolInterpolator::NiBoolInterpolator() : boolValue(false), data(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -44,7 +44,7 @@ void NiBoolInterpolator::Read( istream& in, list<unsigned int> & link_stack, con
 
 	unsigned int block_num;
 	NiKeyBasedInterpolator::Read( in, link_stack, info );
-	NifStream( value, in, info );
+	NifStream( boolValue, in, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
 
@@ -57,8 +57,24 @@ void NiBoolInterpolator::Write( ostream& out, const map<NiObjectRef,unsigned int
 	//--END CUSTOM CODE--//
 
 	NiKeyBasedInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( value, out, info );
-	WriteRef( StaticCast<NiObject>(data), out, info, link_map, missing_link_stack );
+	NifStream( boolValue, out, info );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*data), out );
+	} else {
+		if ( data != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(data) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( data );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -70,7 +86,7 @@ std::string NiBoolInterpolator::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiKeyBasedInterpolator::asString();
-	out << "  Value:  " << value << endl;
+	out << "  Bool Value:  " << boolValue << endl;
 	out << "  Data:  " << data << endl;
 	return out.str();
 
@@ -106,11 +122,11 @@ std::list<NiObject *> NiBoolInterpolator::GetPtrs() const {
 //--BEGIN MISC CUSTOM CODE--//
 
 bool NiBoolInterpolator::GetBoolValue() const {
-	return value;
+	return boolValue;
 }
 
 void NiBoolInterpolator::SetBoolValue( bool value ) {
-	value = value;
+	boolValue = value;
 }
 
 Ref<NiBoolData > NiBoolInterpolator::GetData() const {

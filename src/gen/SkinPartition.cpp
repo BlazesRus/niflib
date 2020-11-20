@@ -1,18 +1,16 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
-//-----------------------------------NOTICE----------------------------------//
-// Some of this file is automatically filled in by a Python script.  Only    //
-// add custom code in the designated areas or it will be overwritten during  //
-// the next update.                                                          //
-//-----------------------------------NOTICE----------------------------------//
+//---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
+
+//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
 
 #include "../../include/gen/SkinPartition.h"
-#include "../../include/gen/BSVertexDesc.h"
+#include "../../include/gen/SkinPartitionUnknownItem1.h"
 using namespace Niflib;
 
 //Constructor
-SkinPartition::SkinPartition() : numVertices((unsigned short)0), numTriangles((unsigned short)0), numBones((unsigned short)0), numStrips((unsigned short)0), numWeightsPerVertex((unsigned short)0), hasVertexMap(false), hasVertexWeights(false), hasFaces(false), hasBoneIndices(false), unknownShort((unsigned short)0) {};
+SkinPartition::SkinPartition() : numVertices((unsigned short)0), numTriangles((unsigned short)0), numBones((unsigned short)0), numStrips((unsigned short)0), numWeightsPerVertex((unsigned short)0), hasVertexMap(false), hasVertexWeights(false), hasFaces(false), hasBoneIndices(false), unknownShort((unsigned short)0), unknown83C3((unsigned short)0), unknown00001((unsigned short)0), numVertices2((unsigned short)0), unknown00002((unsigned short)0), unknown00003((unsigned short)0), unknown00004((unsigned short)0) {};
 
 //Copy Constructor
 SkinPartition::SkinPartition( const SkinPartition & src ) {
@@ -38,8 +36,13 @@ SkinPartition & SkinPartition::operator=( const SkinPartition & src ) {
 	this->hasBoneIndices = src.hasBoneIndices;
 	this->boneIndices = src.boneIndices;
 	this->unknownShort = src.unknownShort;
-	this->vertexDesc = src.vertexDesc;
-	this->trianglesCopy = src.trianglesCopy;
+	this->unknown83C3 = src.unknown83C3;
+	this->unknown00001 = src.unknown00001;
+	this->numVertices2 = src.numVertices2;
+	this->unknown00002 = src.unknown00002;
+	this->unknown00003 = src.unknown00003;
+	this->unknown00004 = src.unknown00004;
+	this->unknownArr1 = src.unknownArr1;
 	return *this;
 };
 

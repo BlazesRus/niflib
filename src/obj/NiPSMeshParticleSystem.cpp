@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,13 +15,12 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPSMeshParticleSystem.h"
-#include "../../include/obj/NiAVObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiPSMeshParticleSystem::TYPE("NiPSMeshParticleSystem", &NiPSParticleSystem::TYPE );
 
-NiPSMeshParticleSystem::NiPSMeshParticleSystem() : numGenerations((unsigned int)0), poolSize((unsigned int)0), auto_fillPools(false) {
+NiPSMeshParticleSystem::NiPSMeshParticleSystem() : unknown23((int)0), unknown24((int)0), unknown25((int)0), unknown26((byte)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,16 +45,11 @@ void NiPSMeshParticleSystem::Read( istream& in, list<unsigned int> & link_stack,
 
 	//--END CUSTOM CODE--//
 
-	unsigned int block_num;
 	NiPSParticleSystem::Read( in, link_stack, info );
-	NifStream( numGenerations, in, info );
-	masterParticles.resize(numGenerations);
-	for (unsigned int i1 = 0; i1 < masterParticles.size(); i1++) {
-		NifStream( block_num, in, info );
-		link_stack.push_back( block_num );
-	};
-	NifStream( poolSize, in, info );
-	NifStream( auto_fillPools, in, info );
+	NifStream( unknown23, in, info );
+	NifStream( unknown24, in, info );
+	NifStream( unknown25, in, info );
+	NifStream( unknown26, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -68,13 +62,10 @@ void NiPSMeshParticleSystem::Write( ostream& out, const map<NiObjectRef,unsigned
 	//--END CUSTOM CODE--//
 
 	NiPSParticleSystem::Write( out, link_map, missing_link_stack, info );
-	numGenerations = (unsigned int)(masterParticles.size());
-	NifStream( numGenerations, out, info );
-	for (unsigned int i1 = 0; i1 < masterParticles.size(); i1++) {
-		WriteRef( StaticCast<NiObject>(masterParticles[i1]), out, info, link_map, missing_link_stack );
-	};
-	NifStream( poolSize, out, info );
-	NifStream( auto_fillPools, out, info );
+	NifStream( unknown23, out, info );
+	NifStream( unknown24, out, info );
+	NifStream( unknown25, out, info );
+	NifStream( unknown26, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -87,24 +78,11 @@ std::string NiPSMeshParticleSystem::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	unsigned int array_output_count = 0;
 	out << NiPSParticleSystem::asString();
-	numGenerations = (unsigned int)(masterParticles.size());
-	out << "  Num Generations:  " << numGenerations << endl;
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < masterParticles.size(); i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
-		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Master Particles[" << i1 << "]:  " << masterParticles[i1] << endl;
-		array_output_count++;
-	};
-	out << "  Pool Size:  " << poolSize << endl;
-	out << "  Auto-Fill Pools:  " << auto_fillPools << endl;
+	out << "  Unknown 23:  " << unknown23 << endl;
+	out << "  Unknown 24:  " << unknown24 << endl;
+	out << "  Unknown 25:  " << unknown25 << endl;
+	out << "  Unknown 26:  " << unknown26 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -118,9 +96,6 @@ void NiPSMeshParticleSystem::FixLinks( const map<unsigned int,NiObjectRef> & obj
 	//--END CUSTOM CODE--//
 
 	NiPSParticleSystem::FixLinks( objects, link_stack, missing_link_stack, info );
-	for (unsigned int i1 = 0; i1 < masterParticles.size(); i1++) {
-		masterParticles[i1] = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
-	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -130,18 +105,12 @@ void NiPSMeshParticleSystem::FixLinks( const map<unsigned int,NiObjectRef> & obj
 std::list<NiObjectRef> NiPSMeshParticleSystem::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiPSParticleSystem::GetRefs();
-	for (unsigned int i1 = 0; i1 < masterParticles.size(); i1++) {
-		if ( masterParticles[i1] != NULL )
-			refs.push_back(StaticCast<NiObject>(masterParticles[i1]));
-	};
 	return refs;
 }
 
 std::list<NiObject *> NiPSMeshParticleSystem::GetPtrs() const {
 	list<NiObject *> ptrs;
 	ptrs = NiPSParticleSystem::GetPtrs();
-	for (unsigned int i1 = 0; i1 < masterParticles.size(); i1++) {
-	};
 	return ptrs;
 }
 

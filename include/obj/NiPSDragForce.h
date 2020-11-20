@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,41 +14,39 @@ All rights reserved.  Please see niflib.h for license. */
 
 //--END CUSTOM CODE--//
 
-#include "NiPSForce.h"
+#include "NiObject.h"
 namespace Niflib {
 
-// Forward define of referenced NIF objects
-class NiAVObject;
 class NiPSDragForce;
 typedef Ref<NiPSDragForce> NiPSDragForceRef;
 
-/*! Applies a linear drag force to particles. */
-class NiPSDragForce : public NiPSForce {
+/*!  */
+class NiPSDragForce : public NiObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiPSDragForce();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiPSDragForce();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -59,11 +57,26 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	Vector3 dragAxis;
-	float percentage;
-	float range;
-	float rangeFalloff;
-	NiAVObject * dragObject;
+	/*! Unknown. */
+	int unknown1;
+	/*! Unknown. */
+	int unknown2;
+	/*! Unknown. */
+	byte unknown3;
+	/*! Unknown. */
+	float unknown4;
+	/*! Unknown. */
+	float unknown5;
+	/*! Unknown. */
+	float unknown6;
+	/*! Unknown. */
+	float unknown7;
+	/*! Unknown. */
+	float unknown8;
+	/*! Unknown. */
+	float unknown9;
+	/*! Unknown. */
+	int unknown10;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -81,5 +94,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

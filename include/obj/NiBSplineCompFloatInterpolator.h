@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,36 +19,33 @@ namespace Niflib {
 class NiBSplineCompFloatInterpolator;
 typedef Ref<NiBSplineCompFloatInterpolator> NiBSplineCompFloatInterpolatorRef;
 
-/*!
- * NiBSplineFloatInterpolator plus the information required for using compact
- * control points.
- */
+/*! Unknown. */
 class NiBSplineCompFloatInterpolator : public NiBSplineFloatInterpolator {
 public:
 	/*! Constructor */
 	NIFLIB_API NiBSplineCompFloatInterpolator();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiBSplineCompFloatInterpolator();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -57,11 +54,55 @@ public:
 
 	//--BEGIN MISC CUSTOM CODE--//
 
-	NIFLIB_API float GetOffset() const;
-	NIFLIB_API void SetOffset( float value );
+	/*!
+	* Gets the base value when a curve is not defined.
+	* \return The base value.
+	*/
+	NIFLIB_API float GetBase() const;
 
-	NIFLIB_API float GetHalfRange() const;
-	NIFLIB_API void SetHalfRange( float value );
+	/*!
+	* Sets the base value when a curve is not defined.
+	* \param[in] value The new base value.
+	*/
+	NIFLIB_API void SetBase( float value );
+
+	/*!
+	* Gets value bias.
+	* \return The value bias.
+	*/
+	NIFLIB_API float GetBias() const;
+
+	/*!
+	* Sets value bias.
+	* \param[in] value The new value bias.
+	*/
+	NIFLIB_API void SetBias( float value );
+
+	/*!
+	* Gets value multiplier.
+	* \return The value multiplier.
+	*/
+	NIFLIB_API float GetMultiplier() const;
+
+	/*!
+	* Sets value multiplier.
+	* \param[in] value The new value multiplier.
+	*/
+	NIFLIB_API void SetMultiplier( float value );
+
+	/*!
+	* Retrieves the key data.
+	* \return A vector containing control float data which specify a value over time.
+	*/
+	NIFLIB_API vector< float > GetControlData() const;
+
+	/*!
+	* Retrieves the sampled data between start and stop time.
+	* \param npoints The number of data points to sample between start and stop time.
+	* \param degree N-th order degree of polynomial used to fit the data.
+	* \return A vector containing Key<float> data which specify a value over time.
+	*/
+	NIFLIB_API vector< Key<float> > SampleKeys(int npoints, int degree) const;
 
 	/*!
 	* Retrieves the number of control points used in the spline curve.
@@ -70,8 +111,14 @@ public:
 	NIFLIB_API int GetNumControlPoints() const;
 	//--END CUSTOM CODE--//
 protected:
-	float floatOffset;
-	float floatHalfRange;
+	/*! Base value when curve not defined. */
+	float base;
+	/*! Starting offset for the data. (USHRT_MAX for no data.) */
+	unsigned int offset;
+	/*! Bias */
+	float bias;
+	/*! Multiplier */
+	float multiplier;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -88,5 +135,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

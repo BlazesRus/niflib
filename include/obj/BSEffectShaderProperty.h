@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,39 +14,39 @@ All rights reserved.  Please see niflib.h for license. */
 
 //--END CUSTOM CODE--//
 
-#include "BSShaderProperty.h"
+#include "NiProperty.h"
 namespace Niflib {
 
 class BSEffectShaderProperty;
 typedef Ref<BSEffectShaderProperty> BSEffectShaderPropertyRef;
 
-/*! Bethesda effect shader property for Skyrim and later. */
-class BSEffectShaderProperty : public BSShaderProperty {
+/*! Skyrim non-PP shader model, used primarily for transparency effects. */
+class BSEffectShaderProperty : public NiProperty {
 public:
 	/*! Constructor */
 	NIFLIB_API BSEffectShaderProperty();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~BSEffectShaderProperty();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -57,10 +57,10 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	SkyrimShaderPropertyFlags1 shaderFlags1_sk;
-	SkyrimShaderPropertyFlags2 shaderFlags2_sk;
-	Fallout4ShaderPropertyFlags1 shaderFlags1_fo4;
-	Fallout4ShaderPropertyFlags2 shaderFlags2_fo4;
+	/*! Unknown. */
+	SkyrimShaderPropertyFlags1 shaderFlags1;
+	/*! Unknown. */
+	SkyrimShaderPropertyFlags2 shaderFlags2;
 	/*! Offset UVs */
 	TexCoord uvOffset;
 	/*! Offset UV Scale to repeat tiling textures */
@@ -68,33 +68,23 @@ protected:
 	/*! points to an external texture. */
 	string sourceTexture;
 	/*! How to handle texture borders. */
-	byte textureClampMode;
-	byte lightingInfluence;
-	byte envMapMinLod;
+	unsigned int textureClampMode;
 	/*! Unknown. */
-	byte unknownByte;
-	/*! At this cosine of angle falloff will be equal to Falloff Start Opacity */
 	float falloffStartAngle;
-	/*! At this cosine of angle falloff will be equal to Falloff Stop Opacity */
+	/*! Unknown. */
 	float falloffStopAngle;
-	/*! Alpha falloff multiplier at start angle */
+	/*! Texture will fade in within this proximity. */
 	float falloffStartOpacity;
-	/*! Alpha falloff multiplier at end angle */
+	/*! Unknown. */
 	float falloffStopOpacity;
 	/*! Emissive color */
 	Color4 emissiveColor;
-	/*! Multiplier for Emissive Color (RGB part) */
+	/*! Multipled Emissive Colors */
 	float emissiveMultiple;
+	/*! Unknown. */
 	float softFalloffDepth;
-	/*!
-	 * Points to an external texture, used as palette for
-	 * SLSF1_Greyscale_To_PaletteColor/SLSF1_Greyscale_To_PaletteAlpha.
-	 */
+	/*! points to an external texture. */
 	string greyscaleTexture;
-	string envMapTexture;
-	string normalTexture;
-	string envMaskTexture;
-	float environmentMapScale;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -112,5 +102,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

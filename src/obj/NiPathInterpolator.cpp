@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,7 +21,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiPathInterpolator::TYPE("NiPathInterpolator", &NiKeyBasedInterpolator::TYPE );
 
-NiPathInterpolator::NiPathInterpolator() : flags((PathFlags)3), bankDir((int)1), maxBankAngle(0.0f), smoothing(0.0f), followAxis((short)0), pathData(NULL), percentData(NULL) {
+NiPathInterpolator::NiPathInterpolator() : unknownShort((unsigned short)0), unknownInt((unsigned int)0), unknownFloat1(0.0f), unknownFloat2(0.0f), unknownShort2((unsigned short)0), posData(NULL), floatData(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -45,11 +45,11 @@ void NiPathInterpolator::Read( istream& in, list<unsigned int> & link_stack, con
 
 	unsigned int block_num;
 	NiKeyBasedInterpolator::Read( in, link_stack, info );
-	NifStream( flags, in, info );
-	NifStream( bankDir, in, info );
-	NifStream( maxBankAngle, in, info );
-	NifStream( smoothing, in, info );
-	NifStream( followAxis, in, info );
+	NifStream( unknownShort, in, info );
+	NifStream( unknownInt, in, info );
+	NifStream( unknownFloat1, in, info );
+	NifStream( unknownFloat2, in, info );
+	NifStream( unknownShort2, in, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
 	NifStream( block_num, in, info );
@@ -64,13 +64,45 @@ void NiPathInterpolator::Write( ostream& out, const map<NiObjectRef,unsigned int
 	//--END CUSTOM CODE--//
 
 	NiKeyBasedInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( flags, out, info );
-	NifStream( bankDir, out, info );
-	NifStream( maxBankAngle, out, info );
-	NifStream( smoothing, out, info );
-	NifStream( followAxis, out, info );
-	WriteRef( StaticCast<NiObject>(pathData), out, info, link_map, missing_link_stack );
-	WriteRef( StaticCast<NiObject>(percentData), out, info, link_map, missing_link_stack );
+	NifStream( unknownShort, out, info );
+	NifStream( unknownInt, out, info );
+	NifStream( unknownFloat1, out, info );
+	NifStream( unknownFloat2, out, info );
+	NifStream( unknownShort2, out, info );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*posData), out );
+	} else {
+		if ( posData != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(posData) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( posData );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*floatData), out );
+	} else {
+		if ( floatData != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(floatData) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( floatData );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -82,13 +114,13 @@ std::string NiPathInterpolator::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiKeyBasedInterpolator::asString();
-	out << "  Flags:  " << flags << endl;
-	out << "  Bank Dir:  " << bankDir << endl;
-	out << "  Max Bank Angle:  " << maxBankAngle << endl;
-	out << "  Smoothing:  " << smoothing << endl;
-	out << "  Follow Axis:  " << followAxis << endl;
-	out << "  Path Data:  " << pathData << endl;
-	out << "  Percent Data:  " << percentData << endl;
+	out << "  Unknown Short:  " << unknownShort << endl;
+	out << "  Unknown Int:  " << unknownInt << endl;
+	out << "  Unknown Float 1:  " << unknownFloat1 << endl;
+	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
+	out << "  Unknown Short 2:  " << unknownShort2 << endl;
+	out << "  Pos Data:  " << posData << endl;
+	out << "  Float Data:  " << floatData << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -100,8 +132,8 @@ void NiPathInterpolator::FixLinks( const map<unsigned int,NiObjectRef> & objects
 	//--END CUSTOM CODE--//
 
 	NiKeyBasedInterpolator::FixLinks( objects, link_stack, missing_link_stack, info );
-	pathData = FixLink<NiPosData>( objects, link_stack, missing_link_stack, info );
-	percentData = FixLink<NiFloatData>( objects, link_stack, missing_link_stack, info );
+	posData = FixLink<NiPosData>( objects, link_stack, missing_link_stack, info );
+	floatData = FixLink<NiFloatData>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -110,10 +142,10 @@ void NiPathInterpolator::FixLinks( const map<unsigned int,NiObjectRef> & objects
 std::list<NiObjectRef> NiPathInterpolator::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiKeyBasedInterpolator::GetRefs();
-	if ( pathData != NULL )
-		refs.push_back(StaticCast<NiObject>(pathData));
-	if ( percentData != NULL )
-		refs.push_back(StaticCast<NiObject>(percentData));
+	if ( posData != NULL )
+		refs.push_back(StaticCast<NiObject>(posData));
+	if ( floatData != NULL )
+		refs.push_back(StaticCast<NiObject>(floatData));
 	return refs;
 }
 
@@ -125,74 +157,30 @@ std::list<NiObject *> NiPathInterpolator::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-PathFlags NiPathInterpolator::GetPathFlags() const
-{
-	return flags;
+Ref<NiPosData > NiPathInterpolator::GetPosData() const {
+	return posData;
 }
 
-void NiPathInterpolator::SetPathFlags(PathFlags value)
-{
-	flags = value;
+void NiPathInterpolator::SetPosData( NiPosData * value ) {
+	posData = value;
 }
 
-float NiPathInterpolator::GetBankDir() const
-{
-	return bankDir;
+Ref<NiFloatData > NiPathInterpolator::GetFloatData() const {
+	return floatData;
 }
 
-void NiPathInterpolator::SetBankDir(float value)
-{
-	bankDir = value;
+void NiPathInterpolator::SetFloatData( NiFloatData * value ) {
+	floatData = value;
 }
 
-float NiPathInterpolator::GetMaxBankAngle() const
-{
-	return maxBankAngle;
+void NiPathInterpolator::NormalizeKeys( float phase, float frequency ) {
+	if ( posData != NULL ) {
+		posData->NormalizeKeys( phase, frequency );
+	}
+	if ( floatData != NULL ) {
+		floatData->NormalizeKeys( phase, frequency );
+	}
 }
 
-void NiPathInterpolator::SetMaxBankAngle(float value)
-{
-	maxBankAngle = value;
-}
-
-float NiPathInterpolator::GetSmoothing() const
-{
-	return smoothing;
-}
-
-void NiPathInterpolator::SetSmoothing(float value)
-{
-	smoothing = value;
-}
-
-float NiPathInterpolator::GetFollowAxis() const
-{
-	return followAxis;
-}
-
-void NiPathInterpolator::SetFollowAxis(float value)
-{
-	followAxis = value;
-}
-
-Ref<NiPosData> NiPathInterpolator::GetPathData() const
-{
-	return pathData;
-}
-
-void NiPathInterpolator::SetPathData(const Ref<NiPosData>& value)
-{
-	pathData = value;
-}
-
-Ref<NiFloatData> NiPathInterpolator::GetPercentData() const
-{
-	return percentData;
-}
-
-void NiPathInterpolator::SetPercentData(const Ref<NiFloatData>& value)
-{
-	percentData = value;
-}
 
 //--END CUSTOM CODE--//

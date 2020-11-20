@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,16 +15,15 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPhysXProp.h"
-#include "../../include/obj/NiMesh.h"
 #include "../../include/obj/NiObject.h"
-#include "../../include/obj/NiPhysXDest.h"
 #include "../../include/obj/NiPhysXPropDesc.h"
+#include "../../include/obj/NiPhysXTransformDest.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiPhysXProp::TYPE("NiPhysXProp", &NiObjectNET::TYPE );
 
-NiPhysXProp::NiPhysXProp() : physxToWorldScale(0.0f), numSources((unsigned int)0), numDests((int)0), numModifiedMeshes((unsigned int)0), keepMeshes(false), propDescription(NULL) {
+NiPhysXProp::NiPhysXProp() : unknownFloat1(0.0f), unknownInt1((unsigned int)0), numDests((int)0), unknownByte((byte)0), unknownInt((int)0), propDescription(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -51,31 +50,23 @@ void NiPhysXProp::Read( istream& in, list<unsigned int> & link_stack, const NifI
 
 	unsigned int block_num;
 	NiObjectNET::Read( in, link_stack, info );
-	NifStream( physxToWorldScale, in, info );
-	NifStream( numSources, in, info );
-	sources.resize(numSources);
-	for (unsigned int i1 = 0; i1 < sources.size(); i1++) {
+	NifStream( unknownFloat1, in, info );
+	NifStream( unknownInt1, in, info );
+	unknownRefs1.resize(unknownInt1);
+	for (unsigned int i1 = 0; i1 < unknownRefs1.size(); i1++) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
 	NifStream( numDests, in, info );
-	dests.resize(numDests);
-	for (unsigned int i1 = 0; i1 < dests.size(); i1++) {
+	transformDests.resize(numDests);
+	for (unsigned int i1 = 0; i1 < transformDests.size(); i1++) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	if ( info.version >= 0x14040000 ) {
-		NifStream( numModifiedMeshes, in, info );
-		modifiedMeshes.resize(numModifiedMeshes);
-		for (unsigned int i2 = 0; i2 < modifiedMeshes.size(); i2++) {
-			NifStream( block_num, in, info );
-			link_stack.push_back( block_num );
-		};
+	NifStream( unknownByte, in, info );
+	if ( info.version >= 0x14050000 ) {
+		NifStream( unknownInt, in, info );
 	};
-	if ( ( info.version >= 0x1E010002 ) && ( info.version <= 0x1E020002 ) ) {
-		NifStream( tempName, in, info );
-	};
-	NifStream( keepMeshes, in, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
 
@@ -90,29 +81,70 @@ void NiPhysXProp::Write( ostream& out, const map<NiObjectRef,unsigned int> & lin
 	//--END CUSTOM CODE--//
 
 	NiObjectNET::Write( out, link_map, missing_link_stack, info );
-	numModifiedMeshes = (unsigned int)(modifiedMeshes.size());
-	numDests = (int)(dests.size());
-	numSources = (unsigned int)(sources.size());
-	NifStream( physxToWorldScale, out, info );
-	NifStream( numSources, out, info );
-	for (unsigned int i1 = 0; i1 < sources.size(); i1++) {
-		WriteRef( StaticCast<NiObject>(sources[i1]), out, info, link_map, missing_link_stack );
+	numDests = (int)(transformDests.size());
+	unknownInt1 = (unsigned int)(unknownRefs1.size());
+	NifStream( unknownFloat1, out, info );
+	NifStream( unknownInt1, out, info );
+	for (unsigned int i1 = 0; i1 < unknownRefs1.size(); i1++) {
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*unknownRefs1[i1]), out );
+		} else {
+			if ( unknownRefs1[i1] != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(unknownRefs1[i1]) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( unknownRefs1[i1] );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
 	NifStream( numDests, out, info );
-	for (unsigned int i1 = 0; i1 < dests.size(); i1++) {
-		WriteRef( StaticCast<NiObject>(dests[i1]), out, info, link_map, missing_link_stack );
+	for (unsigned int i1 = 0; i1 < transformDests.size(); i1++) {
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*transformDests[i1]), out );
+		} else {
+			if ( transformDests[i1] != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(transformDests[i1]) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( transformDests[i1] );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
-	if ( info.version >= 0x14040000 ) {
-		NifStream( numModifiedMeshes, out, info );
-		for (unsigned int i2 = 0; i2 < modifiedMeshes.size(); i2++) {
-			WriteRef( StaticCast<NiObject>(modifiedMeshes[i2]), out, info, link_map, missing_link_stack );
-		};
+	NifStream( unknownByte, out, info );
+	if ( info.version >= 0x14050000 ) {
+		NifStream( unknownInt, out, info );
 	};
-	if ( ( info.version >= 0x1E010002 ) && ( info.version <= 0x1E020002 ) ) {
-		NifStream( tempName, out, info );
-	};
-	NifStream( keepMeshes, out, info );
-	WriteRef( StaticCast<NiObject>(propDescription), out, info, link_map, missing_link_stack );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*propDescription), out );
+	} else {
+		if ( propDescription != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(propDescription) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( propDescription );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -127,13 +159,12 @@ std::string NiPhysXProp::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiObjectNET::asString();
-	numModifiedMeshes = (unsigned int)(modifiedMeshes.size());
-	numDests = (int)(dests.size());
-	numSources = (unsigned int)(sources.size());
-	out << "  PhysX to World Scale:  " << physxToWorldScale << endl;
-	out << "  Num Sources:  " << numSources << endl;
+	numDests = (int)(transformDests.size());
+	unknownInt1 = (unsigned int)(unknownRefs1.size());
+	out << "  Unknown Float 1:  " << unknownFloat1 << endl;
+	out << "  Unknown Int 1:  " << unknownInt1 << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < sources.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < unknownRefs1.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -141,12 +172,12 @@ std::string NiPhysXProp::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Sources[" << i1 << "]:  " << sources[i1] << endl;
+		out << "    Unknown Refs 1[" << i1 << "]:  " << unknownRefs1[i1] << endl;
 		array_output_count++;
 	};
 	out << "  Num Dests:  " << numDests << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < dests.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < transformDests.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -154,24 +185,11 @@ std::string NiPhysXProp::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Dests[" << i1 << "]:  " << dests[i1] << endl;
+		out << "    Transform Dests[" << i1 << "]:  " << transformDests[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Num Modified Meshes:  " << numModifiedMeshes << endl;
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < modifiedMeshes.size(); i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
-		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Modified Meshes[" << i1 << "]:  " << modifiedMeshes[i1] << endl;
-		array_output_count++;
-	};
-	out << "  Temp Name:  " << tempName << endl;
-	out << "  Keep Meshes:  " << keepMeshes << endl;
+	out << "  Unknown Byte:  " << unknownByte << endl;
+	out << "  Unknown Int:  " << unknownInt << endl;
 	out << "  Prop Description:  " << propDescription << endl;
 	return out.str();
 
@@ -186,16 +204,11 @@ void NiPhysXProp::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<
 	//--END CUSTOM CODE--//
 
 	NiObjectNET::FixLinks( objects, link_stack, missing_link_stack, info );
-	for (unsigned int i1 = 0; i1 < sources.size(); i1++) {
-		sources[i1] = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
+	for (unsigned int i1 = 0; i1 < unknownRefs1.size(); i1++) {
+		unknownRefs1[i1] = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
 	};
-	for (unsigned int i1 = 0; i1 < dests.size(); i1++) {
-		dests[i1] = FixLink<NiPhysXDest>( objects, link_stack, missing_link_stack, info );
-	};
-	if ( info.version >= 0x14040000 ) {
-		for (unsigned int i2 = 0; i2 < modifiedMeshes.size(); i2++) {
-			modifiedMeshes[i2] = FixLink<NiMesh>( objects, link_stack, missing_link_stack, info );
-		};
+	for (unsigned int i1 = 0; i1 < transformDests.size(); i1++) {
+		transformDests[i1] = FixLink<NiPhysXTransformDest>( objects, link_stack, missing_link_stack, info );
 	};
 	propDescription = FixLink<NiPhysXPropDesc>( objects, link_stack, missing_link_stack, info );
 
@@ -207,17 +220,13 @@ void NiPhysXProp::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<
 std::list<NiObjectRef> NiPhysXProp::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiObjectNET::GetRefs();
-	for (unsigned int i1 = 0; i1 < sources.size(); i1++) {
-		if ( sources[i1] != NULL )
-			refs.push_back(StaticCast<NiObject>(sources[i1]));
+	for (unsigned int i1 = 0; i1 < unknownRefs1.size(); i1++) {
+		if ( unknownRefs1[i1] != NULL )
+			refs.push_back(StaticCast<NiObject>(unknownRefs1[i1]));
 	};
-	for (unsigned int i1 = 0; i1 < dests.size(); i1++) {
-		if ( dests[i1] != NULL )
-			refs.push_back(StaticCast<NiObject>(dests[i1]));
-	};
-	for (unsigned int i1 = 0; i1 < modifiedMeshes.size(); i1++) {
-		if ( modifiedMeshes[i1] != NULL )
-			refs.push_back(StaticCast<NiObject>(modifiedMeshes[i1]));
+	for (unsigned int i1 = 0; i1 < transformDests.size(); i1++) {
+		if ( transformDests[i1] != NULL )
+			refs.push_back(StaticCast<NiObject>(transformDests[i1]));
 	};
 	if ( propDescription != NULL )
 		refs.push_back(StaticCast<NiObject>(propDescription));
@@ -227,11 +236,9 @@ std::list<NiObjectRef> NiPhysXProp::GetRefs() const {
 std::list<NiObject *> NiPhysXProp::GetPtrs() const {
 	list<NiObject *> ptrs;
 	ptrs = NiObjectNET::GetPtrs();
-	for (unsigned int i1 = 0; i1 < sources.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < unknownRefs1.size(); i1++) {
 	};
-	for (unsigned int i1 = 0; i1 < dests.size(); i1++) {
-	};
-	for (unsigned int i1 = 0; i1 < modifiedMeshes.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < transformDests.size(); i1++) {
 	};
 	return ptrs;
 }

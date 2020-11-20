@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //#define DEBUG // this will produce lots of output
@@ -186,9 +186,9 @@ vector<NiObjectRef> ReadNifList( istream & in, list<NiObjectRef> & missing_link_
 	info->userVersion = header.userVersion;
 	info->userVersion2 = header.userVersion2;
 	info->endian = EndianType(header.endianType);
-	info->author = header.exportInfo.author;
-	info->exportScript = header.exportInfo.exportScript;
-	info->processScript = header.exportInfo.processScript;
+	info->creator = header.exportInfo.creator.str;
+	info->exportInfo1 = header.exportInfo.exportInfo1.str;
+	info->exportInfo2 = header.exportInfo.exportInfo2.str;
 
 #ifdef DEBUG_HEADER_FOOTER
 	//Print debug output for header
@@ -230,7 +230,7 @@ vector<NiObjectRef> ReadNifList( istream & in, list<NiObjectRef> & missing_link_
 		if (in.eof() ) {
 			errStream << "End of file reached prematurely.  This NIF may be corrupt or improperly supported." << endl;
 			if ( new_obj != NULL ) {
-				errStream << "Last successfully read object was:  " << endl;
+				errStream << "Last successfuly read object was:  " << endl;
 				errStream << "====[ " << "Object " << i - 1 << " | " << new_obj->GetType().GetTypeName() << " ]====" << endl;
 				errStream << new_obj->asString();
 			} else {
@@ -251,9 +251,9 @@ vector<NiObjectRef> ReadNifList( istream & in, list<NiObjectRef> & missing_link_
 				unsigned int checkValue = ReadUInt( in );
 				if ( checkValue != 0 ) {
 					//Throw an exception if it's not zero
-					errStream << "Read failure - Bad object position.  Invalid check value:  " << checkValue << endl;
+					errStream << "Read failue - Bad object position.  Invalid check value:  " << checkValue << endl;
 					if ( new_obj != NULL ) {
-						errStream << "Last successfully read object was:  " << endl;
+						errStream << "Last successfuly read object was:  " << endl;
 						errStream << "====[ " << "Object " << i - 1 << " | " << new_obj->GetType().GetTypeName() << " ]====" << endl;
 						errStream << new_obj->asString();
 					} else {
@@ -273,9 +273,9 @@ vector<NiObjectRef> ReadNifList( istream & in, list<NiObjectRef> & missing_link_
 			// Find which object type this is by reading the string at this location
 			unsigned int objectTypeLength = ReadUInt( in );
 			if (objectTypeLength > 30 || objectTypeLength < 6) {
-				errStream << "Read failure - Bad object position.  Invalid Type Name Length:  " << objectTypeLength  << endl;
+				errStream << "Read failue - Bad object position.  Invalid Type Name Length:  " << objectTypeLength  << endl;
 				if ( new_obj != NULL ) {
-					errStream << "Last successfully read object was:  " << endl;
+					errStream << "Last successfuly read object was:  " << endl;
 					errStream << "====[ " << "Object " << i - 1 << " | " << new_obj->GetType().GetTypeName() << " ]====" << endl;
 					errStream << new_obj->asString();
 				} else {
@@ -331,7 +331,7 @@ vector<NiObjectRef> ReadNifList( istream & in, list<NiObjectRef> & missing_link_
 			//which is used as the index
 			index = ReadUInt(in);
 		} else {
-			//These newer versions use their position in the file as their index
+			//These newer verisons use their position in the file as their index
 			index = i;
 		}
 
@@ -486,9 +486,9 @@ void WriteNifTree( ostream & out, list<NiObjectRef> const & roots, list<NiObject
 	header.userVersion = info.userVersion;
 	header.userVersion2 = info.userVersion2;
 	header.endianType = info.endian;
-	header.exportInfo.author = info.author;
-	header.exportInfo.exportScript = info.exportScript;
-	header.exportInfo.processScript = info.processScript;
+	header.exportInfo.creator.str = info.creator;
+	header.exportInfo.exportInfo1.str = info.exportInfo1;
+	header.exportInfo.exportInfo2.str = info.exportInfo2;
 	header.copyright[0].line = "Numerical Design Limited, Chapel Hill, NC 27514";
 	header.copyright[1].line = "Copyright (c) 1996-2000";
 	header.copyright[2].line = "All Rights Reserved";
@@ -1105,7 +1105,7 @@ void MergeNifTrees( NiNode * target, NiControllerSequence * right, unsigned vers
 	//Atach it to
 
 	//Get the controller data
-	vector<ControlledBlock> data = right->GetControllerData();
+	vector<ControllerLink> data = right->GetControllerData();
 
 	//Connect a clone of all the interpolators/controllers to the named node
 	for ( unsigned int i = 0; i < data.size(); ++i ) {

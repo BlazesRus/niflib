@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,13 +15,12 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPSBombForce.h"
-#include "../../include/obj/NiAVObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPSBombForce::TYPE("NiPSBombForce", &NiPSForce::TYPE );
+const Type NiPSBombForce::TYPE("NiPSBombForce", &NiObject::TYPE );
 
-NiPSBombForce::NiPSBombForce() : decay(0.0f), deltaV(0.0f), decayType((DecayType)0), symmetryType((SymmetryType)0), bombObject(NULL) {
+NiPSBombForce::NiPSBombForce() : unknown1((byte)0), unknown2((int)0), unknown3((int)0), unknown4((int)0), unknown5((int)0), unknown6((int)0), unknown7((int)0), unknown8((int)0), unknown9((int)0), unknown10((int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,15 +45,18 @@ void NiPSBombForce::Read( istream& in, list<unsigned int> & link_stack, const Ni
 
 	//--END CUSTOM CODE--//
 
-	unsigned int block_num;
-	NiPSForce::Read( in, link_stack, info );
-	NifStream( bombAxis, in, info );
-	NifStream( decay, in, info );
-	NifStream( deltaV, in, info );
-	NifStream( decayType, in, info );
-	NifStream( symmetryType, in, info );
-	NifStream( block_num, in, info );
-	link_stack.push_back( block_num );
+	NiObject::Read( in, link_stack, info );
+	NifStream( name, in, info );
+	NifStream( unknown1, in, info );
+	NifStream( unknown2, in, info );
+	NifStream( unknown3, in, info );
+	NifStream( unknown4, in, info );
+	NifStream( unknown5, in, info );
+	NifStream( unknown6, in, info );
+	NifStream( unknown7, in, info );
+	NifStream( unknown8, in, info );
+	NifStream( unknown9, in, info );
+	NifStream( unknown10, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -66,13 +68,18 @@ void NiPSBombForce::Write( ostream& out, const map<NiObjectRef,unsigned int> & l
 
 	//--END CUSTOM CODE--//
 
-	NiPSForce::Write( out, link_map, missing_link_stack, info );
-	NifStream( bombAxis, out, info );
-	NifStream( decay, out, info );
-	NifStream( deltaV, out, info );
-	NifStream( decayType, out, info );
-	NifStream( symmetryType, out, info );
-	WriteRef( StaticCast<NiObject>(bombObject), out, info, link_map, missing_link_stack );
+	NiObject::Write( out, link_map, missing_link_stack, info );
+	NifStream( name, out, info );
+	NifStream( unknown1, out, info );
+	NifStream( unknown2, out, info );
+	NifStream( unknown3, out, info );
+	NifStream( unknown4, out, info );
+	NifStream( unknown5, out, info );
+	NifStream( unknown6, out, info );
+	NifStream( unknown7, out, info );
+	NifStream( unknown8, out, info );
+	NifStream( unknown9, out, info );
+	NifStream( unknown10, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -85,13 +92,18 @@ std::string NiPSBombForce::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiPSForce::asString();
-	out << "  Bomb Axis:  " << bombAxis << endl;
-	out << "  Decay:  " << decay << endl;
-	out << "  Delta V:  " << deltaV << endl;
-	out << "  Decay Type:  " << decayType << endl;
-	out << "  Symmetry Type:  " << symmetryType << endl;
-	out << "  Bomb Object:  " << bombObject << endl;
+	out << NiObject::asString();
+	out << "  Name:  " << name << endl;
+	out << "  Unknown 1:  " << unknown1 << endl;
+	out << "  Unknown 2:  " << unknown2 << endl;
+	out << "  Unknown 3:  " << unknown3 << endl;
+	out << "  Unknown 4:  " << unknown4 << endl;
+	out << "  Unknown 5:  " << unknown5 << endl;
+	out << "  Unknown 6:  " << unknown6 << endl;
+	out << "  Unknown 7:  " << unknown7 << endl;
+	out << "  Unknown 8:  " << unknown8 << endl;
+	out << "  Unknown 9:  " << unknown9 << endl;
+	out << "  Unknown 10:  " << unknown10 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -104,8 +116,7 @@ void NiPSBombForce::FixLinks( const map<unsigned int,NiObjectRef> & objects, lis
 
 	//--END CUSTOM CODE--//
 
-	NiPSForce::FixLinks( objects, link_stack, missing_link_stack, info );
-	bombObject = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
+	NiObject::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -114,15 +125,13 @@ void NiPSBombForce::FixLinks( const map<unsigned int,NiObjectRef> & objects, lis
 
 std::list<NiObjectRef> NiPSBombForce::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiPSForce::GetRefs();
+	refs = NiObject::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> NiPSBombForce::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiPSForce::GetPtrs();
-	if ( bombObject != NULL )
-		ptrs.push_back((NiObject *)(bombObject));
+	ptrs = NiObject::GetPtrs();
 	return ptrs;
 }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,12 +15,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/BSFrustumFOVController.h"
+#include "../../include/obj/NiFloatInterpolator.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type BSFrustumFOVController::TYPE("BSFrustumFOVController", &NiFloatInterpController::TYPE );
+const Type BSFrustumFOVController::TYPE("BSFrustumFOVController", &NiTimeController::TYPE );
 
-BSFrustumFOVController::BSFrustumFOVController() {
+BSFrustumFOVController::BSFrustumFOVController() : interpolator(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,7 +46,10 @@ void BSFrustumFOVController::Read( istream& in, list<unsigned int> & link_stack,
 
 	//--END CUSTOM CODE--//
 
-	NiFloatInterpController::Read( in, link_stack, info );
+	unsigned int block_num;
+	NiTimeController::Read( in, link_stack, info );
+	NifStream( block_num, in, info );
+	link_stack.push_back( block_num );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -57,7 +61,24 @@ void BSFrustumFOVController::Write( ostream& out, const map<NiObjectRef,unsigned
 
 	//--END CUSTOM CODE--//
 
-	NiFloatInterpController::Write( out, link_map, missing_link_stack, info );
+	NiTimeController::Write( out, link_map, missing_link_stack, info );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*interpolator), out );
+	} else {
+		if ( interpolator != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(interpolator) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( interpolator );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -70,7 +91,8 @@ std::string BSFrustumFOVController::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiFloatInterpController::asString();
+	out << NiTimeController::asString();
+	out << "  Interpolator:  " << interpolator << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -83,7 +105,8 @@ void BSFrustumFOVController::FixLinks( const map<unsigned int,NiObjectRef> & obj
 
 	//--END CUSTOM CODE--//
 
-	NiFloatInterpController::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiTimeController::FixLinks( objects, link_stack, missing_link_stack, info );
+	interpolator = FixLink<NiFloatInterpolator>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -92,13 +115,15 @@ void BSFrustumFOVController::FixLinks( const map<unsigned int,NiObjectRef> & obj
 
 std::list<NiObjectRef> BSFrustumFOVController::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiFloatInterpController::GetRefs();
+	refs = NiTimeController::GetRefs();
+	if ( interpolator != NULL )
+		refs.push_back(StaticCast<NiObject>(interpolator));
 	return refs;
 }
 
 std::list<NiObject *> BSFrustumFOVController::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiFloatInterpController::GetPtrs();
+	ptrs = NiTimeController::GetPtrs();
 	return ptrs;
 }
 

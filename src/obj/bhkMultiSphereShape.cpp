@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,7 +14,7 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkMultiSphereShape.h"
-#include "../../include/gen/NiBound.h"
+#include "../../include/gen/SphereBV.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
@@ -124,11 +124,11 @@ std::list<NiObject *> bhkMultiSphereShape::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-vector<NiBound > bhkMultiSphereShape::GetSpheres() const {
+vector<SphereBV > bhkMultiSphereShape::GetSpheres() const {
 	return spheres;
 }
 
-void bhkMultiSphereShape::SetSpheres( const vector<NiBound >& value ) {
+void bhkMultiSphereShape::SetSpheres( const vector<SphereBV >& value ) {
 	spheres = value;
 }
 

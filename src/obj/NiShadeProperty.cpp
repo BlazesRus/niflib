@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiShadeProperty::TYPE("NiShadeProperty", &NiProperty::TYPE );
 
-NiShadeProperty::NiShadeProperty() : flags((unsigned short)1) {
+NiShadeProperty::NiShadeProperty() : flags((unsigned short)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,9 +42,7 @@ void NiShadeProperty::Read( istream& in, list<unsigned int> & link_stack, const 
 	//--END CUSTOM CODE--//
 
 	NiProperty::Read( in, link_stack, info );
-	if ( (info.userVersion2 <= 34) ) {
-		NifStream( flags, in, info );
-	};
+	NifStream( flags, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -55,9 +53,7 @@ void NiShadeProperty::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	//--END CUSTOM CODE--//
 
 	NiProperty::Write( out, link_map, missing_link_stack, info );
-	if ( (info.userVersion2 <= 34) ) {
-		NifStream( flags, out, info );
-	};
+	NifStream( flags, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//

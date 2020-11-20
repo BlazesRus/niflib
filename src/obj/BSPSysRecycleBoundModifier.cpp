@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,13 +15,12 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/BSPSysRecycleBoundModifier.h"
-#include "../../include/obj/NiNode.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type BSPSysRecycleBoundModifier::TYPE("BSPSysRecycleBoundModifier", &NiPSysModifier::TYPE );
 
-BSPSysRecycleBoundModifier::BSPSysRecycleBoundModifier() : target(NULL) {
+BSPSysRecycleBoundModifier::BSPSysRecycleBoundModifier() : unknownFloat1(0.0f), unknownFloat2(0.0f), unknownFloat3(0.0f), unknownFloat4(0.0f), unknownFloat5(0.0f), unknownFloat6(0.0f), unknownInt1((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,12 +45,14 @@ void BSPSysRecycleBoundModifier::Read( istream& in, list<unsigned int> & link_st
 
 	//--END CUSTOM CODE--//
 
-	unsigned int block_num;
 	NiPSysModifier::Read( in, link_stack, info );
-	NifStream( boundOffset, in, info );
-	NifStream( boundExtent, in, info );
-	NifStream( block_num, in, info );
-	link_stack.push_back( block_num );
+	NifStream( unknownFloat1, in, info );
+	NifStream( unknownFloat2, in, info );
+	NifStream( unknownFloat3, in, info );
+	NifStream( unknownFloat4, in, info );
+	NifStream( unknownFloat5, in, info );
+	NifStream( unknownFloat6, in, info );
+	NifStream( unknownInt1, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -64,9 +65,13 @@ void BSPSysRecycleBoundModifier::Write( ostream& out, const map<NiObjectRef,unsi
 	//--END CUSTOM CODE--//
 
 	NiPSysModifier::Write( out, link_map, missing_link_stack, info );
-	NifStream( boundOffset, out, info );
-	NifStream( boundExtent, out, info );
-	WriteRef( StaticCast<NiObject>(target), out, info, link_map, missing_link_stack );
+	NifStream( unknownFloat1, out, info );
+	NifStream( unknownFloat2, out, info );
+	NifStream( unknownFloat3, out, info );
+	NifStream( unknownFloat4, out, info );
+	NifStream( unknownFloat5, out, info );
+	NifStream( unknownFloat6, out, info );
+	NifStream( unknownInt1, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -80,9 +85,13 @@ std::string BSPSysRecycleBoundModifier::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiPSysModifier::asString();
-	out << "  Bound Offset:  " << boundOffset << endl;
-	out << "  Bound Extent:  " << boundExtent << endl;
-	out << "  Target:  " << target << endl;
+	out << "  Unknown Float 1:  " << unknownFloat1 << endl;
+	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
+	out << "  Unknown Float 3:  " << unknownFloat3 << endl;
+	out << "  Unknown Float 4:  " << unknownFloat4 << endl;
+	out << "  Unknown Float 5:  " << unknownFloat5 << endl;
+	out << "  Unknown Float 6:  " << unknownFloat6 << endl;
+	out << "  Unknown Int 1:  " << unknownInt1 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -96,7 +105,6 @@ void BSPSysRecycleBoundModifier::FixLinks( const map<unsigned int,NiObjectRef> &
 	//--END CUSTOM CODE--//
 
 	NiPSysModifier::FixLinks( objects, link_stack, missing_link_stack, info );
-	target = FixLink<NiNode>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -112,8 +120,6 @@ std::list<NiObjectRef> BSPSysRecycleBoundModifier::GetRefs() const {
 std::list<NiObject *> BSPSysRecycleBoundModifier::GetPtrs() const {
 	list<NiObject *> ptrs;
 	ptrs = NiPSysModifier::GetPtrs();
-	if ( target != NULL )
-		ptrs.push_back((NiObject *)(target));
 	return ptrs;
 }
 

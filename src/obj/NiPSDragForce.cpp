@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,13 +15,12 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiPSDragForce.h"
-#include "../../include/obj/NiAVObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPSDragForce::TYPE("NiPSDragForce", &NiPSForce::TYPE );
+const Type NiPSDragForce::TYPE("NiPSDragForce", &NiObject::TYPE );
 
-NiPSDragForce::NiPSDragForce() : percentage(0.0f), range(0.0f), rangeFalloff(0.0f), dragObject(NULL) {
+NiPSDragForce::NiPSDragForce() : unknown1((int)0), unknown2((int)0), unknown3((byte)0), unknown4(0.0f), unknown5(0.0f), unknown6(0.0f), unknown7(0.0f), unknown8(0.0f), unknown9(0.0f), unknown10((int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,14 +45,17 @@ void NiPSDragForce::Read( istream& in, list<unsigned int> & link_stack, const Ni
 
 	//--END CUSTOM CODE--//
 
-	unsigned int block_num;
-	NiPSForce::Read( in, link_stack, info );
-	NifStream( dragAxis, in, info );
-	NifStream( percentage, in, info );
-	NifStream( range, in, info );
-	NifStream( rangeFalloff, in, info );
-	NifStream( block_num, in, info );
-	link_stack.push_back( block_num );
+	NiObject::Read( in, link_stack, info );
+	NifStream( unknown1, in, info );
+	NifStream( unknown2, in, info );
+	NifStream( unknown3, in, info );
+	NifStream( unknown4, in, info );
+	NifStream( unknown5, in, info );
+	NifStream( unknown6, in, info );
+	NifStream( unknown7, in, info );
+	NifStream( unknown8, in, info );
+	NifStream( unknown9, in, info );
+	NifStream( unknown10, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -65,12 +67,17 @@ void NiPSDragForce::Write( ostream& out, const map<NiObjectRef,unsigned int> & l
 
 	//--END CUSTOM CODE--//
 
-	NiPSForce::Write( out, link_map, missing_link_stack, info );
-	NifStream( dragAxis, out, info );
-	NifStream( percentage, out, info );
-	NifStream( range, out, info );
-	NifStream( rangeFalloff, out, info );
-	WriteRef( StaticCast<NiObject>(dragObject), out, info, link_map, missing_link_stack );
+	NiObject::Write( out, link_map, missing_link_stack, info );
+	NifStream( unknown1, out, info );
+	NifStream( unknown2, out, info );
+	NifStream( unknown3, out, info );
+	NifStream( unknown4, out, info );
+	NifStream( unknown5, out, info );
+	NifStream( unknown6, out, info );
+	NifStream( unknown7, out, info );
+	NifStream( unknown8, out, info );
+	NifStream( unknown9, out, info );
+	NifStream( unknown10, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -83,12 +90,17 @@ std::string NiPSDragForce::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiPSForce::asString();
-	out << "  Drag Axis:  " << dragAxis << endl;
-	out << "  Percentage:  " << percentage << endl;
-	out << "  Range:  " << range << endl;
-	out << "  Range Falloff:  " << rangeFalloff << endl;
-	out << "  Drag Object:  " << dragObject << endl;
+	out << NiObject::asString();
+	out << "  Unknown 1:  " << unknown1 << endl;
+	out << "  Unknown 2:  " << unknown2 << endl;
+	out << "  Unknown 3:  " << unknown3 << endl;
+	out << "  Unknown 4:  " << unknown4 << endl;
+	out << "  Unknown 5:  " << unknown5 << endl;
+	out << "  Unknown 6:  " << unknown6 << endl;
+	out << "  Unknown 7:  " << unknown7 << endl;
+	out << "  Unknown 8:  " << unknown8 << endl;
+	out << "  Unknown 9:  " << unknown9 << endl;
+	out << "  Unknown 10:  " << unknown10 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -101,8 +113,7 @@ void NiPSDragForce::FixLinks( const map<unsigned int,NiObjectRef> & objects, lis
 
 	//--END CUSTOM CODE--//
 
-	NiPSForce::FixLinks( objects, link_stack, missing_link_stack, info );
-	dragObject = FixLink<NiAVObject>( objects, link_stack, missing_link_stack, info );
+	NiObject::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -111,15 +122,13 @@ void NiPSDragForce::FixLinks( const map<unsigned int,NiObjectRef> & objects, lis
 
 std::list<NiObjectRef> NiPSDragForce::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiPSForce::GetRefs();
+	refs = NiObject::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> NiPSDragForce::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiPSForce::GetPtrs();
-	if ( dragObject != NULL )
-		ptrs.push_back((NiObject *)(dragObject));
+	ptrs = NiObject::GetPtrs();
 	return ptrs;
 }
 

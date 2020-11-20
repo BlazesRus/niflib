@@ -1,21 +1,16 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
-//-----------------------------------NOTICE----------------------------------//
-// Some of this file is automatically filled in by a Python script.  Only    //
-// add custom code in the designated areas or it will be overwritten during  //
-// the next update.                                                          //
-//-----------------------------------NOTICE----------------------------------//
+//---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
+
+//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
 
 #include "../../include/gen/LimitedHingeDescriptor.h"
 #include "../../include/gen/MotorDescriptor.h"
-#include "../../include/gen/bhkPositionConstraintMotor.h"
-#include "../../include/gen/bhkSpringDamperConstraintMotor.h"
-#include "../../include/gen/bhkVelocityConstraintMotor.h"
 using namespace Niflib;
 
 //Constructor
-LimitedHingeDescriptor::LimitedHingeDescriptor() : minAngle(0.0f), maxAngle(0.0f), maxFriction(0.0f) {};
+LimitedHingeDescriptor::LimitedHingeDescriptor() : minAngle(0.0f), maxAngle(0.0f), maxFriction(0.0f), enableMotor(false) {};
 
 //Copy Constructor
 LimitedHingeDescriptor::LimitedHingeDescriptor( const LimitedHingeDescriptor & src ) {
@@ -35,6 +30,7 @@ LimitedHingeDescriptor & LimitedHingeDescriptor::operator=( const LimitedHingeDe
 	this->minAngle = src.minAngle;
 	this->maxAngle = src.maxAngle;
 	this->maxFriction = src.maxFriction;
+	this->enableMotor = src.enableMotor;
 	this->motor = src.motor;
 	return *this;
 };

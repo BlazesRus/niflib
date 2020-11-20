@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -172,7 +172,23 @@ void NiParticleSystemController::Write( ostream& out, const map<NiObjectRef,unsi
 		NifStream( emitFlags, out, info );
 	};
 	NifStream( startRandom, out, info );
-	WriteRef( StaticCast<NiObject>(emitter), out, info, link_map, missing_link_stack );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*emitter), out );
+	} else {
+		if ( emitter != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(emitter) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( emitter );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 	if ( info.version >= 0x04000002 ) {
 		NifStream( unknownShort2_, out, info );
 		NifStream( unknownFloat13_, out, info );
@@ -184,7 +200,23 @@ void NiParticleSystemController::Write( ostream& out, const map<NiObjectRef,unsi
 		NifStream( particleVelocity, out, info );
 		NifStream( particleUnknownVector, out, info );
 		NifStream( particleLifetime, out, info );
-		WriteRef( StaticCast<NiObject>(particleLink), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*particleLink), out );
+		} else {
+			if ( particleLink != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(particleLink) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( particleLink );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 		NifStream( particleTimestamp, out, info );
 		NifStream( particleUnknownShort, out, info );
 		NifStream( particleVertexId, out, info );
@@ -201,15 +233,79 @@ void NiParticleSystemController::Write( ostream& out, const map<NiObjectRef,unsi
 			NifStream( particles[i2].unknownShort, out, info );
 			NifStream( particles[i2].vertexId, out, info );
 		};
-		WriteRef( StaticCast<NiObject>(unknownLink), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*unknownLink), out );
+		} else {
+			if ( unknownLink != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(unknownLink) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( unknownLink );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
-	WriteRef( StaticCast<NiObject>(particleExtra), out, info, link_map, missing_link_stack );
-	WriteRef( StaticCast<NiObject>(unknownLink2), out, info, link_map, missing_link_stack );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*particleExtra), out );
+	} else {
+		if ( particleExtra != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(particleExtra) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( particleExtra );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*unknownLink2), out );
+	} else {
+		if ( unknownLink2 != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(unknownLink2) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( unknownLink2 );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 	if ( info.version >= 0x04000002 ) {
 		NifStream( trailer, out, info );
 	};
 	if ( info.version <= 0x03010000 ) {
-		WriteRef( StaticCast<NiObject>(colorData), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*colorData), out );
+		} else {
+			if ( colorData != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(colorData) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( colorData );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 		NifStream( unknownFloat1, out, info );
 		for (unsigned int i2 = 0; i2 < unknownFloats2.size(); i2++) {
 			NifStream( unknownFloats2[i2], out, info );

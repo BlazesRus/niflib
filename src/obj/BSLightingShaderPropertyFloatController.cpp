@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type BSLightingShaderPropertyFloatController::TYPE("BSLightingShaderPropertyFloatController", &NiFloatInterpController::TYPE );
 
-BSLightingShaderPropertyFloatController::BSLightingShaderPropertyFloatController() : typeOfControlledVariable((LightingShaderControlledVariable)0) {
+BSLightingShaderPropertyFloatController::BSLightingShaderPropertyFloatController() : targetVariable(LSCV_UNKNOWN_FLOAT_2) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,7 +46,7 @@ void BSLightingShaderPropertyFloatController::Read( istream& in, list<unsigned i
 	//--END CUSTOM CODE--//
 
 	NiFloatInterpController::Read( in, link_stack, info );
-	NifStream( typeOfControlledVariable, in, info );
+	NifStream( targetVariable, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -59,7 +59,7 @@ void BSLightingShaderPropertyFloatController::Write( ostream& out, const map<NiO
 	//--END CUSTOM CODE--//
 
 	NiFloatInterpController::Write( out, link_map, missing_link_stack, info );
-	NifStream( typeOfControlledVariable, out, info );
+	NifStream( targetVariable, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -73,7 +73,7 @@ std::string BSLightingShaderPropertyFloatController::asString( bool verbose ) co
 
 	stringstream out;
 	out << NiFloatInterpController::asString();
-	out << "  Type of Controlled Variable:  " << typeOfControlledVariable << endl;
+	out << "  Target Variable:  " << targetVariable << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

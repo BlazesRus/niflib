@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,24 +14,18 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkMalleableConstraint.h"
-#include "../../include/gen/BallAndSocketDescriptor.h"
 #include "../../include/gen/HingeDescriptor.h"
-#include "../../include/gen/LimitedHingeDescriptor.h"
-#include "../../include/gen/MalleableDescriptor.h"
-#include "../../include/gen/MotorDescriptor.h"
-#include "../../include/gen/PrismaticDescriptor.h"
 #include "../../include/gen/RagdollDescriptor.h"
-#include "../../include/gen/StiffSpringDescriptor.h"
-#include "../../include/gen/bhkPositionConstraintMotor.h"
-#include "../../include/gen/bhkSpringDamperConstraintMotor.h"
-#include "../../include/gen/bhkVelocityConstraintMotor.h"
-#include "../../include/obj/bhkEntity.h"
+#include "../../include/gen/MotorDescriptor.h"
+#include "../../include/gen/LimitedHingeDescriptor.h"
+#include "../../include/gen/MotorDescriptor.h"
+#include "../../include/obj/NiObject.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type bhkMalleableConstraint::TYPE("bhkMalleableConstraint", &bhkConstraint::TYPE );
 
-bhkMalleableConstraint::bhkMalleableConstraint() {
+bhkMalleableConstraint::bhkMalleableConstraint() : type((unsigned int)0), unknownInt2((unsigned int)0), unknownLink1(NULL), unknownLink2(NULL), unknownInt3((unsigned int)0), tau(0.0f), damping(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -55,204 +49,110 @@ void bhkMalleableConstraint::Read( istream& in, list<unsigned int> & link_stack,
 
 	unsigned int block_num;
 	bhkConstraint::Read( in, link_stack, info );
-	NifStream( malleable.type, in, info );
-	NifStream( malleable.numEntities, in, info );
+	NifStream( type, in, info );
+	NifStream( unknownInt2, in, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
-	NifStream( malleable.priority, in, info );
-	if ( (malleable.type == 0) ) {
-		NifStream( malleable.ballAndSocket.pivotA, in, info );
-		NifStream( malleable.ballAndSocket.pivotB, in, info );
-	};
-	if ( (malleable.type == 1) ) {
+	NifStream( unknownInt3, in, info );
+	if ( (type == 1) ) {
 		if ( info.version <= 0x14000005 ) {
-			NifStream( malleable.hinge.pivotA, in, info );
-			NifStream( malleable.hinge.perp2AxleInA1, in, info );
-			NifStream( malleable.hinge.perp2AxleInA2, in, info );
-			NifStream( malleable.hinge.pivotB, in, info );
-			NifStream( malleable.hinge.axleB, in, info );
+			NifStream( hinge.pivotA, in, info );
+			NifStream( hinge.perp2AxleInA1, in, info );
+			NifStream( hinge.perp2AxleInA2, in, info );
+			NifStream( hinge.pivotB, in, info );
+			NifStream( hinge.axleB, in, info );
 		};
 		if ( info.version >= 0x14020007 ) {
-			NifStream( malleable.hinge.axleA, in, info );
-			NifStream( (Vector4&)malleable.hinge.perp2AxleInA1, in, info );
-			NifStream( (Vector4&)malleable.hinge.perp2AxleInA2, in, info );
-			NifStream( (Vector4&)malleable.hinge.pivotA, in, info );
-			NifStream( (Vector4&)malleable.hinge.axleB, in, info );
-			NifStream( malleable.hinge.perp2AxleInB1, in, info );
-			NifStream( malleable.hinge.perp2AxleInB2, in, info );
-			NifStream( (Vector4&)malleable.hinge.pivotB, in, info );
+			NifStream( hinge.axleA, in, info );
+			NifStream( hinge.perp2AxleInA1, in, info );
+			NifStream( hinge.perp2AxleInA2, in, info );
+			NifStream( hinge.pivotA, in, info );
+			NifStream( hinge.axleB, in, info );
+			NifStream( hinge.perp2AxleInB1, in, info );
+			NifStream( hinge.perp2AxleInB2, in, info );
+			NifStream( hinge.pivotB, in, info );
 		};
 	};
-	if ( (malleable.type == 2) ) {
-		if ( (info.userVersion2 <= 16) ) {
-			NifStream( malleable.limitedHinge.pivotA, in, info );
-			NifStream( malleable.limitedHinge.axleA, in, info );
-			NifStream( malleable.limitedHinge.perp2AxleInA1, in, info );
-			NifStream( malleable.limitedHinge.perp2AxleInA2, in, info );
-			NifStream( malleable.limitedHinge.pivotB, in, info );
-			NifStream( malleable.limitedHinge.axleB, in, info );
-			NifStream( malleable.limitedHinge.perp2AxleInB2, in, info );
-		};
-		if ( (info.userVersion2 > 16) ) {
-			NifStream( (Vector4&)malleable.limitedHinge.axleA, in, info );
-			NifStream( (Vector4&)malleable.limitedHinge.perp2AxleInA1, in, info );
-			NifStream( (Vector4&)malleable.limitedHinge.perp2AxleInA2, in, info );
-			NifStream( (Vector4&)malleable.limitedHinge.pivotA, in, info );
-			NifStream( (Vector4&)malleable.limitedHinge.axleB, in, info );
-			NifStream( malleable.limitedHinge.perp2AxleInB1, in, info );
-			NifStream( (Vector4&)malleable.limitedHinge.perp2AxleInB2, in, info );
-			NifStream( (Vector4&)malleable.limitedHinge.pivotB, in, info );
-		};
-		NifStream( malleable.limitedHinge.minAngle, in, info );
-		NifStream( malleable.limitedHinge.maxAngle, in, info );
-		NifStream( malleable.limitedHinge.maxFriction, in, info );
-		if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 16) ) ) {
-			NifStream( malleable.limitedHinge.motor.type, in, info );
-			if ( (malleable.limitedHinge.motor.type == 1) ) {
-				NifStream( malleable.limitedHinge.motor.positionMotor.minForce, in, info );
-				NifStream( malleable.limitedHinge.motor.positionMotor.maxForce, in, info );
-				NifStream( malleable.limitedHinge.motor.positionMotor.tau, in, info );
-				NifStream( malleable.limitedHinge.motor.positionMotor.damping, in, info );
-				NifStream( malleable.limitedHinge.motor.positionMotor.proportionalRecoveryVelocity, in, info );
-				NifStream( malleable.limitedHinge.motor.positionMotor.constantRecoveryVelocity, in, info );
-				NifStream( malleable.limitedHinge.motor.positionMotor.motorEnabled, in, info );
-			};
-			if ( (malleable.limitedHinge.motor.type == 2) ) {
-				NifStream( malleable.limitedHinge.motor.velocityMotor.minForce, in, info );
-				NifStream( malleable.limitedHinge.motor.velocityMotor.maxForce, in, info );
-				NifStream( malleable.limitedHinge.motor.velocityMotor.tau, in, info );
-				NifStream( malleable.limitedHinge.motor.velocityMotor.targetVelocity, in, info );
-				NifStream( malleable.limitedHinge.motor.velocityMotor.useVelocityTarget, in, info );
-				NifStream( malleable.limitedHinge.motor.velocityMotor.motorEnabled, in, info );
-			};
-			if ( (malleable.limitedHinge.motor.type == 3) ) {
-				NifStream( malleable.limitedHinge.motor.springDamperMotor.minForce, in, info );
-				NifStream( malleable.limitedHinge.motor.springDamperMotor.maxForce, in, info );
-				NifStream( malleable.limitedHinge.motor.springDamperMotor.springConstant, in, info );
-				NifStream( malleable.limitedHinge.motor.springDamperMotor.springDamping, in, info );
-				NifStream( malleable.limitedHinge.motor.springDamperMotor.motorEnabled, in, info );
-			};
-		};
-	};
-	if ( (malleable.type == 6) ) {
+	if ( (type == 7) ) {
 		if ( info.version <= 0x14000005 ) {
-			NifStream( malleable.prismatic.pivotA, in, info );
-			NifStream( malleable.prismatic.rotationA, in, info );
-			NifStream( malleable.prismatic.planeA, in, info );
-			NifStream( malleable.prismatic.slidingA, in, info );
-			NifStream( malleable.prismatic.pivotB, in, info );
-			NifStream( malleable.prismatic.rotationB, in, info );
-			NifStream( malleable.prismatic.planeB, in, info );
-			NifStream( malleable.prismatic.slidingB, in, info );
+			NifStream( ragdoll.pivotA, in, info );
+			NifStream( ragdoll.planeA, in, info );
+			NifStream( ragdoll.twistA, in, info );
+			NifStream( ragdoll.pivotB, in, info );
+			NifStream( ragdoll.planeB, in, info );
+			NifStream( ragdoll.twistB, in, info );
 		};
 		if ( info.version >= 0x14020007 ) {
-			NifStream( (Vector4&)malleable.prismatic.slidingA, in, info );
-			NifStream( (Vector4&)malleable.prismatic.rotationA, in, info );
-			NifStream( (Vector4&)malleable.prismatic.planeA, in, info );
-			NifStream( (Vector4&)malleable.prismatic.pivotA, in, info );
-			NifStream( (Vector4&)malleable.prismatic.slidingB, in, info );
-			NifStream( (Vector4&)malleable.prismatic.rotationB, in, info );
-			NifStream( (Vector4&)malleable.prismatic.planeB, in, info );
-			NifStream( (Vector4&)malleable.prismatic.pivotB, in, info );
+			NifStream( ragdoll.twistA, in, info );
+			NifStream( ragdoll.planeA, in, info );
+			NifStream( ragdoll.motorA, in, info );
+			NifStream( ragdoll.pivotA, in, info );
+			NifStream( ragdoll.twistB, in, info );
+			NifStream( ragdoll.planeB, in, info );
+			NifStream( ragdoll.motorB, in, info );
+			NifStream( ragdoll.pivotB, in, info );
 		};
-		NifStream( malleable.prismatic.minDistance, in, info );
-		NifStream( malleable.prismatic.maxDistance, in, info );
-		NifStream( malleable.prismatic.friction, in, info );
-		if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 16) ) ) {
-			NifStream( malleable.prismatic.motor.type, in, info );
-			if ( (malleable.prismatic.motor.type == 1) ) {
-				NifStream( malleable.prismatic.motor.positionMotor.minForce, in, info );
-				NifStream( malleable.prismatic.motor.positionMotor.maxForce, in, info );
-				NifStream( malleable.prismatic.motor.positionMotor.tau, in, info );
-				NifStream( malleable.prismatic.motor.positionMotor.damping, in, info );
-				NifStream( malleable.prismatic.motor.positionMotor.proportionalRecoveryVelocity, in, info );
-				NifStream( malleable.prismatic.motor.positionMotor.constantRecoveryVelocity, in, info );
-				NifStream( malleable.prismatic.motor.positionMotor.motorEnabled, in, info );
-			};
-			if ( (malleable.prismatic.motor.type == 2) ) {
-				NifStream( malleable.prismatic.motor.velocityMotor.minForce, in, info );
-				NifStream( malleable.prismatic.motor.velocityMotor.maxForce, in, info );
-				NifStream( malleable.prismatic.motor.velocityMotor.tau, in, info );
-				NifStream( malleable.prismatic.motor.velocityMotor.targetVelocity, in, info );
-				NifStream( malleable.prismatic.motor.velocityMotor.useVelocityTarget, in, info );
-				NifStream( malleable.prismatic.motor.velocityMotor.motorEnabled, in, info );
-			};
-			if ( (malleable.prismatic.motor.type == 3) ) {
-				NifStream( malleable.prismatic.motor.springDamperMotor.minForce, in, info );
-				NifStream( malleable.prismatic.motor.springDamperMotor.maxForce, in, info );
-				NifStream( malleable.prismatic.motor.springDamperMotor.springConstant, in, info );
-				NifStream( malleable.prismatic.motor.springDamperMotor.springDamping, in, info );
-				NifStream( malleable.prismatic.motor.springDamperMotor.motorEnabled, in, info );
+		NifStream( ragdoll.coneMaxAngle, in, info );
+		NifStream( ragdoll.planeMinAngle, in, info );
+		NifStream( ragdoll.planeMaxAngle, in, info );
+		NifStream( ragdoll.twistMinAngle, in, info );
+		NifStream( ragdoll.twistMaxAngle, in, info );
+		NifStream( ragdoll.maxFriction, in, info );
+		if ( info.version >= 0x14020007 ) {
+			NifStream( ragdoll.enableMotor, in, info );
+			if ( ragdoll.enableMotor ) {
+				NifStream( ragdoll.motor.unknownFloat1, in, info );
+				NifStream( ragdoll.motor.unknownFloat2, in, info );
+				NifStream( ragdoll.motor.unknownFloat3, in, info );
+				NifStream( ragdoll.motor.unknownFloat4, in, info );
+				NifStream( ragdoll.motor.unknownFloat5, in, info );
+				NifStream( ragdoll.motor.unknownFloat6, in, info );
+				NifStream( ragdoll.motor.unknownByte1, in, info );
 			};
 		};
 	};
-	if ( (malleable.type == 7) ) {
-		if ( (info.userVersion2 <= 16) ) {
-			NifStream( malleable.ragdoll.pivotA, in, info );
-			NifStream( malleable.ragdoll.planeA, in, info );
-			NifStream( malleable.ragdoll.twistA, in, info );
-			NifStream( malleable.ragdoll.pivotB, in, info );
-			NifStream( malleable.ragdoll.planeB, in, info );
-			NifStream( malleable.ragdoll.twistB, in, info );
+	if ( (type == 2) ) {
+		if ( info.version <= 0x14000005 ) {
+			NifStream( limitedHinge.pivotA, in, info );
+			NifStream( limitedHinge.axleA, in, info );
+			NifStream( limitedHinge.perp2AxleInA1, in, info );
+			NifStream( limitedHinge.perp2AxleInA2, in, info );
+			NifStream( limitedHinge.pivotB, in, info );
+			NifStream( limitedHinge.axleB, in, info );
+			NifStream( limitedHinge.perp2AxleInB2, in, info );
 		};
-		if ( (info.userVersion2 > 16) ) {
-			NifStream( (Vector4&)malleable.ragdoll.twistA, in, info );
-			NifStream( (Vector4&)malleable.ragdoll.planeA, in, info );
-			NifStream( malleable.ragdoll.motorA, in, info );
-			NifStream( (Vector4&)malleable.ragdoll.pivotA, in, info );
-			NifStream( (Vector4&)malleable.ragdoll.twistB, in, info );
-			NifStream( (Vector4&)malleable.ragdoll.planeB, in, info );
-			NifStream( malleable.ragdoll.motorB, in, info );
-			NifStream( (Vector4&)malleable.ragdoll.pivotB, in, info );
+		if ( info.version >= 0x14020007 ) {
+			NifStream( limitedHinge.axleA, in, info );
+			NifStream( limitedHinge.perp2AxleInA1, in, info );
+			NifStream( limitedHinge.perp2AxleInA2, in, info );
+			NifStream( limitedHinge.pivotA, in, info );
+			NifStream( limitedHinge.axleB, in, info );
+			NifStream( limitedHinge.perp2AxleInB1, in, info );
+			NifStream( limitedHinge.perp2AxleInB2, in, info );
+			NifStream( limitedHinge.pivotB, in, info );
 		};
-		NifStream( malleable.ragdoll.coneMaxAngle, in, info );
-		NifStream( malleable.ragdoll.planeMinAngle, in, info );
-		NifStream( malleable.ragdoll.planeMaxAngle, in, info );
-		NifStream( malleable.ragdoll.twistMinAngle, in, info );
-		NifStream( malleable.ragdoll.twistMaxAngle, in, info );
-		NifStream( malleable.ragdoll.maxFriction, in, info );
-		if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 16) ) ) {
-			NifStream( malleable.ragdoll.motor.type, in, info );
-			if ( (malleable.ragdoll.motor.type == 1) ) {
-				NifStream( malleable.ragdoll.motor.positionMotor.minForce, in, info );
-				NifStream( malleable.ragdoll.motor.positionMotor.maxForce, in, info );
-				NifStream( malleable.ragdoll.motor.positionMotor.tau, in, info );
-				NifStream( malleable.ragdoll.motor.positionMotor.damping, in, info );
-				NifStream( malleable.ragdoll.motor.positionMotor.proportionalRecoveryVelocity, in, info );
-				NifStream( malleable.ragdoll.motor.positionMotor.constantRecoveryVelocity, in, info );
-				NifStream( malleable.ragdoll.motor.positionMotor.motorEnabled, in, info );
-			};
-			if ( (malleable.ragdoll.motor.type == 2) ) {
-				NifStream( malleable.ragdoll.motor.velocityMotor.minForce, in, info );
-				NifStream( malleable.ragdoll.motor.velocityMotor.maxForce, in, info );
-				NifStream( malleable.ragdoll.motor.velocityMotor.tau, in, info );
-				NifStream( malleable.ragdoll.motor.velocityMotor.targetVelocity, in, info );
-				NifStream( malleable.ragdoll.motor.velocityMotor.useVelocityTarget, in, info );
-				NifStream( malleable.ragdoll.motor.velocityMotor.motorEnabled, in, info );
-			};
-			if ( (malleable.ragdoll.motor.type == 3) ) {
-				NifStream( malleable.ragdoll.motor.springDamperMotor.minForce, in, info );
-				NifStream( malleable.ragdoll.motor.springDamperMotor.maxForce, in, info );
-				NifStream( malleable.ragdoll.motor.springDamperMotor.springConstant, in, info );
-				NifStream( malleable.ragdoll.motor.springDamperMotor.springDamping, in, info );
-				NifStream( malleable.ragdoll.motor.springDamperMotor.motorEnabled, in, info );
+		NifStream( limitedHinge.minAngle, in, info );
+		NifStream( limitedHinge.maxAngle, in, info );
+		NifStream( limitedHinge.maxFriction, in, info );
+		if ( info.version >= 0x14020007 ) {
+			NifStream( limitedHinge.enableMotor, in, info );
+			if ( limitedHinge.enableMotor ) {
+				NifStream( limitedHinge.motor.unknownFloat1, in, info );
+				NifStream( limitedHinge.motor.unknownFloat2, in, info );
+				NifStream( limitedHinge.motor.unknownFloat3, in, info );
+				NifStream( limitedHinge.motor.unknownFloat4, in, info );
+				NifStream( limitedHinge.motor.unknownFloat5, in, info );
+				NifStream( limitedHinge.motor.unknownFloat6, in, info );
+				NifStream( limitedHinge.motor.unknownByte1, in, info );
 			};
 		};
-	};
-	if ( (malleable.type == 8) ) {
-		NifStream( malleable.stiffSpring.pivotA, in, info );
-		NifStream( malleable.stiffSpring.pivotB, in, info );
-		NifStream( malleable.stiffSpring.length, in, info );
 	};
 	if ( info.version <= 0x14000005 ) {
-		NifStream( malleable.tau, in, info );
-		NifStream( malleable.damping, in, info );
+		NifStream( tau, in, info );
 	};
-	if ( info.version >= 0x14020007 ) {
-		NifStream( malleable.strength, in, info );
-	};
+	NifStream( damping, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -263,202 +163,140 @@ void bhkMalleableConstraint::Write( ostream& out, const map<NiObjectRef,unsigned
 	//--END CUSTOM CODE--//
 
 	bhkConstraint::Write( out, link_map, missing_link_stack, info );
-	NifStream( malleable.type, out, info );
-	NifStream( malleable.numEntities, out, info );
-	WriteRef( StaticCast<NiObject>(malleable.entityA), out, info, link_map, missing_link_stack );
-	WriteRef( StaticCast<NiObject>(malleable.entityB), out, info, link_map, missing_link_stack );
-	NifStream( malleable.priority, out, info );
-	if ( (malleable.type == 0) ) {
-		NifStream( malleable.ballAndSocket.pivotA, out, info );
-		NifStream( malleable.ballAndSocket.pivotB, out, info );
-	};
-	if ( (malleable.type == 1) ) {
+	NifStream( type, out, info );
+	NifStream( unknownInt2, out, info );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*unknownLink1), out );
+	} else {
+		if ( unknownLink1 != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(unknownLink1) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( unknownLink1 );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*unknownLink2), out );
+	} else {
+		if ( unknownLink2 != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(unknownLink2) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( unknownLink2 );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+	NifStream( unknownInt3, out, info );
+	if ( (type == 1) ) {
 		if ( info.version <= 0x14000005 ) {
-			NifStream( malleable.hinge.pivotA, out, info );
-			NifStream( malleable.hinge.perp2AxleInA1, out, info );
-			NifStream( malleable.hinge.perp2AxleInA2, out, info );
-			NifStream( malleable.hinge.pivotB, out, info );
-			NifStream( malleable.hinge.axleB, out, info );
+			NifStream( hinge.pivotA, out, info );
+			NifStream( hinge.perp2AxleInA1, out, info );
+			NifStream( hinge.perp2AxleInA2, out, info );
+			NifStream( hinge.pivotB, out, info );
+			NifStream( hinge.axleB, out, info );
 		};
 		if ( info.version >= 0x14020007 ) {
-			NifStream( malleable.hinge.axleA, out, info );
-			NifStream( (Vector4&)malleable.hinge.perp2AxleInA1, out, info );
-			NifStream( (Vector4&)malleable.hinge.perp2AxleInA2, out, info );
-			NifStream( (Vector4&)malleable.hinge.pivotA, out, info );
-			NifStream( (Vector4&)malleable.hinge.axleB, out, info );
-			NifStream( malleable.hinge.perp2AxleInB1, out, info );
-			NifStream( malleable.hinge.perp2AxleInB2, out, info );
-			NifStream( (Vector4&)malleable.hinge.pivotB, out, info );
+			NifStream( hinge.axleA, out, info );
+			NifStream( hinge.perp2AxleInA1, out, info );
+			NifStream( hinge.perp2AxleInA2, out, info );
+			NifStream( hinge.pivotA, out, info );
+			NifStream( hinge.axleB, out, info );
+			NifStream( hinge.perp2AxleInB1, out, info );
+			NifStream( hinge.perp2AxleInB2, out, info );
+			NifStream( hinge.pivotB, out, info );
 		};
 	};
-	if ( (malleable.type == 2) ) {
-		if ( (info.userVersion2 <= 16) ) {
-			NifStream( malleable.limitedHinge.pivotA, out, info );
-			NifStream( malleable.limitedHinge.axleA, out, info );
-			NifStream( malleable.limitedHinge.perp2AxleInA1, out, info );
-			NifStream( malleable.limitedHinge.perp2AxleInA2, out, info );
-			NifStream( malleable.limitedHinge.pivotB, out, info );
-			NifStream( malleable.limitedHinge.axleB, out, info );
-			NifStream( malleable.limitedHinge.perp2AxleInB2, out, info );
-		};
-		if ( (info.userVersion2 > 16) ) {
-			NifStream( (Vector4&)malleable.limitedHinge.axleA, out, info );
-			NifStream( (Vector4&)malleable.limitedHinge.perp2AxleInA1, out, info );
-			NifStream( (Vector4&)malleable.limitedHinge.perp2AxleInA2, out, info );
-			NifStream( (Vector4&)malleable.limitedHinge.pivotA, out, info );
-			NifStream( (Vector4&)malleable.limitedHinge.axleB, out, info );
-			NifStream( malleable.limitedHinge.perp2AxleInB1, out, info );
-			NifStream( (Vector4&)malleable.limitedHinge.perp2AxleInB2, out, info );
-			NifStream( (Vector4&)malleable.limitedHinge.pivotB, out, info );
-		};
-		NifStream( malleable.limitedHinge.minAngle, out, info );
-		NifStream( malleable.limitedHinge.maxAngle, out, info );
-		NifStream( malleable.limitedHinge.maxFriction, out, info );
-		if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 16) ) ) {
-			NifStream( malleable.limitedHinge.motor.type, out, info );
-			if ( (malleable.limitedHinge.motor.type == 1) ) {
-				NifStream( malleable.limitedHinge.motor.positionMotor.minForce, out, info );
-				NifStream( malleable.limitedHinge.motor.positionMotor.maxForce, out, info );
-				NifStream( malleable.limitedHinge.motor.positionMotor.tau, out, info );
-				NifStream( malleable.limitedHinge.motor.positionMotor.damping, out, info );
-				NifStream( malleable.limitedHinge.motor.positionMotor.proportionalRecoveryVelocity, out, info );
-				NifStream( malleable.limitedHinge.motor.positionMotor.constantRecoveryVelocity, out, info );
-				NifStream( malleable.limitedHinge.motor.positionMotor.motorEnabled, out, info );
-			};
-			if ( (malleable.limitedHinge.motor.type == 2) ) {
-				NifStream( malleable.limitedHinge.motor.velocityMotor.minForce, out, info );
-				NifStream( malleable.limitedHinge.motor.velocityMotor.maxForce, out, info );
-				NifStream( malleable.limitedHinge.motor.velocityMotor.tau, out, info );
-				NifStream( malleable.limitedHinge.motor.velocityMotor.targetVelocity, out, info );
-				NifStream( malleable.limitedHinge.motor.velocityMotor.useVelocityTarget, out, info );
-				NifStream( malleable.limitedHinge.motor.velocityMotor.motorEnabled, out, info );
-			};
-			if ( (malleable.limitedHinge.motor.type == 3) ) {
-				NifStream( malleable.limitedHinge.motor.springDamperMotor.minForce, out, info );
-				NifStream( malleable.limitedHinge.motor.springDamperMotor.maxForce, out, info );
-				NifStream( malleable.limitedHinge.motor.springDamperMotor.springConstant, out, info );
-				NifStream( malleable.limitedHinge.motor.springDamperMotor.springDamping, out, info );
-				NifStream( malleable.limitedHinge.motor.springDamperMotor.motorEnabled, out, info );
-			};
-		};
-	};
-	if ( (malleable.type == 6) ) {
+	if ( (type == 7) ) {
 		if ( info.version <= 0x14000005 ) {
-			NifStream( malleable.prismatic.pivotA, out, info );
-			NifStream( malleable.prismatic.rotationA, out, info );
-			NifStream( malleable.prismatic.planeA, out, info );
-			NifStream( malleable.prismatic.slidingA, out, info );
-			NifStream( malleable.prismatic.pivotB, out, info );
-			NifStream( malleable.prismatic.rotationB, out, info );
-			NifStream( malleable.prismatic.planeB, out, info );
-			NifStream( malleable.prismatic.slidingB, out, info );
+			NifStream( ragdoll.pivotA, out, info );
+			NifStream( ragdoll.planeA, out, info );
+			NifStream( ragdoll.twistA, out, info );
+			NifStream( ragdoll.pivotB, out, info );
+			NifStream( ragdoll.planeB, out, info );
+			NifStream( ragdoll.twistB, out, info );
 		};
 		if ( info.version >= 0x14020007 ) {
-			NifStream( (Vector4&)malleable.prismatic.slidingA, out, info );
-			NifStream( (Vector4&)malleable.prismatic.rotationA, out, info );
-			NifStream( (Vector4&)malleable.prismatic.planeA, out, info );
-			NifStream( (Vector4&)malleable.prismatic.pivotA, out, info );
-			NifStream( (Vector4&)malleable.prismatic.slidingB, out, info );
-			NifStream( (Vector4&)malleable.prismatic.rotationB, out, info );
-			NifStream( (Vector4&)malleable.prismatic.planeB, out, info );
-			NifStream( (Vector4&)malleable.prismatic.pivotB, out, info );
+			NifStream( ragdoll.twistA, out, info );
+			NifStream( ragdoll.planeA, out, info );
+			NifStream( ragdoll.motorA, out, info );
+			NifStream( ragdoll.pivotA, out, info );
+			NifStream( ragdoll.twistB, out, info );
+			NifStream( ragdoll.planeB, out, info );
+			NifStream( ragdoll.motorB, out, info );
+			NifStream( ragdoll.pivotB, out, info );
 		};
-		NifStream( malleable.prismatic.minDistance, out, info );
-		NifStream( malleable.prismatic.maxDistance, out, info );
-		NifStream( malleable.prismatic.friction, out, info );
-		if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 16) ) ) {
-			NifStream( malleable.prismatic.motor.type, out, info );
-			if ( (malleable.prismatic.motor.type == 1) ) {
-				NifStream( malleable.prismatic.motor.positionMotor.minForce, out, info );
-				NifStream( malleable.prismatic.motor.positionMotor.maxForce, out, info );
-				NifStream( malleable.prismatic.motor.positionMotor.tau, out, info );
-				NifStream( malleable.prismatic.motor.positionMotor.damping, out, info );
-				NifStream( malleable.prismatic.motor.positionMotor.proportionalRecoveryVelocity, out, info );
-				NifStream( malleable.prismatic.motor.positionMotor.constantRecoveryVelocity, out, info );
-				NifStream( malleable.prismatic.motor.positionMotor.motorEnabled, out, info );
-			};
-			if ( (malleable.prismatic.motor.type == 2) ) {
-				NifStream( malleable.prismatic.motor.velocityMotor.minForce, out, info );
-				NifStream( malleable.prismatic.motor.velocityMotor.maxForce, out, info );
-				NifStream( malleable.prismatic.motor.velocityMotor.tau, out, info );
-				NifStream( malleable.prismatic.motor.velocityMotor.targetVelocity, out, info );
-				NifStream( malleable.prismatic.motor.velocityMotor.useVelocityTarget, out, info );
-				NifStream( malleable.prismatic.motor.velocityMotor.motorEnabled, out, info );
-			};
-			if ( (malleable.prismatic.motor.type == 3) ) {
-				NifStream( malleable.prismatic.motor.springDamperMotor.minForce, out, info );
-				NifStream( malleable.prismatic.motor.springDamperMotor.maxForce, out, info );
-				NifStream( malleable.prismatic.motor.springDamperMotor.springConstant, out, info );
-				NifStream( malleable.prismatic.motor.springDamperMotor.springDamping, out, info );
-				NifStream( malleable.prismatic.motor.springDamperMotor.motorEnabled, out, info );
+		NifStream( ragdoll.coneMaxAngle, out, info );
+		NifStream( ragdoll.planeMinAngle, out, info );
+		NifStream( ragdoll.planeMaxAngle, out, info );
+		NifStream( ragdoll.twistMinAngle, out, info );
+		NifStream( ragdoll.twistMaxAngle, out, info );
+		NifStream( ragdoll.maxFriction, out, info );
+		if ( info.version >= 0x14020007 ) {
+			NifStream( ragdoll.enableMotor, out, info );
+			if ( ragdoll.enableMotor ) {
+				NifStream( ragdoll.motor.unknownFloat1, out, info );
+				NifStream( ragdoll.motor.unknownFloat2, out, info );
+				NifStream( ragdoll.motor.unknownFloat3, out, info );
+				NifStream( ragdoll.motor.unknownFloat4, out, info );
+				NifStream( ragdoll.motor.unknownFloat5, out, info );
+				NifStream( ragdoll.motor.unknownFloat6, out, info );
+				NifStream( ragdoll.motor.unknownByte1, out, info );
 			};
 		};
 	};
-	if ( (malleable.type == 7) ) {
-		if ( (info.userVersion2 <= 16) ) {
-			NifStream( malleable.ragdoll.pivotA, out, info );
-			NifStream( malleable.ragdoll.planeA, out, info );
-			NifStream( malleable.ragdoll.twistA, out, info );
-			NifStream( malleable.ragdoll.pivotB, out, info );
-			NifStream( malleable.ragdoll.planeB, out, info );
-			NifStream( malleable.ragdoll.twistB, out, info );
+	if ( (type == 2) ) {
+		if ( info.version <= 0x14000005 ) {
+			NifStream( limitedHinge.pivotA, out, info );
+			NifStream( limitedHinge.axleA, out, info );
+			NifStream( limitedHinge.perp2AxleInA1, out, info );
+			NifStream( limitedHinge.perp2AxleInA2, out, info );
+			NifStream( limitedHinge.pivotB, out, info );
+			NifStream( limitedHinge.axleB, out, info );
+			NifStream( limitedHinge.perp2AxleInB2, out, info );
 		};
-		if ( (info.userVersion2 > 16) ) {
-			NifStream( (Vector4&)malleable.ragdoll.twistA, out, info );
-			NifStream( (Vector4&)malleable.ragdoll.planeA, out, info );
-			NifStream( malleable.ragdoll.motorA, out, info );
-			NifStream( (Vector4&)malleable.ragdoll.pivotA, out, info );
-			NifStream( (Vector4&)malleable.ragdoll.twistB, out, info );
-			NifStream( (Vector4&)malleable.ragdoll.planeB, out, info );
-			NifStream( malleable.ragdoll.motorB, out, info );
-			NifStream( (Vector4&)malleable.ragdoll.pivotB, out, info );
+		if ( info.version >= 0x14020007 ) {
+			NifStream( limitedHinge.axleA, out, info );
+			NifStream( limitedHinge.perp2AxleInA1, out, info );
+			NifStream( limitedHinge.perp2AxleInA2, out, info );
+			NifStream( limitedHinge.pivotA, out, info );
+			NifStream( limitedHinge.axleB, out, info );
+			NifStream( limitedHinge.perp2AxleInB1, out, info );
+			NifStream( limitedHinge.perp2AxleInB2, out, info );
+			NifStream( limitedHinge.pivotB, out, info );
 		};
-		NifStream( malleable.ragdoll.coneMaxAngle, out, info );
-		NifStream( malleable.ragdoll.planeMinAngle, out, info );
-		NifStream( malleable.ragdoll.planeMaxAngle, out, info );
-		NifStream( malleable.ragdoll.twistMinAngle, out, info );
-		NifStream( malleable.ragdoll.twistMaxAngle, out, info );
-		NifStream( malleable.ragdoll.maxFriction, out, info );
-		if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 16) ) ) {
-			NifStream( malleable.ragdoll.motor.type, out, info );
-			if ( (malleable.ragdoll.motor.type == 1) ) {
-				NifStream( malleable.ragdoll.motor.positionMotor.minForce, out, info );
-				NifStream( malleable.ragdoll.motor.positionMotor.maxForce, out, info );
-				NifStream( malleable.ragdoll.motor.positionMotor.tau, out, info );
-				NifStream( malleable.ragdoll.motor.positionMotor.damping, out, info );
-				NifStream( malleable.ragdoll.motor.positionMotor.proportionalRecoveryVelocity, out, info );
-				NifStream( malleable.ragdoll.motor.positionMotor.constantRecoveryVelocity, out, info );
-				NifStream( malleable.ragdoll.motor.positionMotor.motorEnabled, out, info );
-			};
-			if ( (malleable.ragdoll.motor.type == 2) ) {
-				NifStream( malleable.ragdoll.motor.velocityMotor.minForce, out, info );
-				NifStream( malleable.ragdoll.motor.velocityMotor.maxForce, out, info );
-				NifStream( malleable.ragdoll.motor.velocityMotor.tau, out, info );
-				NifStream( malleable.ragdoll.motor.velocityMotor.targetVelocity, out, info );
-				NifStream( malleable.ragdoll.motor.velocityMotor.useVelocityTarget, out, info );
-				NifStream( malleable.ragdoll.motor.velocityMotor.motorEnabled, out, info );
-			};
-			if ( (malleable.ragdoll.motor.type == 3) ) {
-				NifStream( malleable.ragdoll.motor.springDamperMotor.minForce, out, info );
-				NifStream( malleable.ragdoll.motor.springDamperMotor.maxForce, out, info );
-				NifStream( malleable.ragdoll.motor.springDamperMotor.springConstant, out, info );
-				NifStream( malleable.ragdoll.motor.springDamperMotor.springDamping, out, info );
-				NifStream( malleable.ragdoll.motor.springDamperMotor.motorEnabled, out, info );
+		NifStream( limitedHinge.minAngle, out, info );
+		NifStream( limitedHinge.maxAngle, out, info );
+		NifStream( limitedHinge.maxFriction, out, info );
+		if ( info.version >= 0x14020007 ) {
+			NifStream( limitedHinge.enableMotor, out, info );
+			if ( limitedHinge.enableMotor ) {
+				NifStream( limitedHinge.motor.unknownFloat1, out, info );
+				NifStream( limitedHinge.motor.unknownFloat2, out, info );
+				NifStream( limitedHinge.motor.unknownFloat3, out, info );
+				NifStream( limitedHinge.motor.unknownFloat4, out, info );
+				NifStream( limitedHinge.motor.unknownFloat5, out, info );
+				NifStream( limitedHinge.motor.unknownFloat6, out, info );
+				NifStream( limitedHinge.motor.unknownByte1, out, info );
 			};
 		};
-	};
-	if ( (malleable.type == 8) ) {
-		NifStream( malleable.stiffSpring.pivotA, out, info );
-		NifStream( malleable.stiffSpring.pivotB, out, info );
-		NifStream( malleable.stiffSpring.length, out, info );
 	};
 	if ( info.version <= 0x14000005 ) {
-		NifStream( malleable.tau, out, info );
-		NifStream( malleable.damping, out, info );
+		NifStream( tau, out, info );
 	};
-	if ( info.version >= 0x14020007 ) {
-		NifStream( malleable.strength, out, info );
-	};
+	NifStream( damping, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -470,150 +308,72 @@ std::string bhkMalleableConstraint::asString( bool verbose ) const {
 
 	stringstream out;
 	out << bhkConstraint::asString();
-	out << "  Type:  " << malleable.type << endl;
-	out << "  Num Entities:  " << malleable.numEntities << endl;
-	out << "  Entity A:  " << malleable.entityA << endl;
-	out << "  Entity B:  " << malleable.entityB << endl;
-	out << "  Priority:  " << malleable.priority << endl;
-	if ( (malleable.type == 0) ) {
-		out << "    Pivot A:  " << malleable.ballAndSocket.pivotA << endl;
-		out << "    Pivot B:  " << malleable.ballAndSocket.pivotB << endl;
+	out << "  Type:  " << type << endl;
+	out << "  Unknown Int 2:  " << unknownInt2 << endl;
+	out << "  Unknown Link 1:  " << unknownLink1 << endl;
+	out << "  Unknown Link 2:  " << unknownLink2 << endl;
+	out << "  Unknown Int 3:  " << unknownInt3 << endl;
+	if ( (type == 1) ) {
+		out << "    Pivot A:  " << hinge.pivotA << endl;
+		out << "    Perp2 Axle In A1:  " << hinge.perp2AxleInA1 << endl;
+		out << "    Perp2 Axle In A2:  " << hinge.perp2AxleInA2 << endl;
+		out << "    Pivot B:  " << hinge.pivotB << endl;
+		out << "    Axle B:  " << hinge.axleB << endl;
+		out << "    Axle A:  " << hinge.axleA << endl;
+		out << "    Perp2 Axle In B1:  " << hinge.perp2AxleInB1 << endl;
+		out << "    Perp2 Axle In B2:  " << hinge.perp2AxleInB2 << endl;
 	};
-	if ( (malleable.type == 1) ) {
-		out << "    Pivot A:  " << malleable.hinge.pivotA << endl;
-		out << "    Perp2 Axle In A1:  " << malleable.hinge.perp2AxleInA1 << endl;
-		out << "    Perp2 Axle In A2:  " << malleable.hinge.perp2AxleInA2 << endl;
-		out << "    Pivot B:  " << malleable.hinge.pivotB << endl;
-		out << "    Axle B:  " << malleable.hinge.axleB << endl;
-		out << "    Axle A:  " << malleable.hinge.axleA << endl;
-		out << "    Perp2 Axle In B1:  " << malleable.hinge.perp2AxleInB1 << endl;
-		out << "    Perp2 Axle In B2:  " << malleable.hinge.perp2AxleInB2 << endl;
-	};
-	if ( (malleable.type == 2) ) {
-		out << "    Pivot A:  " << malleable.limitedHinge.pivotA << endl;
-		out << "    Axle A:  " << malleable.limitedHinge.axleA << endl;
-		out << "    Perp2 Axle In A1:  " << malleable.limitedHinge.perp2AxleInA1 << endl;
-		out << "    Perp2 Axle In A2:  " << malleable.limitedHinge.perp2AxleInA2 << endl;
-		out << "    Pivot B:  " << malleable.limitedHinge.pivotB << endl;
-		out << "    Axle B:  " << malleable.limitedHinge.axleB << endl;
-		out << "    Perp2 Axle In B2:  " << malleable.limitedHinge.perp2AxleInB2 << endl;
-		out << "    Perp2 Axle In B1:  " << malleable.limitedHinge.perp2AxleInB1 << endl;
-		out << "    Min Angle:  " << malleable.limitedHinge.minAngle << endl;
-		out << "    Max Angle:  " << malleable.limitedHinge.maxAngle << endl;
-		out << "    Max Friction:  " << malleable.limitedHinge.maxFriction << endl;
-		out << "    Type:  " << malleable.limitedHinge.motor.type << endl;
-		if ( (malleable.limitedHinge.motor.type == 1) ) {
-			out << "      Min Force:  " << malleable.limitedHinge.motor.positionMotor.minForce << endl;
-			out << "      Max Force:  " << malleable.limitedHinge.motor.positionMotor.maxForce << endl;
-			out << "      Tau:  " << malleable.limitedHinge.motor.positionMotor.tau << endl;
-			out << "      Damping:  " << malleable.limitedHinge.motor.positionMotor.damping << endl;
-			out << "      Proportional Recovery Velocity:  " << malleable.limitedHinge.motor.positionMotor.proportionalRecoveryVelocity << endl;
-			out << "      Constant Recovery Velocity:  " << malleable.limitedHinge.motor.positionMotor.constantRecoveryVelocity << endl;
-			out << "      Motor Enabled:  " << malleable.limitedHinge.motor.positionMotor.motorEnabled << endl;
-		};
-		if ( (malleable.limitedHinge.motor.type == 2) ) {
-			out << "      Min Force:  " << malleable.limitedHinge.motor.velocityMotor.minForce << endl;
-			out << "      Max Force:  " << malleable.limitedHinge.motor.velocityMotor.maxForce << endl;
-			out << "      Tau:  " << malleable.limitedHinge.motor.velocityMotor.tau << endl;
-			out << "      Target Velocity:  " << malleable.limitedHinge.motor.velocityMotor.targetVelocity << endl;
-			out << "      Use Velocity Target:  " << malleable.limitedHinge.motor.velocityMotor.useVelocityTarget << endl;
-			out << "      Motor Enabled:  " << malleable.limitedHinge.motor.velocityMotor.motorEnabled << endl;
-		};
-		if ( (malleable.limitedHinge.motor.type == 3) ) {
-			out << "      Min Force:  " << malleable.limitedHinge.motor.springDamperMotor.minForce << endl;
-			out << "      Max Force:  " << malleable.limitedHinge.motor.springDamperMotor.maxForce << endl;
-			out << "      Spring Constant:  " << malleable.limitedHinge.motor.springDamperMotor.springConstant << endl;
-			out << "      Spring Damping:  " << malleable.limitedHinge.motor.springDamperMotor.springDamping << endl;
-			out << "      Motor Enabled:  " << malleable.limitedHinge.motor.springDamperMotor.motorEnabled << endl;
+	if ( (type == 7) ) {
+		out << "    Pivot A:  " << ragdoll.pivotA << endl;
+		out << "    Plane A:  " << ragdoll.planeA << endl;
+		out << "    Twist A:  " << ragdoll.twistA << endl;
+		out << "    Pivot B:  " << ragdoll.pivotB << endl;
+		out << "    Plane B:  " << ragdoll.planeB << endl;
+		out << "    Twist B:  " << ragdoll.twistB << endl;
+		out << "    Motor A:  " << ragdoll.motorA << endl;
+		out << "    Motor B:  " << ragdoll.motorB << endl;
+		out << "    Cone Max Angle:  " << ragdoll.coneMaxAngle << endl;
+		out << "    Plane Min Angle:  " << ragdoll.planeMinAngle << endl;
+		out << "    Plane Max Angle:  " << ragdoll.planeMaxAngle << endl;
+		out << "    Twist Min Angle:  " << ragdoll.twistMinAngle << endl;
+		out << "    Twist Max Angle:  " << ragdoll.twistMaxAngle << endl;
+		out << "    Max Friction:  " << ragdoll.maxFriction << endl;
+		out << "    Enable Motor:  " << ragdoll.enableMotor << endl;
+		if ( ragdoll.enableMotor ) {
+			out << "      Unknown Float 1:  " << ragdoll.motor.unknownFloat1 << endl;
+			out << "      Unknown Float 2:  " << ragdoll.motor.unknownFloat2 << endl;
+			out << "      Unknown Float 3:  " << ragdoll.motor.unknownFloat3 << endl;
+			out << "      Unknown Float 4:  " << ragdoll.motor.unknownFloat4 << endl;
+			out << "      Unknown Float 5:  " << ragdoll.motor.unknownFloat5 << endl;
+			out << "      Unknown Float 6:  " << ragdoll.motor.unknownFloat6 << endl;
+			out << "      Unknown Byte 1:  " << ragdoll.motor.unknownByte1 << endl;
 		};
 	};
-	if ( (malleable.type == 6) ) {
-		out << "    Pivot A:  " << malleable.prismatic.pivotA << endl;
-		out << "    Rotation A:  " << malleable.prismatic.rotationA << endl;
-		out << "    Plane A:  " << malleable.prismatic.planeA << endl;
-		out << "    Sliding A:  " << malleable.prismatic.slidingA << endl;
-		out << "    Pivot B:  " << malleable.prismatic.pivotB << endl;
-		out << "    Rotation B:  " << malleable.prismatic.rotationB << endl;
-		out << "    Plane B:  " << malleable.prismatic.planeB << endl;
-		out << "    Sliding B:  " << malleable.prismatic.slidingB << endl;
-		out << "    Min Distance:  " << malleable.prismatic.minDistance << endl;
-		out << "    Max Distance:  " << malleable.prismatic.maxDistance << endl;
-		out << "    Friction:  " << malleable.prismatic.friction << endl;
-		out << "    Type:  " << malleable.prismatic.motor.type << endl;
-		if ( (malleable.prismatic.motor.type == 1) ) {
-			out << "      Min Force:  " << malleable.prismatic.motor.positionMotor.minForce << endl;
-			out << "      Max Force:  " << malleable.prismatic.motor.positionMotor.maxForce << endl;
-			out << "      Tau:  " << malleable.prismatic.motor.positionMotor.tau << endl;
-			out << "      Damping:  " << malleable.prismatic.motor.positionMotor.damping << endl;
-			out << "      Proportional Recovery Velocity:  " << malleable.prismatic.motor.positionMotor.proportionalRecoveryVelocity << endl;
-			out << "      Constant Recovery Velocity:  " << malleable.prismatic.motor.positionMotor.constantRecoveryVelocity << endl;
-			out << "      Motor Enabled:  " << malleable.prismatic.motor.positionMotor.motorEnabled << endl;
-		};
-		if ( (malleable.prismatic.motor.type == 2) ) {
-			out << "      Min Force:  " << malleable.prismatic.motor.velocityMotor.minForce << endl;
-			out << "      Max Force:  " << malleable.prismatic.motor.velocityMotor.maxForce << endl;
-			out << "      Tau:  " << malleable.prismatic.motor.velocityMotor.tau << endl;
-			out << "      Target Velocity:  " << malleable.prismatic.motor.velocityMotor.targetVelocity << endl;
-			out << "      Use Velocity Target:  " << malleable.prismatic.motor.velocityMotor.useVelocityTarget << endl;
-			out << "      Motor Enabled:  " << malleable.prismatic.motor.velocityMotor.motorEnabled << endl;
-		};
-		if ( (malleable.prismatic.motor.type == 3) ) {
-			out << "      Min Force:  " << malleable.prismatic.motor.springDamperMotor.minForce << endl;
-			out << "      Max Force:  " << malleable.prismatic.motor.springDamperMotor.maxForce << endl;
-			out << "      Spring Constant:  " << malleable.prismatic.motor.springDamperMotor.springConstant << endl;
-			out << "      Spring Damping:  " << malleable.prismatic.motor.springDamperMotor.springDamping << endl;
-			out << "      Motor Enabled:  " << malleable.prismatic.motor.springDamperMotor.motorEnabled << endl;
+	if ( (type == 2) ) {
+		out << "    Pivot A:  " << limitedHinge.pivotA << endl;
+		out << "    Axle A:  " << limitedHinge.axleA << endl;
+		out << "    Perp2 Axle In A1:  " << limitedHinge.perp2AxleInA1 << endl;
+		out << "    Perp2 Axle In A2:  " << limitedHinge.perp2AxleInA2 << endl;
+		out << "    Pivot B:  " << limitedHinge.pivotB << endl;
+		out << "    Axle B:  " << limitedHinge.axleB << endl;
+		out << "    Perp2 Axle In B2:  " << limitedHinge.perp2AxleInB2 << endl;
+		out << "    Perp2 Axle In B1:  " << limitedHinge.perp2AxleInB1 << endl;
+		out << "    Min Angle:  " << limitedHinge.minAngle << endl;
+		out << "    Max Angle:  " << limitedHinge.maxAngle << endl;
+		out << "    Max Friction:  " << limitedHinge.maxFriction << endl;
+		out << "    Enable Motor:  " << limitedHinge.enableMotor << endl;
+		if ( limitedHinge.enableMotor ) {
+			out << "      Unknown Float 1:  " << limitedHinge.motor.unknownFloat1 << endl;
+			out << "      Unknown Float 2:  " << limitedHinge.motor.unknownFloat2 << endl;
+			out << "      Unknown Float 3:  " << limitedHinge.motor.unknownFloat3 << endl;
+			out << "      Unknown Float 4:  " << limitedHinge.motor.unknownFloat4 << endl;
+			out << "      Unknown Float 5:  " << limitedHinge.motor.unknownFloat5 << endl;
+			out << "      Unknown Float 6:  " << limitedHinge.motor.unknownFloat6 << endl;
+			out << "      Unknown Byte 1:  " << limitedHinge.motor.unknownByte1 << endl;
 		};
 	};
-	if ( (malleable.type == 7) ) {
-		out << "    Pivot A:  " << malleable.ragdoll.pivotA << endl;
-		out << "    Plane A:  " << malleable.ragdoll.planeA << endl;
-		out << "    Twist A:  " << malleable.ragdoll.twistA << endl;
-		out << "    Pivot B:  " << malleable.ragdoll.pivotB << endl;
-		out << "    Plane B:  " << malleable.ragdoll.planeB << endl;
-		out << "    Twist B:  " << malleable.ragdoll.twistB << endl;
-		out << "    Motor A:  " << malleable.ragdoll.motorA << endl;
-		out << "    Motor B:  " << malleable.ragdoll.motorB << endl;
-		out << "    Cone Max Angle:  " << malleable.ragdoll.coneMaxAngle << endl;
-		out << "    Plane Min Angle:  " << malleable.ragdoll.planeMinAngle << endl;
-		out << "    Plane Max Angle:  " << malleable.ragdoll.planeMaxAngle << endl;
-		out << "    Twist Min Angle:  " << malleable.ragdoll.twistMinAngle << endl;
-		out << "    Twist Max Angle:  " << malleable.ragdoll.twistMaxAngle << endl;
-		out << "    Max Friction:  " << malleable.ragdoll.maxFriction << endl;
-		out << "    Type:  " << malleable.ragdoll.motor.type << endl;
-		if ( (malleable.ragdoll.motor.type == 1) ) {
-			out << "      Min Force:  " << malleable.ragdoll.motor.positionMotor.minForce << endl;
-			out << "      Max Force:  " << malleable.ragdoll.motor.positionMotor.maxForce << endl;
-			out << "      Tau:  " << malleable.ragdoll.motor.positionMotor.tau << endl;
-			out << "      Damping:  " << malleable.ragdoll.motor.positionMotor.damping << endl;
-			out << "      Proportional Recovery Velocity:  " << malleable.ragdoll.motor.positionMotor.proportionalRecoveryVelocity << endl;
-			out << "      Constant Recovery Velocity:  " << malleable.ragdoll.motor.positionMotor.constantRecoveryVelocity << endl;
-			out << "      Motor Enabled:  " << malleable.ragdoll.motor.positionMotor.motorEnabled << endl;
-		};
-		if ( (malleable.ragdoll.motor.type == 2) ) {
-			out << "      Min Force:  " << malleable.ragdoll.motor.velocityMotor.minForce << endl;
-			out << "      Max Force:  " << malleable.ragdoll.motor.velocityMotor.maxForce << endl;
-			out << "      Tau:  " << malleable.ragdoll.motor.velocityMotor.tau << endl;
-			out << "      Target Velocity:  " << malleable.ragdoll.motor.velocityMotor.targetVelocity << endl;
-			out << "      Use Velocity Target:  " << malleable.ragdoll.motor.velocityMotor.useVelocityTarget << endl;
-			out << "      Motor Enabled:  " << malleable.ragdoll.motor.velocityMotor.motorEnabled << endl;
-		};
-		if ( (malleable.ragdoll.motor.type == 3) ) {
-			out << "      Min Force:  " << malleable.ragdoll.motor.springDamperMotor.minForce << endl;
-			out << "      Max Force:  " << malleable.ragdoll.motor.springDamperMotor.maxForce << endl;
-			out << "      Spring Constant:  " << malleable.ragdoll.motor.springDamperMotor.springConstant << endl;
-			out << "      Spring Damping:  " << malleable.ragdoll.motor.springDamperMotor.springDamping << endl;
-			out << "      Motor Enabled:  " << malleable.ragdoll.motor.springDamperMotor.motorEnabled << endl;
-		};
-	};
-	if ( (malleable.type == 8) ) {
-		out << "    Pivot A:  " << malleable.stiffSpring.pivotA << endl;
-		out << "    Pivot B:  " << malleable.stiffSpring.pivotB << endl;
-		out << "    Length:  " << malleable.stiffSpring.length << endl;
-	};
-	out << "  Tau:  " << malleable.tau << endl;
-	out << "  Damping:  " << malleable.damping << endl;
-	out << "  Strength:  " << malleable.strength << endl;
+	out << "  Tau:  " << tau << endl;
+	out << "  Damping:  " << damping << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -625,8 +385,8 @@ void bhkMalleableConstraint::FixLinks( const map<unsigned int,NiObjectRef> & obj
 	//--END CUSTOM CODE--//
 
 	bhkConstraint::FixLinks( objects, link_stack, missing_link_stack, info );
-	malleable.entityA = FixLink<bhkEntity>( objects, link_stack, missing_link_stack, info );
-	malleable.entityB = FixLink<bhkEntity>( objects, link_stack, missing_link_stack, info );
+	unknownLink1 = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
+	unknownLink2 = FixLink<NiObject>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -635,16 +395,16 @@ void bhkMalleableConstraint::FixLinks( const map<unsigned int,NiObjectRef> & obj
 std::list<NiObjectRef> bhkMalleableConstraint::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = bhkConstraint::GetRefs();
+	if ( unknownLink1 != NULL )
+		refs.push_back(StaticCast<NiObject>(unknownLink1));
+	if ( unknownLink2 != NULL )
+		refs.push_back(StaticCast<NiObject>(unknownLink2));
 	return refs;
 }
 
 std::list<NiObject *> bhkMalleableConstraint::GetPtrs() const {
 	list<NiObject *> ptrs;
 	ptrs = bhkConstraint::GetPtrs();
-	if ( malleable.entityA != NULL )
-		ptrs.push_back((NiObject *)(malleable.entityA));
-	if ( malleable.entityB != NULL )
-		ptrs.push_back((NiObject *)(malleable.entityB));
 	return ptrs;
 }
 

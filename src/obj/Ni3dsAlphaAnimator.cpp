@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -79,7 +79,23 @@ void Ni3dsAlphaAnimator::Write( ostream& out, const map<NiObjectRef,unsigned int
 	for (unsigned int i1 = 0; i1 < 40; i1++) {
 		NifStream( unknown1[i1], out, info );
 	};
-	WriteRef( StaticCast<NiObject>(parent), out, info, link_map, missing_link_stack );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*parent), out );
+	} else {
+		if ( parent != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(parent) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( parent );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 	NifStream( num1, out, info );
 	NifStream( num2, out, info );
 	for (unsigned int i1 = 0; i1 < unknown2.size(); i1++) {

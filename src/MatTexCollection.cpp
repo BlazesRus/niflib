@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 #include "../include/MatTexCollection.h"
@@ -573,7 +573,7 @@ PixelLayout TextureWrapper::GetPixelLayout() {
 	}
 
 	//Just return default value for now.  Not sure where this data may or may not be stored in the old style image object.
-	return PX_LAY_PALETTIZED_8;
+	return PIX_LAY_DEFAULT;
 }
 
 void TextureWrapper::SetPixelLayout( PixelLayout layout ) {

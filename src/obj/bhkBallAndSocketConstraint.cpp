@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,13 +15,12 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkBallAndSocketConstraint.h"
-#include "../../include/gen/BallAndSocketDescriptor.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type bhkBallAndSocketConstraint::TYPE("bhkBallAndSocketConstraint", &bhkConstraint::TYPE );
 
-bhkBallAndSocketConstraint::bhkBallAndSocketConstraint() {
+bhkBallAndSocketConstraint::bhkBallAndSocketConstraint() : unknownInt1((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -47,8 +46,12 @@ void bhkBallAndSocketConstraint::Read( istream& in, list<unsigned int> & link_st
 	//--END CUSTOM CODE--//
 
 	bhkConstraint::Read( in, link_stack, info );
-	NifStream( ballAndSocket.pivotA, in, info );
-	NifStream( ballAndSocket.pivotB, in, info );
+	for (unsigned int i1 = 0; i1 < 4; i1++) {
+		NifStream( unknown4Bytes[i1], in, info );
+	};
+	NifStream( unknownFloats1, in, info );
+	NifStream( unknownFloats2, in, info );
+	NifStream( unknownInt1, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -61,8 +64,12 @@ void bhkBallAndSocketConstraint::Write( ostream& out, const map<NiObjectRef,unsi
 	//--END CUSTOM CODE--//
 
 	bhkConstraint::Write( out, link_map, missing_link_stack, info );
-	NifStream( ballAndSocket.pivotA, out, info );
-	NifStream( ballAndSocket.pivotB, out, info );
+	for (unsigned int i1 = 0; i1 < 4; i1++) {
+		NifStream( unknown4Bytes[i1], out, info );
+	};
+	NifStream( unknownFloats1, out, info );
+	NifStream( unknownFloats2, out, info );
+	NifStream( unknownInt1, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -75,9 +82,23 @@ std::string bhkBallAndSocketConstraint::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
+	unsigned int array_output_count = 0;
 	out << bhkConstraint::asString();
-	out << "  Pivot A:  " << ballAndSocket.pivotA << endl;
-	out << "  Pivot B:  " << ballAndSocket.pivotB << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < 4; i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Unknown 4 bytes[" << i1 << "]:  " << unknown4Bytes[i1] << endl;
+		array_output_count++;
+	};
+	out << "  Unknown Floats 1:  " << unknownFloats1 << endl;
+	out << "  Unknown Floats 2:  " << unknownFloats2 << endl;
+	out << "  Unknown Int 1:  " << unknownInt1 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

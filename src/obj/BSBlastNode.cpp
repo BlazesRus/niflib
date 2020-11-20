@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,9 +18,9 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type BSBlastNode::TYPE("BSBlastNode", &BSRangeNode::TYPE );
+const Type BSBlastNode::TYPE("BSBlastNode", &NiNode::TYPE );
 
-BSBlastNode::BSBlastNode() {
+BSBlastNode::BSBlastNode() : unknownByte1((byte)0), unknownShort2((short)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,7 +45,9 @@ void BSBlastNode::Read( istream& in, list<unsigned int> & link_stack, const NifI
 
 	//--END CUSTOM CODE--//
 
-	BSRangeNode::Read( in, link_stack, info );
+	NiNode::Read( in, link_stack, info );
+	NifStream( unknownByte1, in, info );
+	NifStream( unknownShort2, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -57,7 +59,9 @@ void BSBlastNode::Write( ostream& out, const map<NiObjectRef,unsigned int> & lin
 
 	//--END CUSTOM CODE--//
 
-	BSRangeNode::Write( out, link_map, missing_link_stack, info );
+	NiNode::Write( out, link_map, missing_link_stack, info );
+	NifStream( unknownByte1, out, info );
+	NifStream( unknownShort2, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -70,7 +74,9 @@ std::string BSBlastNode::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << BSRangeNode::asString();
+	out << NiNode::asString();
+	out << "  Unknown Byte 1:  " << unknownByte1 << endl;
+	out << "  Unknown Short 2:  " << unknownShort2 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -83,7 +89,7 @@ void BSBlastNode::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<
 
 	//--END CUSTOM CODE--//
 
-	BSRangeNode::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiNode::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -92,13 +98,13 @@ void BSBlastNode::FixLinks( const map<unsigned int,NiObjectRef> & objects, list<
 
 std::list<NiObjectRef> BSBlastNode::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = BSRangeNode::GetRefs();
+	refs = NiNode::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> BSBlastNode::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = BSRangeNode::GetPtrs();
+	ptrs = NiNode::GetPtrs();
 	return ptrs;
 }
 

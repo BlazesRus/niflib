@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type BSShaderLightingProperty::TYPE("BSShaderLightingProperty", &BSShaderProperty::TYPE );
 
-BSShaderLightingProperty::BSShaderLightingProperty() : textureClampMode((TexClampMode)3) {
+BSShaderLightingProperty::BSShaderLightingProperty() : unknownInt3((int)3) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,8 +46,8 @@ void BSShaderLightingProperty::Read( istream& in, list<unsigned int> & link_stac
 	//--END CUSTOM CODE--//
 
 	BSShaderProperty::Read( in, link_stack, info );
-	if ( (info.userVersion2 <= 34) ) {
-		NifStream( textureClampMode, in, info );
+	if ( (info.userVersion <= 11) ) {
+		NifStream( unknownInt3, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -61,8 +61,8 @@ void BSShaderLightingProperty::Write( ostream& out, const map<NiObjectRef,unsign
 	//--END CUSTOM CODE--//
 
 	BSShaderProperty::Write( out, link_map, missing_link_stack, info );
-	if ( (info.userVersion2 <= 34) ) {
-		NifStream( textureClampMode, out, info );
+	if ( (info.userVersion <= 11) ) {
+		NifStream( unknownInt3, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -77,7 +77,7 @@ std::string BSShaderLightingProperty::asString( bool verbose ) const {
 
 	stringstream out;
 	out << BSShaderProperty::asString();
-	out << "  Texture Clamp Mode:  " << textureClampMode << endl;
+	out << "  Unknown Int 3:  " << unknownInt3 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

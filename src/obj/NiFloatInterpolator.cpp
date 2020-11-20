@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiFloatInterpolator::TYPE("NiFloatInterpolator", &NiKeyBasedInterpolator::TYPE );
 
-NiFloatInterpolator::NiFloatInterpolator() : value(-3.402823466e+38f), data(NULL) {
+NiFloatInterpolator::NiFloatInterpolator() : floatValue(0.0f), data(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -44,7 +44,7 @@ void NiFloatInterpolator::Read( istream& in, list<unsigned int> & link_stack, co
 
 	unsigned int block_num;
 	NiKeyBasedInterpolator::Read( in, link_stack, info );
-	NifStream( value, in, info );
+	NifStream( floatValue, in, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
 
@@ -57,8 +57,24 @@ void NiFloatInterpolator::Write( ostream& out, const map<NiObjectRef,unsigned in
 	//--END CUSTOM CODE--//
 
 	NiKeyBasedInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( value, out, info );
-	WriteRef( StaticCast<NiObject>(data), out, info, link_map, missing_link_stack );
+	NifStream( floatValue, out, info );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*data), out );
+	} else {
+		if ( data != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(data) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( data );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -70,7 +86,7 @@ std::string NiFloatInterpolator::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiKeyBasedInterpolator::asString();
-	out << "  Value:  " << value << endl;
+	out << "  Float Value:  " << floatValue << endl;
 	out << "  Data:  " << data << endl;
 	return out.str();
 

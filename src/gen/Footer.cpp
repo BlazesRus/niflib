@@ -1,11 +1,9 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
-//-----------------------------------NOTICE----------------------------------//
-// Some of this file is automatically filled in by a Python script.  Only    //
-// add custom code in the designated areas or it will be overwritten during  //
-// the next update.                                                          //
-//-----------------------------------NOTICE----------------------------------//
+//---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
+
+//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
 
 #include "../../include/gen/Footer.h"
 #include "../../include/obj/NiObject.h"
@@ -46,7 +44,23 @@ void Footer::Write( ostream& out, const map<NiObjectRef,unsigned int> & link_map
 	if ( info.version >= 0x0303000D ) {
 		NifStream( numRoots, out, info );
 		for (unsigned int i2 = 0; i2 < roots.size(); i2++) {
-			WriteRef( StaticCast<NiObject>(roots[i2]), out, info, link_map, missing_link_stack );
+			if ( info.version < VER_3_3_0_13 ) {
+				WritePtr32( &(*roots[i2]), out );
+			} else {
+				if ( roots[i2] != NULL ) {
+					map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(roots[i2]) );
+					if (it != link_map.end()) {
+						NifStream( it->second, out, info );
+						missing_link_stack.push_back( NULL );
+					} else {
+						NifStream( 0xFFFFFFFF, out, info );
+						missing_link_stack.push_back( roots[i2] );
+					}
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( NULL );
+				}
+			}
 		};
 	};
 }

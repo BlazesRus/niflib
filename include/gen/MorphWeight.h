@@ -1,9 +1,9 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
 
-// To change this file, alter the gen_niflib.py script.
+//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
 
 #ifndef _MORPHWEIGHT_H_
 #define _MORPHWEIGHT_H_
@@ -17,6 +17,7 @@ namespace Niflib {
 // Forward define of referenced NIF objects
 class NiInterpolator;
 
+/*!  */
 struct MorphWeight {
 	/*! Default Constructor */
 	NIFLIB_API MorphWeight();
@@ -26,8 +27,10 @@ struct MorphWeight {
 	NIFLIB_API MorphWeight( const MorphWeight & src );
 	/*! Copy Operator */
 	NIFLIB_API MorphWeight & operator=( const MorphWeight & src );
+	/*! Interpolator */
 	Ref<NiInterpolator > interpolator;
-	float weight;
+	/*! Weight */
+	float weight_;
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 };

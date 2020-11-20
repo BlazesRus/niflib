@@ -1,9 +1,9 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
 
-// To change this file, alter the gen_niflib.py script.
+//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
 
 #ifndef _SHADERTEXDESC_H_
 #define _SHADERTEXDESC_H_
@@ -15,7 +15,7 @@ All rights reserved.  Please see niflib.h for license. */
 namespace Niflib {
 
 
-/*! NiTexturingProperty::ShaderMap. Shader texture description. */
+/*! An extended texture description for shader textures. */
 struct ShaderTexDesc {
 	/*! Default Constructor */
 	NIFLIB_API ShaderTexDesc();
@@ -25,10 +25,12 @@ struct ShaderTexDesc {
 	NIFLIB_API ShaderTexDesc( const ShaderTexDesc & src );
 	/*! Copy Operator */
 	NIFLIB_API ShaderTexDesc & operator=( const ShaderTexDesc & src );
-	bool hasMap;
-	TexDesc map;
-	/*! Unique identifier for the Gamebryo shader system. */
-	unsigned int mapId;
+	/*! Is it used? */
+	bool isUsed;
+	/*! The texture data. */
+	TexDesc textureData;
+	/*! Map Index */
+	unsigned int mapIndex;
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 };

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,15 +15,14 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkRigidBody.h"
-#include "../../include/gen/HavokFilter.h"
-#include "../../include/gen/hkQuaternion.h"
+#include "../../include/gen/QuaternionXYZW.h"
 #include "../../include/obj/bhkSerializable.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type bhkRigidBody::TYPE("bhkRigidBody", &bhkEntity::TYPE );
 
-bhkRigidBody::bhkRigidBody() : collisionResponse((hkResponseType)RESPONSE_SIMPLE_CONTACT), unusedByte1((byte)0), processContactCallbackDelay((unsigned short)0xffff), unknownInt1((unsigned int)0), unknownInt2((unsigned int)0), collisionResponse2((hkResponseType)RESPONSE_SIMPLE_CONTACT), unusedByte2((byte)0), processContactCallbackDelay2((unsigned short)0xffff), mass(1.0f), linearDamping(0.1f), angularDamping(0.05f), timeFactor(1.0f), gravityFactor(1.0f), friction(0.5f), rollingFrictionMultiplier(0.0f), restitution(0.4f), maxLinearVelocity(104.4f), maxAngularVelocity(31.57f), penetrationDepth(0.15f), motionSystem((hkMotionType)MO_SYS_DYNAMIC), deactivatorType((hkDeactivatorType)DEACTIVATOR_NEVER), enableDeactivation(1), solverDeactivation((hkSolverDeactivation)SOLVER_DEACTIVATION_OFF), qualityType((hkQualityType)MO_QUAL_FIXED), numConstraints((unsigned int)0), bodyFlags((unsigned int)0) {
+bhkRigidBody::bhkRigidBody() : unknownInt1((int)0), unknownInt2((int)0x00000001), unknown3Ints(3,(int)0,(int)0,(int)0x80000000), collisionResponse_((hkResponseType)RESPONSE_SIMPLE_CONTACT), unknownByte((byte)0xbe), processContactCallbackDelay_((unsigned short)0xffff), unknown2Shorts(2,(unsigned short)35899,(unsigned short)16336), layerCopy((OblivionLayer)OL_STATIC), colFilterCopy((byte)0), skyrimLayerCopy((SkyrimLayer)SKYL_STATIC), flagsAndPartNumberCopy((byte)0), unknown7Shorts(7,(unsigned short)0,(unsigned short)21280,(unsigned short)2481,(unsigned short)62977,(unsigned short)65535,(unsigned short)44,(unsigned short)0), mass(1.0f), linearDamping(0.1f), angularDamping(0.05f), unknownTimefactorOrGravityfactor1(0.0f), unknownTimefactorOrGravityfactor2(0.0f), friction(0.3f), rollingfrictionmultiplier_(0.0f), restitution(0.3f), maxLinearVelocity(250.0f), maxAngularVelocity(31.4159f), penetrationDepth(0.15f), motionSystem((MotionSystem)MO_SYS_DYNAMIC), deactivatorType((DeactivatorType)DEACTIVATOR_NEVER), solverDeactivation((SolverDeactivation)SOLVER_DEACTIVATION_OFF), qualityType((MotionQuality)MO_QUAL_FIXED), unknownInt6((unsigned int)512), unknownInt7((unsigned int)160), unknownInt8((unsigned int)161), unknownInt81((unsigned int)0), numConstraints((unsigned int)0), unknownInt9((unsigned int)0), unknownInt91((unsigned short)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -47,32 +46,26 @@ void bhkRigidBody::Read( istream& in, list<unsigned int> & link_stack, const Nif
 
 	unsigned int block_num;
 	bhkEntity::Read( in, link_stack, info );
-	NifStream( collisionResponse, in, info );
-	NifStream( unusedByte1, in, info );
-	NifStream( processContactCallbackDelay, in, info );
 	NifStream( unknownInt1, in, info );
-	if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
-		NifStream( havokFilterCopy.layer_ob, in, info );
+	NifStream( unknownInt2, in, info );
+	for (unsigned int i1 = 0; i1 < 3; i1++) {
+		NifStream( unknown3Ints[i1], in, info );
 	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
-		NifStream( havokFilterCopy.layer_fo, in, info );
+	NifStream( collisionResponse_, in, info );
+	NifStream( unknownByte, in, info );
+	NifStream( processContactCallbackDelay_, in, info );
+	for (unsigned int i1 = 0; i1 < 2; i1++) {
+		NifStream( unknown2Shorts[i1], in, info );
 	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
-		NifStream( havokFilterCopy.layer_sk, in, info );
-	};
-	NifStream( havokFilterCopy.flagsAndPartNumber, in, info );
-	NifStream( havokFilterCopy.group, in, info );
-	for (unsigned int i1 = 0; i1 < 4; i1++) {
-		NifStream( unused2[i1], in, info );
-	};
-	if ( (info.userVersion2 > 34) ) {
-		NifStream( unknownInt2, in, info );
-	};
-	NifStream( collisionResponse2, in, info );
-	NifStream( unusedByte2, in, info );
-	NifStream( processContactCallbackDelay2, in, info );
-	if ( (info.userVersion2 <= 34) ) {
-		NifStream( (unsigned int&)unknownInt2, in, info );
+	if ( (info.userVersion >= 12) ) {
+		NifStream( skyrimLayerCopy, in, info );
+		NifStream( flagsAndPartNumberCopy, in, info );
+	} else {
+	NifStream( layerCopy, in, info );
+	NifStream( colFilterCopy, in, info );
+	}
+	for (unsigned int i1 = 0; i1 < 7; i1++) {
+		NifStream( unknown7Shorts[i1], in, info );
 	};
 	NifStream( translation, in, info );
 	NifStream( rotation.x, in, info );
@@ -81,39 +74,32 @@ void bhkRigidBody::Read( istream& in, list<unsigned int> & link_stack, const Nif
 	NifStream( rotation.w, in, info );
 	NifStream( linearVelocity, in, info );
 	NifStream( angularVelocity, in, info );
-	NifStream( inertiaTensor, in, info );
+	NifStream( inertia, in, info );
 	NifStream( center, in, info );
 	NifStream( mass, in, info );
 	NifStream( linearDamping, in, info );
 	NifStream( angularDamping, in, info );
-	if ( (info.userVersion2 > 34) ) {
-		NifStream( timeFactor, in, info );
-		NifStream( gravityFactor, in, info );
+	if ( (info.userVersion >= 12) ) {
+		NifStream( unknownTimefactorOrGravityfactor1, in, info );
+		NifStream( unknownTimefactorOrGravityfactor2, in, info );
 	};
 	NifStream( friction, in, info );
-	if ( (info.userVersion2 > 34) ) {
-		NifStream( rollingFrictionMultiplier, in, info );
+	if ( (info.userVersion >= 12) ) {
+		NifStream( rollingfrictionmultiplier_, in, info );
 	};
 	NifStream( restitution, in, info );
 	NifStream( maxLinearVelocity, in, info );
 	NifStream( maxAngularVelocity, in, info );
 	NifStream( penetrationDepth, in, info );
 	NifStream( motionSystem, in, info );
-	if ( (info.userVersion2 <= 34) ) {
-		NifStream( deactivatorType, in, info );
-	};
-	if ( (info.userVersion2 > 34) ) {
-		NifStream( enableDeactivation, in, info );
-	};
+	NifStream( deactivatorType, in, info );
 	NifStream( solverDeactivation, in, info );
 	NifStream( qualityType, in, info );
-	for (unsigned int i1 = 0; i1 < 12; i1++) {
-		NifStream( unknownBytes1[i1], in, info );
-	};
-	if ( (info.userVersion2 > 34) ) {
-		for (unsigned int i2 = 0; i2 < 4; i2++) {
-			NifStream( unknownBytes2[i2], in, info );
-		};
+	NifStream( unknownInt6, in, info );
+	NifStream( unknownInt7, in, info );
+	NifStream( unknownInt8, in, info );
+	if ( (info.userVersion >= 12) ) {
+		NifStream( unknownInt81, in, info );
 	};
 	NifStream( numConstraints, in, info );
 	constraints.resize(numConstraints);
@@ -121,11 +107,11 @@ void bhkRigidBody::Read( istream& in, list<unsigned int> & link_stack, const Nif
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	if ( (info.userVersion2 < 76) ) {
-		NifStream( bodyFlags, in, info );
+	if ( (info.userVersion <= 11) ) {
+		NifStream( unknownInt9, in, info );
 	};
-	if ( (info.userVersion2 >= 76) ) {
-		NifStream( (unsigned short&)bodyFlags, in, info );
+	if ( (info.userVersion >= 12) ) {
+		NifStream( unknownInt91, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -138,32 +124,26 @@ void bhkRigidBody::Write( ostream& out, const map<NiObjectRef,unsigned int> & li
 
 	bhkEntity::Write( out, link_map, missing_link_stack, info );
 	numConstraints = (unsigned int)(constraints.size());
-	NifStream( collisionResponse, out, info );
-	NifStream( unusedByte1, out, info );
-	NifStream( processContactCallbackDelay, out, info );
 	NifStream( unknownInt1, out, info );
-	if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
-		NifStream( havokFilterCopy.layer_ob, out, info );
+	NifStream( unknownInt2, out, info );
+	for (unsigned int i1 = 0; i1 < 3; i1++) {
+		NifStream( unknown3Ints[i1], out, info );
 	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
-		NifStream( havokFilterCopy.layer_fo, out, info );
+	NifStream( collisionResponse_, out, info );
+	NifStream( unknownByte, out, info );
+	NifStream( processContactCallbackDelay_, out, info );
+	for (unsigned int i1 = 0; i1 < 2; i1++) {
+		NifStream( unknown2Shorts[i1], out, info );
 	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
-		NifStream( havokFilterCopy.layer_sk, out, info );
-	};
-	NifStream( havokFilterCopy.flagsAndPartNumber, out, info );
-	NifStream( havokFilterCopy.group, out, info );
-	for (unsigned int i1 = 0; i1 < 4; i1++) {
-		NifStream( unused2[i1], out, info );
-	};
-	if ( (info.userVersion2 > 34) ) {
-		NifStream( unknownInt2, out, info );
-	};
-	NifStream( collisionResponse2, out, info );
-	NifStream( unusedByte2, out, info );
-	NifStream( processContactCallbackDelay2, out, info );
-	if ( (info.userVersion2 <= 34) ) {
-		NifStream( (unsigned int&)unknownInt2, out, info );
+	if ( (info.userVersion >= 12) ) {
+		NifStream( skyrimLayerCopy, out, info );
+		NifStream( flagsAndPartNumberCopy, out, info );
+	} else {
+	NifStream( layerCopy, out, info );
+	NifStream( colFilterCopy, out, info );
+	}
+	for (unsigned int i1 = 0; i1 < 7; i1++) {
+		NifStream( unknown7Shorts[i1], out, info );
 	};
 	NifStream( translation, out, info );
 	NifStream( rotation.x, out, info );
@@ -172,49 +152,58 @@ void bhkRigidBody::Write( ostream& out, const map<NiObjectRef,unsigned int> & li
 	NifStream( rotation.w, out, info );
 	NifStream( linearVelocity, out, info );
 	NifStream( angularVelocity, out, info );
-	NifStream( inertiaTensor, out, info );
+	NifStream( inertia, out, info );
 	NifStream( center, out, info );
 	NifStream( mass, out, info );
 	NifStream( linearDamping, out, info );
 	NifStream( angularDamping, out, info );
-	if ( (info.userVersion2 > 34) ) {
-		NifStream( timeFactor, out, info );
-		NifStream( gravityFactor, out, info );
+	if ( (info.userVersion >= 12) ) {
+		NifStream( unknownTimefactorOrGravityfactor1, out, info );
+		NifStream( unknownTimefactorOrGravityfactor2, out, info );
 	};
 	NifStream( friction, out, info );
-	if ( (info.userVersion2 > 34) ) {
-		NifStream( rollingFrictionMultiplier, out, info );
+	if ( (info.userVersion >= 12) ) {
+		NifStream( rollingfrictionmultiplier_, out, info );
 	};
 	NifStream( restitution, out, info );
 	NifStream( maxLinearVelocity, out, info );
 	NifStream( maxAngularVelocity, out, info );
 	NifStream( penetrationDepth, out, info );
 	NifStream( motionSystem, out, info );
-	if ( (info.userVersion2 <= 34) ) {
-		NifStream( deactivatorType, out, info );
-	};
-	if ( (info.userVersion2 > 34) ) {
-		NifStream( enableDeactivation, out, info );
-	};
+	NifStream( deactivatorType, out, info );
 	NifStream( solverDeactivation, out, info );
 	NifStream( qualityType, out, info );
-	for (unsigned int i1 = 0; i1 < 12; i1++) {
-		NifStream( unknownBytes1[i1], out, info );
-	};
-	if ( (info.userVersion2 > 34) ) {
-		for (unsigned int i2 = 0; i2 < 4; i2++) {
-			NifStream( unknownBytes2[i2], out, info );
-		};
+	NifStream( unknownInt6, out, info );
+	NifStream( unknownInt7, out, info );
+	NifStream( unknownInt8, out, info );
+	if ( (info.userVersion >= 12) ) {
+		NifStream( unknownInt81, out, info );
 	};
 	NifStream( numConstraints, out, info );
 	for (unsigned int i1 = 0; i1 < constraints.size(); i1++) {
-		WriteRef( StaticCast<NiObject>(constraints[i1]), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*constraints[i1]), out );
+		} else {
+			if ( constraints[i1] != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(constraints[i1]) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( constraints[i1] );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
-	if ( (info.userVersion2 < 76) ) {
-		NifStream( bodyFlags, out, info );
+	if ( (info.userVersion <= 11) ) {
+		NifStream( unknownInt9, out, info );
 	};
-	if ( (info.userVersion2 >= 76) ) {
-		NifStream( (unsigned short&)bodyFlags, out, info );
+	if ( (info.userVersion >= 12) ) {
+		NifStream( unknownInt91, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -229,17 +218,10 @@ std::string bhkRigidBody::asString( bool verbose ) const {
 	unsigned int array_output_count = 0;
 	out << bhkEntity::asString();
 	numConstraints = (unsigned int)(constraints.size());
-	out << "  Collision Response:  " << collisionResponse << endl;
-	out << "  Unused Byte 1:  " << unusedByte1 << endl;
-	out << "  Process Contact Callback Delay:  " << processContactCallbackDelay << endl;
 	out << "  Unknown Int 1:  " << unknownInt1 << endl;
-	out << "  Layer:  " << havokFilterCopy.layer_ob << endl;
-	out << "  Layer:  " << havokFilterCopy.layer_fo << endl;
-	out << "  Layer:  " << havokFilterCopy.layer_sk << endl;
-	out << "  Flags and Part Number:  " << havokFilterCopy.flagsAndPartNumber << endl;
-	out << "  Group:  " << havokFilterCopy.group << endl;
+	out << "  Unknown Int 2:  " << unknownInt2 << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < 4; i1++) {
+	for (unsigned int i1 = 0; i1 < 3; i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -247,13 +229,40 @@ std::string bhkRigidBody::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Unused 2[" << i1 << "]:  " << unused2[i1] << endl;
+		out << "    Unknown 3 Ints[" << i1 << "]:  " << unknown3Ints[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Unknown Int 2:  " << unknownInt2 << endl;
-	out << "  Collision Response 2:  " << collisionResponse2 << endl;
-	out << "  Unused Byte 2:  " << unusedByte2 << endl;
-	out << "  Process Contact Callback Delay 2:  " << processContactCallbackDelay2 << endl;
+	out << "  Collision Response?:  " << collisionResponse_ << endl;
+	out << "  Unknown Byte:  " << unknownByte << endl;
+	out << "  Process Contact Callback Delay?:  " << processContactCallbackDelay_ << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < 2; i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Unknown 2 Shorts[" << i1 << "]:  " << unknown2Shorts[i1] << endl;
+		array_output_count++;
+	};
+	out << "  Layer Copy:  " << layerCopy << endl;
+	out << "  Col Filter Copy:  " << colFilterCopy << endl;
+	out << "  Skyrim Layer Copy:  " << skyrimLayerCopy << endl;
+	out << "  Flags And PartNumber Copy:  " << flagsAndPartNumberCopy << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < 7; i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Unknown 7 Shorts[" << i1 << "]:  " << unknown7Shorts[i1] << endl;
+		array_output_count++;
+	};
 	out << "  Translation:  " << translation << endl;
 	out << "  x:  " << rotation.x << endl;
 	out << "  y:  " << rotation.y << endl;
@@ -261,48 +270,27 @@ std::string bhkRigidBody::asString( bool verbose ) const {
 	out << "  w:  " << rotation.w << endl;
 	out << "  Linear Velocity:  " << linearVelocity << endl;
 	out << "  Angular Velocity:  " << angularVelocity << endl;
-	out << "  Inertia Tensor:  " << inertiaTensor << endl;
+	out << "  Inertia:  " << inertia << endl;
 	out << "  Center:  " << center << endl;
 	out << "  Mass:  " << mass << endl;
 	out << "  Linear Damping:  " << linearDamping << endl;
 	out << "  Angular Damping:  " << angularDamping << endl;
-	out << "  Time Factor:  " << timeFactor << endl;
-	out << "  Gravity Factor:  " << gravityFactor << endl;
+	out << "  Unknown TimeFactor or GravityFactor 1:  " << unknownTimefactorOrGravityfactor1 << endl;
+	out << "  Unknown TimeFactor or GravityFactor 2:  " << unknownTimefactorOrGravityfactor2 << endl;
 	out << "  Friction:  " << friction << endl;
-	out << "  Rolling Friction Multiplier:  " << rollingFrictionMultiplier << endl;
+	out << "  RollingFrictionMultiplier?:  " << rollingfrictionmultiplier_ << endl;
 	out << "  Restitution:  " << restitution << endl;
 	out << "  Max Linear Velocity:  " << maxLinearVelocity << endl;
 	out << "  Max Angular Velocity:  " << maxAngularVelocity << endl;
 	out << "  Penetration Depth:  " << penetrationDepth << endl;
 	out << "  Motion System:  " << motionSystem << endl;
 	out << "  Deactivator Type:  " << deactivatorType << endl;
-	out << "  Enable Deactivation:  " << enableDeactivation << endl;
 	out << "  Solver Deactivation:  " << solverDeactivation << endl;
 	out << "  Quality Type:  " << qualityType << endl;
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < 12; i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
-		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Unknown Bytes 1[" << i1 << "]:  " << unknownBytes1[i1] << endl;
-		array_output_count++;
-	};
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < 4; i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
-		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Unknown Bytes 2[" << i1 << "]:  " << unknownBytes2[i1] << endl;
-		array_output_count++;
-	};
+	out << "  Unknown Int 6:  " << unknownInt6 << endl;
+	out << "  Unknown Int 7:  " << unknownInt7 << endl;
+	out << "  Unknown Int 8:  " << unknownInt8 << endl;
+	out << "  Unknown Int 81:  " << unknownInt81 << endl;
 	out << "  Num Constraints:  " << numConstraints << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < constraints.size(); i1++) {
@@ -316,7 +304,8 @@ std::string bhkRigidBody::asString( bool verbose ) const {
 		out << "    Constraints[" << i1 << "]:  " << constraints[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Body Flags:  " << bodyFlags << endl;
+	out << "  Unknown Int 9:  " << unknownInt9 << endl;
+	out << "  Unknown Int 91:  " << unknownInt91 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -356,6 +345,22 @@ std::list<NiObject *> bhkRigidBody::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
+OblivionLayer bhkRigidBody::GetLayerCopy() const {
+	return layerCopy;
+}
+
+void bhkRigidBody::SetLayerCopy( OblivionLayer value ) {
+	layerCopy = value;
+}
+
+SkyrimLayer bhkRigidBody::GetSkyrimLayerCopy() const {
+	return skyrimLayerCopy;
+}
+
+void bhkRigidBody::SetSkyrimLayerCopy( SkyrimLayer value ) {
+	skyrimLayerCopy = value;
+}
+
 Vector4 bhkRigidBody::GetTranslation() const {
 	return translation;
 }
@@ -364,11 +369,11 @@ void bhkRigidBody::SetTranslation( const Vector4 & value ) {
 	translation = value;
 }
 
-hkQuaternion bhkRigidBody::GetRotation() const {
+QuaternionXYZW bhkRigidBody::GetRotation() const {
 	return rotation;
 }
 
-void bhkRigidBody::SetRotation( const hkQuaternion & value ) {
+void bhkRigidBody::SetRotation( const QuaternionXYZW & value ) {
 	rotation = value;
 }
 
@@ -389,11 +394,11 @@ void bhkRigidBody::SetAngularVelocity( const Vector4 & value ) {
 }
 
 InertiaMatrix  bhkRigidBody::GetInertia() const {
-	return inertiaTensor;
+	return inertia;
 }
 
 void bhkRigidBody::SetInertia( const InertiaMatrix&  value ) {
-	inertiaTensor = value;
+	inertia = value;
 }
 
 Vector4 bhkRigidBody::GetCenter() const {
@@ -468,35 +473,35 @@ void bhkRigidBody::SetPenetrationDepth( float value ) {
 	penetrationDepth = value;
 }
 
-hkMotionType bhkRigidBody::GetMotionSystem() const {
+MotionSystem bhkRigidBody::GetMotionSystem() const {
 	return motionSystem;
 }
 
-void bhkRigidBody::SetMotionSystem( hkMotionType value ) {
+void bhkRigidBody::SetMotionSystem( MotionSystem value ) {
 	motionSystem = value;
 }
 
-hkQualityType bhkRigidBody::GetQualityType() const {
+MotionQuality bhkRigidBody::GetQualityType() const {
 	return qualityType;
 }
 
-void bhkRigidBody::SetQualityType( hkQualityType value ) {
+void bhkRigidBody::SetQualityType( MotionQuality value ) {
 	qualityType = value;
 }
 
-hkDeactivatorType bhkRigidBody::GetDeactivatorType() const {
+DeactivatorType bhkRigidBody::GetDeactivatorType() const {
 	return deactivatorType;
 }
 
-void bhkRigidBody::SetDeactivatorType( const hkDeactivatorType & value ) {
+void bhkRigidBody::SetDeactivatorType( const DeactivatorType & value ) {
 	deactivatorType = value;
 }
 
-hkSolverDeactivation bhkRigidBody::GetSolverDeactivation() const {
+SolverDeactivation bhkRigidBody::GetSolverDeactivation() const {
 	return solverDeactivation;
 }
 
-void bhkRigidBody::SetSolverDeactivation( const hkSolverDeactivation & value ) {
+void bhkRigidBody::SetSolverDeactivation( const SolverDeactivation & value ) {
 	solverDeactivation = value;
 }
 
@@ -534,7 +539,7 @@ void bhkRigidBody::ApplyScale(float scale)
     center *= scale;
 
     // apply scale on inertia tensor
-    inertiaTensor *= pow(scale, 2.0f);
+    inertia *= pow(scale, 2.0f);
 
     //# apply scale on all blocks down the hierarchy
     //ApplyScale(scale)
@@ -553,15 +558,23 @@ void bhkRigidBody::UpdateMassProperties(float density, bool solid, float mass)
 	{
 		float volume;
 		Vector3 com;
-		shape->CalcMassProperties(density, solid, this->mass, volume, com, inertiaTensor);
+		shape->CalcMassProperties(density, solid, this->mass, volume, com, inertia);
 		center = com;
 		if (mass != 0.0f)
 		{
 			float mass_correction = (this->mass != 0.0f) ? mass / this->mass : 1.0f;
 			this->mass = mass;
-			inertiaTensor *= mass_correction;
+			inertia *= mass_correction;
 		}
 	}
+}
+
+Niflib::array<7,unsigned short> bhkRigidBody::GetUnknown7Shorts() const {
+	return unknown7Shorts;
+}
+
+void bhkRigidBody::SetUnknown7Shorts(const Niflib::array<7,unsigned short> & in ) {
+	unknown7Shorts = in;
 }
 
 //--END CUSTOM CODE--//

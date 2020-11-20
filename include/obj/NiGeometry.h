@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -13,24 +13,18 @@ All rights reserved.  Please see niflib.h for license. */
 //--BEGIN FILE HEAD CUSTOM CODE--//
 #include "../gen/SkinWeight.h"
 #include "../obj/NiGeometryData.h"
-
-#include "../gen/BoneVertData.h"
 //--END CUSTOM CODE--//
 
 #include "NiAVObject.h"
 
 // Include structures
-#include "../gen/NiBound.h"
 #include "../Ref.h"
-#include "../gen/MaterialData.h"
 namespace Niflib {
 
 // Forward define of referenced NIF objects
-class NiObject;
 class NiGeometryData;
 class NiSkinInstance;
-class BSShaderProperty;
-class NiAlphaProperty;
+class NiProperty;
 class NiGeometry;
 typedef Ref<NiGeometry> NiGeometryRef;
 
@@ -42,28 +36,28 @@ class NiGeometry : public NiAVObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiGeometry();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiGeometry();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -96,7 +90,7 @@ public:
 	 * The version on this class calculates the center and radius of
 	 * each set of affected vertices automatically.
 	 */
-	NIFLIB_API void SetBoneWeights( unsigned int bone_index, const vector<BoneVertData> & n );
+	NIFLIB_API void SetBoneWeights( unsigned int bone_index, const vector<SkinWeight> & n );
 
 	/*!
 	 * Retrieves the NiSkinInstance object used by this geometry node, if any.
@@ -123,16 +117,16 @@ public:
 	NIFLIB_API void SetData( NiGeometryData * n );
 
 	/*!
-	 * Retrieves the shader used by this geometry node.  The allowable values are game-dependent.
-	 * \return The shader.
+	 * Retrieves the name of the shader used by this geometry node.  The allowable values are game-dependent.
+	 * \return The shader name.
 	 */
-	NIFLIB_API  Ref<BSShaderProperty > GetBSShader() const;
+	NIFLIB_API string GetShader() const;
 
 	/*!
-	 * Sets the shader used by this geometry node.  The allowable values are game-dependent.
-	 * \param[in] n The new shader.
+	 * Sets the name of the shader used by this geometry node.  The allowable values are game-dependent.
+	 * \param[in] n The new shader name.
 	 */
-	NIFLIB_API void SetBSShader( const Ref<BSShaderProperty > & n );
+	NIFLIB_API void SetShader( const string & n );
 
 	/*
 	 * Returns the position of the verticies and values of the normals after they
@@ -166,27 +160,68 @@ public:
 	 */
 	NIFLIB_API bool IsSkin();
 
-   NIFLIB_API void SetAlphaProperty(const Ref<NiAlphaProperty >& value);
-   NIFLIB_API Ref<NiAlphaProperty > GetAlphaProperty() const;
+   // Active Material.
+   // \return The current value.
+   NIFLIB_API int GetActiveMaterial() const;
 
-   NIFLIB_API MaterialData GetMaterialData() const;
-   NIFLIB_API void SetMaterialData(MaterialData value);
+   // Active Material.
+   // \param[in] value The new value.
+   NIFLIB_API void SetActiveMaterial( int value );
 
-   NIFLIB_API Ref<NiObject> GetSkin();
+   // Shader.
+   // \return The current value.
+   NIFLIB_API bool HasShader() const;
 
-   NIFLIB_API NiBound GetBound();
-   NIFLIB_API void SetBound(const NiBound& value);
+   // BSProperty
+   // \param[in] index Index of property to be retrieved.
+   // \return The propterty.
+   NIFLIB_API Ref<NiProperty> GetBSProperty(short index);
+
+   // BSProperty
+   // \param[in] index Index of property to be set.
+   // \param[in] index Property to be set.
+   NIFLIB_API void SetBSProperty(short index, Ref<NiProperty> value);
+
+   /*
+	 * Returns the array of the only 2 properties that are specific to Bethesda
+	 * \return Returns the array of the 2 properties
+	 */
+   NIFLIB_API Niflib::array<2,Ref<NiProperty > > GetBSProperties();
+
+   /*
+	 * Sets the array of the only 2 properties that are specific to Bethesda
+	 * \param[in] The new array of properties
+	 */
+   NIFLIB_API void SetBSProperties( Niflib::array<2, Ref<NiProperty> > value);
 
 	//--END CUSTOM CODE--//
 protected:
-	NiBound bound;
-	Ref<NiObject > skin;
 	/*! Data index (NiTriShapeData/NiTriStripData). */
 	Ref<NiGeometryData > data;
+	/*! Skin instance index. */
 	Ref<NiSkinInstance > skinInstance;
-	MaterialData materialData;
-	Ref<BSShaderProperty > shaderProperty;
-	Ref<NiAlphaProperty > alphaProperty;
+	/*! Num Materials */
+	mutable unsigned int numMaterials;
+	/*! Unknown string.  Shader? */
+	vector<IndexString > materialName;
+	/*! Unknown integer; often -1. (Is this a link, array index?) */
+	vector<int > materialExtraData;
+	/*! Active Material; often -1. (Is this a link, array index?) */
+	int activeMaterial;
+	/*! Shader. */
+	bool hasShader;
+	/*! The shader name. */
+	IndexString shaderName;
+	/*! Unknown value, usually -1. (Not a link) */
+	int unknownInteger;
+	/*! Cyanide extension (only in version 10.2.0.0?). */
+	byte unknownByte;
+	/*! Unknown. */
+	int unknownInteger2;
+	/*! Dirty Flag? */
+	bool dirtyFlag;
+	/*! Two property links, used by Bethesda. */
+	Niflib::array<2,Ref<NiProperty > > bsProperties;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -203,5 +238,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,9 +19,9 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type BSDecalPlacementVectorExtraData::TYPE("BSDecalPlacementVectorExtraData", &NiFloatExtraData::TYPE );
+const Type BSDecalPlacementVectorExtraData::TYPE("BSDecalPlacementVectorExtraData", &NiExtraData::TYPE );
 
-BSDecalPlacementVectorExtraData::BSDecalPlacementVectorExtraData() : numVectorBlocks((short)0) {
+BSDecalPlacementVectorExtraData::BSDecalPlacementVectorExtraData() : unknownFloat1(0.0f), numVectorBlocks((short)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,7 +46,8 @@ void BSDecalPlacementVectorExtraData::Read( istream& in, list<unsigned int> & li
 
 	//--END CUSTOM CODE--//
 
-	NiFloatExtraData::Read( in, link_stack, info );
+	NiExtraData::Read( in, link_stack, info );
+	NifStream( unknownFloat1, in, info );
 	NifStream( numVectorBlocks, in, info );
 	vectorBlocks.resize(numVectorBlocks);
 	for (unsigned int i1 = 0; i1 < vectorBlocks.size(); i1++) {
@@ -71,8 +72,9 @@ void BSDecalPlacementVectorExtraData::Write( ostream& out, const map<NiObjectRef
 
 	//--END CUSTOM CODE--//
 
-	NiFloatExtraData::Write( out, link_map, missing_link_stack, info );
+	NiExtraData::Write( out, link_map, missing_link_stack, info );
 	numVectorBlocks = (short)(vectorBlocks.size());
+	NifStream( unknownFloat1, out, info );
 	NifStream( numVectorBlocks, out, info );
 	for (unsigned int i1 = 0; i1 < vectorBlocks.size(); i1++) {
 		vectorBlocks[i1].numVectors = (short)(vectorBlocks[i1].points.size());
@@ -97,8 +99,9 @@ std::string BSDecalPlacementVectorExtraData::asString( bool verbose ) const {
 
 	stringstream out;
 	unsigned int array_output_count = 0;
-	out << NiFloatExtraData::asString();
+	out << NiExtraData::asString();
 	numVectorBlocks = (short)(vectorBlocks.size());
+	out << "  Unknown Float 1:  " << unknownFloat1 << endl;
 	out << "  Num Vector Blocks:  " << numVectorBlocks << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < vectorBlocks.size(); i1++) {
@@ -145,7 +148,7 @@ void BSDecalPlacementVectorExtraData::FixLinks( const map<unsigned int,NiObjectR
 
 	//--END CUSTOM CODE--//
 
-	NiFloatExtraData::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiExtraData::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -154,13 +157,13 @@ void BSDecalPlacementVectorExtraData::FixLinks( const map<unsigned int,NiObjectR
 
 std::list<NiObjectRef> BSDecalPlacementVectorExtraData::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiFloatExtraData::GetRefs();
+	refs = NiExtraData::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> BSDecalPlacementVectorExtraData::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiFloatExtraData::GetPtrs();
+	ptrs = NiExtraData::GetPtrs();
 	return ptrs;
 }
 

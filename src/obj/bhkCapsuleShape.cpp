@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -44,7 +44,7 @@ void bhkCapsuleShape::Read( istream& in, list<unsigned int> & link_stack, const 
 
 	bhkConvexShape::Read( in, link_stack, info );
 	for (unsigned int i1 = 0; i1 < 8; i1++) {
-		NifStream( unused[i1], in, info );
+		NifStream( unknown8Bytes[i1], in, info );
 	};
 	NifStream( firstPoint, in, info );
 	NifStream( radius1, in, info );
@@ -61,7 +61,7 @@ void bhkCapsuleShape::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 
 	bhkConvexShape::Write( out, link_map, missing_link_stack, info );
 	for (unsigned int i1 = 0; i1 < 8; i1++) {
-		NifStream( unused[i1], out, info );
+		NifStream( unknown8Bytes[i1], out, info );
 	};
 	NifStream( firstPoint, out, info );
 	NifStream( radius1, out, info );
@@ -88,7 +88,7 @@ std::string bhkCapsuleShape::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Unused[" << i1 << "]:  " << unused[i1] << endl;
+		out << "    Unknown 8 Bytes[" << i1 << "]:  " << unknown8Bytes[i1] << endl;
 		array_output_count++;
 	};
 	out << "  First Point:  " << firstPoint << endl;

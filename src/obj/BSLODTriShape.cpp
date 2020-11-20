@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type BSLODTriShape::TYPE("BSLODTriShape", &NiTriBasedGeom::TYPE );
 
-BSLODTriShape::BSLODTriShape() : lod0Size((unsigned int)0), lod1Size((unsigned int)0), lod2Size((unsigned int)0) {
+BSLODTriShape::BSLODTriShape() : level0Size((unsigned int)0), level1Size((unsigned int)0), level2Size((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -36,6 +36,26 @@ const Type & BSLODTriShape::GetType() const {
 	return TYPE;
 }
 
+unsigned int BSLODTriShape::GetLODLevelSize(const unsigned int level) const {
+	switch (level)
+	{
+		case 0:		return level0Size;
+		case 1:		return level1Size;
+		case 2:		return level2Size;
+	}
+
+	return 0;
+}
+
+void BSLODTriShape::SetLODLevelSize(const unsigned int level, unsigned int size) {
+	switch (level)
+	{
+		case 0:		{ level0Size = size; break; }
+		case 1:		{ level1Size = size; break; }
+		case 2:		{ level2Size = size; break; }
+	}
+}			
+
 NiObject * BSLODTriShape::Create() {
 	return new BSLODTriShape;
 }
@@ -46,9 +66,9 @@ void BSLODTriShape::Read( istream& in, list<unsigned int> & link_stack, const Ni
 	//--END CUSTOM CODE--//
 
 	NiTriBasedGeom::Read( in, link_stack, info );
-	NifStream( lod0Size, in, info );
-	NifStream( lod1Size, in, info );
-	NifStream( lod2Size, in, info );
+	NifStream( level0Size, in, info );
+	NifStream( level1Size, in, info );
+	NifStream( level2Size, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -61,9 +81,9 @@ void BSLODTriShape::Write( ostream& out, const map<NiObjectRef,unsigned int> & l
 	//--END CUSTOM CODE--//
 
 	NiTriBasedGeom::Write( out, link_map, missing_link_stack, info );
-	NifStream( lod0Size, out, info );
-	NifStream( lod1Size, out, info );
-	NifStream( lod2Size, out, info );
+	NifStream( level0Size, out, info );
+	NifStream( level1Size, out, info );
+	NifStream( level2Size, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -77,9 +97,9 @@ std::string BSLODTriShape::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiTriBasedGeom::asString();
-	out << "  LOD0 Size:  " << lod0Size << endl;
-	out << "  LOD1 Size:  " << lod1Size << endl;
-	out << "  LOD2 Size:  " << lod2Size << endl;
+	out << "  Level 0 Size:  " << level0Size << endl;
+	out << "  Level 1 Size:  " << level1Size << endl;
+	out << "  Level 2 Size:  " << level2Size << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiPalette::TYPE("NiPalette", &NiObject::TYPE );
 
-NiPalette::NiPalette() : hasAlpha((byte)0), numEntries((unsigned int)256) {
+NiPalette::NiPalette() : unknownByte((byte)0), numEntries((unsigned int)256) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -43,23 +43,13 @@ void NiPalette::Read( istream& in, list<unsigned int> & link_stack, const NifInf
 	//--END CUSTOM CODE--//
 
 	NiObject::Read( in, link_stack, info );
-	NifStream( hasAlpha, in, info );
+	NifStream( unknownByte, in, info );
 	NifStream( numEntries, in, info );
-	if ( (numEntries == 16) ) {
-		for (unsigned int i2 = 0; i2 < 16; i2++) {
-			NifStream( palette[i2].r, in, info );
-			NifStream( palette[i2].g, in, info );
-			NifStream( palette[i2].b, in, info );
-			NifStream( palette[i2].a, in, info );
-		};
-	};
-	if ( (numEntries != 16) ) {
-		for (unsigned int i2 = 0; i2 < 256; i2++) {
-			NifStream( palette[i2].r, in, info );
-			NifStream( palette[i2].g, in, info );
-			NifStream( palette[i2].b, in, info );
-			NifStream( palette[i2].a, in, info );
-		};
+	for (unsigned int i1 = 0; i1 < 256; i1++) {
+		NifStream( palette[i1].r, in, info );
+		NifStream( palette[i1].g, in, info );
+		NifStream( palette[i1].b, in, info );
+		NifStream( palette[i1].a, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -71,23 +61,13 @@ void NiPalette::Write( ostream& out, const map<NiObjectRef,unsigned int> & link_
 	//--END CUSTOM CODE--//
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
-	NifStream( hasAlpha, out, info );
+	NifStream( unknownByte, out, info );
 	NifStream( numEntries, out, info );
-	if ( (numEntries == 16) ) {
-		for (unsigned int i2 = 0; i2 < 16; i2++) {
-			NifStream( palette[i2].r, out, info );
-			NifStream( palette[i2].g, out, info );
-			NifStream( palette[i2].b, out, info );
-			NifStream( palette[i2].a, out, info );
-		};
-	};
-	if ( (numEntries != 16) ) {
-		for (unsigned int i2 = 0; i2 < 256; i2++) {
-			NifStream( palette[i2].r, out, info );
-			NifStream( palette[i2].g, out, info );
-			NifStream( palette[i2].b, out, info );
-			NifStream( palette[i2].a, out, info );
-		};
+	for (unsigned int i1 = 0; i1 < 256; i1++) {
+		NifStream( palette[i1].r, out, info );
+		NifStream( palette[i1].g, out, info );
+		NifStream( palette[i1].b, out, info );
+		NifStream( palette[i1].a, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -101,20 +81,18 @@ std::string NiPalette::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiObject::asString();
-	out << "  Has Alpha:  " << hasAlpha << endl;
+	out << "  Unknown Byte:  " << unknownByte << endl;
 	out << "  Num Entries:  " << numEntries << endl;
-	if ( (numEntries == 16) ) {
-		array_output_count = 0;
-		for (unsigned int i2 = 0; i2 < 16; i2++) {
-			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-				out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-				break;
-			};
-			out << "      r:  " << palette[i2].r << endl;
-			out << "      g:  " << palette[i2].g << endl;
-			out << "      b:  " << palette[i2].b << endl;
-			out << "      a:  " << palette[i2].a << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < 256; i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
 		};
+		out << "    r:  " << palette[i1].r << endl;
+		out << "    g:  " << palette[i1].g << endl;
+		out << "    b:  " << palette[i1].b << endl;
+		out << "    a:  " << palette[i1].a << endl;
 	};
 	return out.str();
 

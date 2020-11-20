@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiPSBoundUpdater::TYPE("NiPSBoundUpdater", &NiObject::TYPE );
 
-NiPSBoundUpdater::NiPSBoundUpdater() : updateSkip((unsigned short)0) {
+NiPSBoundUpdater::NiPSBoundUpdater() : unknown1((byte)0), unknown2((byte)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -46,7 +46,8 @@ void NiPSBoundUpdater::Read( istream& in, list<unsigned int> & link_stack, const
 	//--END CUSTOM CODE--//
 
 	NiObject::Read( in, link_stack, info );
-	NifStream( updateSkip, in, info );
+	NifStream( unknown1, in, info );
+	NifStream( unknown2, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -59,7 +60,8 @@ void NiPSBoundUpdater::Write( ostream& out, const map<NiObjectRef,unsigned int> 
 	//--END CUSTOM CODE--//
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
-	NifStream( updateSkip, out, info );
+	NifStream( unknown1, out, info );
+	NifStream( unknown2, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -73,7 +75,8 @@ std::string NiPSBoundUpdater::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiObject::asString();
-	out << "  Update Skip:  " << updateSkip << endl;
+	out << "  Unknown 1:  " << unknown1 << endl;
+	out << "  Unknown 2:  " << unknown2 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

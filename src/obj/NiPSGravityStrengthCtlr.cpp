@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,9 +18,9 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPSGravityStrengthCtlr::TYPE("NiPSGravityStrengthCtlr", &NiPSForceFloatCtlr::TYPE );
+const Type NiPSGravityStrengthCtlr::TYPE("NiPSGravityStrengthCtlr", &NiTimeController::TYPE );
 
-NiPSGravityStrengthCtlr::NiPSGravityStrengthCtlr() {
+NiPSGravityStrengthCtlr::NiPSGravityStrengthCtlr() : unknown2((int)0), unknown3((int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,7 +45,9 @@ void NiPSGravityStrengthCtlr::Read( istream& in, list<unsigned int> & link_stack
 
 	//--END CUSTOM CODE--//
 
-	NiPSForceFloatCtlr::Read( in, link_stack, info );
+	NiTimeController::Read( in, link_stack, info );
+	NifStream( unknown2, in, info );
+	NifStream( unknown3, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -57,7 +59,9 @@ void NiPSGravityStrengthCtlr::Write( ostream& out, const map<NiObjectRef,unsigne
 
 	//--END CUSTOM CODE--//
 
-	NiPSForceFloatCtlr::Write( out, link_map, missing_link_stack, info );
+	NiTimeController::Write( out, link_map, missing_link_stack, info );
+	NifStream( unknown2, out, info );
+	NifStream( unknown3, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -70,7 +74,9 @@ std::string NiPSGravityStrengthCtlr::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiPSForceFloatCtlr::asString();
+	out << NiTimeController::asString();
+	out << "  Unknown 2:  " << unknown2 << endl;
+	out << "  Unknown 3:  " << unknown3 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -83,7 +89,7 @@ void NiPSGravityStrengthCtlr::FixLinks( const map<unsigned int,NiObjectRef> & ob
 
 	//--END CUSTOM CODE--//
 
-	NiPSForceFloatCtlr::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiTimeController::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -92,13 +98,13 @@ void NiPSGravityStrengthCtlr::FixLinks( const map<unsigned int,NiObjectRef> & ob
 
 std::list<NiObjectRef> NiPSGravityStrengthCtlr::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiPSForceFloatCtlr::GetRefs();
+	refs = NiTimeController::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> NiPSGravityStrengthCtlr::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiPSForceFloatCtlr::GetPtrs();
+	ptrs = NiTimeController::GetPtrs();
 	return ptrs;
 }
 

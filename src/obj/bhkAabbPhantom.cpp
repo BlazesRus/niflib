@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -46,11 +46,9 @@ void bhkAabbPhantom::Read( istream& in, list<unsigned int> & link_stack, const N
 	//--END CUSTOM CODE--//
 
 	bhkShapePhantom::Read( in, link_stack, info );
-	for (unsigned int i1 = 0; i1 < 8; i1++) {
-		NifStream( unused[i1], in, info );
+	for (unsigned int i1 = 0; i1 < 15; i1++) {
+		NifStream( unknownInts1[i1], in, info );
 	};
-	NifStream( aabbMin, in, info );
-	NifStream( aabbMax, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -63,11 +61,9 @@ void bhkAabbPhantom::Write( ostream& out, const map<NiObjectRef,unsigned int> & 
 	//--END CUSTOM CODE--//
 
 	bhkShapePhantom::Write( out, link_map, missing_link_stack, info );
-	for (unsigned int i1 = 0; i1 < 8; i1++) {
-		NifStream( unused[i1], out, info );
+	for (unsigned int i1 = 0; i1 < 15; i1++) {
+		NifStream( unknownInts1[i1], out, info );
 	};
-	NifStream( aabbMin, out, info );
-	NifStream( aabbMax, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -83,7 +79,7 @@ std::string bhkAabbPhantom::asString( bool verbose ) const {
 	unsigned int array_output_count = 0;
 	out << bhkShapePhantom::asString();
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < 8; i1++) {
+	for (unsigned int i1 = 0; i1 < 15; i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -91,11 +87,9 @@ std::string bhkAabbPhantom::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Unused[" << i1 << "]:  " << unused[i1] << endl;
+		out << "    Unknown Ints 1[" << i1 << "]:  " << unknownInts1[i1] << endl;
 		array_output_count++;
 	};
-	out << "  AABB Min:  " << aabbMin << endl;
-	out << "  AABB Max:  " << aabbMax << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

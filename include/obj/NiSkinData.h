@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,9 +19,9 @@ namespace Niflib {
 #include "NiObject.h"
 
 // Include structures
-#include "../gen/NiTransform.h"
+#include "../gen/SkinTransform.h"
 #include "../Ref.h"
-#include "../gen/BoneData.h"
+#include "../gen/SkinData.h"
 namespace Niflib {
 
 // Forward define of referenced NIF objects
@@ -34,28 +34,28 @@ class NiSkinData : public NiObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiSkinData();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiSkinData();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -94,7 +94,7 @@ public:
 	 * \param[in] bone_index The numeric index of the bone that the skin weight data should be returned for.  Must be >= zero and < the number returned by GetBoneCount.
 	 * \return The skin weight data for the specified bone.
 	 */
-	NIFLIB_API vector<BoneVertData> GetBoneWeights( unsigned int bone_index ) const;
+	NIFLIB_API vector<SkinWeight> GetBoneWeights( unsigned int bone_index ) const;
 
 	/*!
 	 * Sets the skin weights for a particular bone.  This information includes the vertex index into the geometry data's vertex array, and the percentage weight that defines how much the movement of this bone influences its position.
@@ -104,13 +104,13 @@ public:
 	 * \param[in] radius The radius of a bounding circle centered at the center point which contains all the vertices affected by this bone.  This is the distance from the center to vertex that is the greatest distance away.
 	 * \return The skin weight data for the specified bone.
 	 */
-	NIFLIB_API void SetBoneWeights( unsigned int bone_index, const vector<BoneVertData> & weights, Vector3 center, float radius );
+	NIFLIB_API void SetBoneWeights( unsigned int bone_index, const vector<SkinWeight> & weights, Vector3 center, float radius );
 	
 	/*!
 	 * Sets the skin weights for a particular bone, without changing center and radius
 	 * \sa NiSkinData::SetBoneWeights
 	 */
-	NIFLIB_API void SetBoneWeights( unsigned int bone_index, const vector<BoneVertData> & weights );
+	NIFLIB_API void SetBoneWeights( unsigned int bone_index, const vector<SkinWeight> & weights );
 
 	/*!
 	 * Returns a reference to the hardware skin partition data object, if any.
@@ -145,7 +145,7 @@ public:
 	//--END CUSTOM CODE--//
 protected:
 	/*! Offset of the skin from this bone in bind position. */
-	NiTransform skinTransform;
+	SkinTransform skinTransform;
 	/*! Number of bones. */
 	mutable unsigned int numBones;
 	/*! This optionally links a NiSkinPartition for hardware-acceleration information. */
@@ -153,7 +153,7 @@ protected:
 	/*! Enables Vertex Weights for this NiSkinData. */
 	byte hasVertexWeights;
 	/*! Contains offset data for each node that this skin is influenced by. */
-	vector<BoneData > boneList;
+	vector<SkinData > boneList;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -170,5 +170,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

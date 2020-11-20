@@ -1,9 +1,9 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
 
-// To change this file, alter the gen_niflib.py script.
+//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
 
 #ifndef _ADDITIONALDATABLOCK_H_
 #define _ADDITIONALDATABLOCK_H_
@@ -13,6 +13,7 @@ All rights reserved.  Please see niflib.h for license. */
 namespace Niflib {
 
 
+/*!  */
 struct AdditionalDataBlock {
 	/*! Default Constructor */
 	NIFLIB_API AdditionalDataBlock();
@@ -26,10 +27,15 @@ struct AdditionalDataBlock {
 	bool hasData;
 	/*! Size of Block */
 	mutable int blockSize;
+	/*! Unknown */
 	mutable int numBlocks;
+	/*! Unknown */
 	vector<int > blockOffsets;
+	/*! Unknown */
 	mutable int numData;
+	/*! Unknown */
 	vector<int > dataSizes;
+	/*! Unknown */
 	vector< vector<byte > > data;
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//

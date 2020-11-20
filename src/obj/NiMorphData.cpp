@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -63,7 +63,7 @@ void NiMorphData::Read( istream& in, list<unsigned int> & link_stack, const NifI
 			NifStream( morphs[i1].unknownInt, in, info );
 		};
 		if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) && ( info.userVersion == 0 ) ) {
-			NifStream( (unsigned int&)morphs[i1].unknownInt, in, info );
+			NifStream( morphs[i1].unknownInt, in, info );
 		};
 		morphs[i1].vectors.resize(numVertices);
 		for (unsigned int i2 = 0; i2 < morphs[i1].vectors.size(); i2++) {
@@ -100,7 +100,7 @@ void NiMorphData::Write( ostream& out, const map<NiObjectRef,unsigned int> & lin
 			NifStream( morphs[i1].unknownInt, out, info );
 		};
 		if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) && ( info.userVersion == 0 ) ) {
-			NifStream( (unsigned int&)morphs[i1].unknownInt, out, info );
+			NifStream( morphs[i1].unknownInt, out, info );
 		};
 		for (unsigned int i2 = 0; i2 < morphs[i1].vectors.size(); i2++) {
 			NifStream( morphs[i1].vectors[i2], out, info );

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -58,9 +58,9 @@ public:
 	//--END CUSTOM CODE--//
 protected:
 	/*! Unknown. */
-	NifArray<4,int > unknownInts;
+	Niflib::array<4,int > unknownInts;
 	/*! Unknown. */
-	NifArray<37,byte > unknownBytes;
+	Niflib::array<37,byte > unknownBytes;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );

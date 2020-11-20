@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiBlendFloatInterpolator::TYPE("NiBlendFloatInterpolator", &NiBlendInterpolator::TYPE );
 
-NiBlendFloatInterpolator::NiBlendFloatInterpolator() : value(-3.402823466e+38f) {
+NiBlendFloatInterpolator::NiBlendFloatInterpolator() : floatValue(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -42,7 +42,7 @@ void NiBlendFloatInterpolator::Read( istream& in, list<unsigned int> & link_stac
 	//--END CUSTOM CODE--//
 
 	NiBlendInterpolator::Read( in, link_stack, info );
-	NifStream( value, in, info );
+	NifStream( floatValue, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -53,7 +53,7 @@ void NiBlendFloatInterpolator::Write( ostream& out, const map<NiObjectRef,unsign
 	//--END CUSTOM CODE--//
 
 	NiBlendInterpolator::Write( out, link_map, missing_link_stack, info );
-	NifStream( value, out, info );
+	NifStream( floatValue, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -65,7 +65,7 @@ std::string NiBlendFloatInterpolator::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiBlendInterpolator::asString();
-	out << "  Value:  " << value << endl;
+	out << "  Float Value:  " << floatValue << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,33 +21,33 @@ class NiParticleSystem;
 class NiPSysModifier;
 typedef Ref<NiPSysModifier> NiPSysModifierRef;
 
-/*! Abstract base class for all particle system modifiers. */
+/*! Generic particle system modifier object. */
 class NiPSysModifier : public NiObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiPSysModifier();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiPSysModifier();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -57,13 +57,13 @@ public:
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 protected:
-	/*! Used to locate the modifier. */
+	/*! The object name. */
 	IndexString name;
 	/*! Modifier ID in the particle modifier chain (always a multiple of 1000)? */
 	unsigned int order;
 	/*! NiParticleSystem parent of this modifier. */
 	NiParticleSystem * target;
-	/*! Whether or not the modifier is active. */
+	/*! Whether the modifier is currently in effect?  Usually true. */
 	bool active;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -81,5 +81,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -30,33 +30,33 @@ class BSAnimNotes;
 class NiControllerSequence;
 typedef Ref<NiControllerSequence> NiControllerSequenceRef;
 
-/*! Root node in Gamebryo .kf files (version 10.0.1.0 and up). */
+/*! Root node in .kf files (version 10.0.1.0 and up). */
 class NiControllerSequence : public NiSequence {
 public:
 	/*! Constructor */
 	NIFLIB_API NiControllerSequence();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiControllerSequence();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -145,14 +145,14 @@ public:
 	 * \return A vector containing the data for all controllers.
 	 * \sa NiControllerSequence::AddController, NiControllerSequence::AddInterpolator, NiControllerSequence::SetContollerData
 	 */
-	NIFLIB_API vector<ControlledBlock> GetControllerData() const;
+	NIFLIB_API vector<ControllerLink> GetControllerData() const;
 
 	/*!
 	* Retrieves the data for the controllers or interpolators which are attached to this controller sequence.
 	* \return A vector containing the data for all controllers.
 	* \sa NiControllerSequence::AddController, NiControllerSequence::AddInterpolator, NiControllerSequence::GetContollerData
 	*/
-	NIFLIB_API void SetControllerData(const vector<ControlledBlock>& value);
+	NIFLIB_API void SetControllerData(const vector<ControllerLink>& value);
 
 	/*!
 	 * Retrieves the text keys, which are tags associated with keyframe times that mark the start and stop of each sequence, among other things such as the triggering of sound effects.
@@ -274,30 +274,42 @@ protected:
 
 	//--END CUSTOM CODE--//
 protected:
-	/*!
-	 * The weight of a sequence describes how it blends with other sequences at the
-	 * same priority.
-	 */
+	/*! Weight/priority of animation? */
 	float weight;
-	Ref<NiTextKeyExtraData > textKeys;
-	CycleType cycleType;
-	float frequency;
-	float phase;
-	float startTime;
-	float stopTime;
-	bool playBackwards;
-	/*! The owner of this sequence. */
-	NiControllerManager * manager;
 	/*!
-	 * The name of the NiAVObject serving as the accumulation root. This is where all
-	 * accumulated translations, scales, and rotations are applied.
+	 * Link to NiTextKeyExtraData. Replaces the other Text Keys field in versions
+	 * 10.1.0.106 and up.
 	 */
-	IndexString accumRootName;
-	AccumFlags accumFlags;
+	Ref<NiTextKeyExtraData > textKeys;
+	/*! Anim cycle type? Is part of "Flags" in other objects? */
+	CycleType cycleType;
+	/*! Unknown. */
+	unsigned int unknownInt0;
+	/*! The animation frequency. */
+	float frequency;
+	/*! The controller sequence start time? */
+	float startTime;
+	/*! Unknown. */
+	float unknownFloat2;
+	/*! The controller sequence stop time? */
+	float stopTime;
+	/*! Unknown. */
+	byte unknownByte;
+	/*! Refers to NiControllerManager which references this object, if any. */
+	NiControllerManager * manager;
+	/*! Name of target node Controller acts on. */
+	IndexString targetName;
+	/*! Refers to NiStringPalette. */
 	Ref<NiStringPalette > stringPalette;
+	/*! Unknown */
 	Ref<BSAnimNotes > animNotes;
-	mutable unsigned short numAnimNoteArrays;
-	vector<Ref<BSAnimNotes > > animNoteArrays;
+	/*! Unknown */
+	short unknownShort1;
+	/*!
+	 * Unknown, found in some Lazeska and Krazy Rain .KFs (seems to be 64 when
+	 * present).
+	 */
+	unsigned int unknownInt3;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -314,5 +326,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -27,7 +27,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiControllerSequence::TYPE("NiControllerSequence", &NiSequence::TYPE );
 
-NiControllerSequence::NiControllerSequence() : weight(1.0f), textKeys(NULL), cycleType((CycleType)0), frequency(1.0f), phase(0.0f), startTime(3.402823466e+38f), stopTime(-3.402823466e+38f), playBackwards(false), manager(NULL), accumFlags((AccumFlags)ACCUM_X_FRONT), stringPalette(NULL), animNotes(NULL), numAnimNoteArrays((unsigned short)0) {
+NiControllerSequence::NiControllerSequence() : weight(1.0f), textKeys(NULL), cycleType((CycleType)0), unknownInt0((unsigned int)0), frequency(0.0f), startTime(0.0f), unknownFloat2(0.0f), stopTime(0.0f), unknownByte((byte)0), manager(NULL), stringPalette(NULL), animNotes(NULL), unknownShort1((short)0), unknownInt3((unsigned int)64) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -56,41 +56,41 @@ void NiControllerSequence::Read( istream& in, list<unsigned int> & link_stack, c
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 		NifStream( cycleType, in, info );
-		NifStream( frequency, in, info );
 	};
-	if ( ( info.version >= 0x0A01006A ) && ( info.version <= 0x0A040001 ) ) {
-		NifStream( phase, in, info );
+	if ( ( info.version >= 0x0A01006A ) && ( info.version <= 0x0A01006A ) ) {
+		NifStream( unknownInt0, in, info );
 	};
 	if ( info.version >= 0x0A01006A ) {
+		NifStream( frequency, in, info );
 		NifStream( startTime, in, info );
+	};
+	if ( ( info.version >= 0x0A020000 ) && ( info.version <= 0x0A040001 ) ) {
+		NifStream( unknownFloat2, in, info );
+	};
+	if ( info.version >= 0x0A01006A ) {
 		NifStream( stopTime, in, info );
 	};
 	if ( ( info.version >= 0x0A01006A ) && ( info.version <= 0x0A01006A ) ) {
-		NifStream( playBackwards, in, info );
+		NifStream( unknownByte, in, info );
 	};
 	if ( info.version >= 0x0A01006A ) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
-		NifStream( accumRootName, in, info );
+		NifStream( targetName, in, info );
 	};
-	if ( info.version >= 0x14030008 ) {
-		NifStream( accumFlags, in, info );
-	};
-	if ( ( info.version >= 0x0A010071 ) && ( info.version <= 0x14010000 ) ) {
+	if ( ( info.version >= 0x0A020000 ) && ( info.version <= 0x14000005 ) ) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	if ( ( info.version >= 0x14020007 ) && ( ((info.userVersion2 >= 24) && (info.userVersion2 <= 28)) ) ) {
+	if ( ( info.version >= 0x14020007 ) && ( ((info.userVersion >= 11) && ((info.userVersion2 >= 24) && (info.userVersion2 <= 28))) ) ) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 28) ) ) {
-		NifStream( numAnimNoteArrays, in, info );
-		animNoteArrays.resize(numAnimNoteArrays);
-		for (unsigned int i2 = 0; i2 < animNoteArrays.size(); i2++) {
-			NifStream( block_num, in, info );
-			link_stack.push_back( block_num );
-		};
+	if ( ( info.version >= 0x14020007 ) && ( ((info.userVersion >= 11) && (info.userVersion2 > 28)) ) ) {
+		NifStream( unknownShort1, in, info );
+	};
+	if ( info.version >= 0x14030009 ) {
+		NifStream( unknownInt3, in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -102,41 +102,106 @@ void NiControllerSequence::Write( ostream& out, const map<NiObjectRef,unsigned i
 	//--END CUSTOM CODE--//
 
 	NiSequence::Write( out, link_map, missing_link_stack, info );
-	numAnimNoteArrays = (unsigned short)(animNoteArrays.size());
 	if ( info.version >= 0x0A01006A ) {
 		NifStream( weight, out, info );
-		WriteRef( StaticCast<NiObject>(textKeys), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*textKeys), out );
+		} else {
+			if ( textKeys != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(textKeys) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( textKeys );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 		NifStream( cycleType, out, info );
-		NifStream( frequency, out, info );
 	};
-	if ( ( info.version >= 0x0A01006A ) && ( info.version <= 0x0A040001 ) ) {
-		NifStream( phase, out, info );
+	if ( ( info.version >= 0x0A01006A ) && ( info.version <= 0x0A01006A ) ) {
+		NifStream( unknownInt0, out, info );
 	};
 	if ( info.version >= 0x0A01006A ) {
+		NifStream( frequency, out, info );
 		NifStream( startTime, out, info );
+	};
+	if ( ( info.version >= 0x0A020000 ) && ( info.version <= 0x0A040001 ) ) {
+		NifStream( unknownFloat2, out, info );
+	};
+	if ( info.version >= 0x0A01006A ) {
 		NifStream( stopTime, out, info );
 	};
 	if ( ( info.version >= 0x0A01006A ) && ( info.version <= 0x0A01006A ) ) {
-		NifStream( playBackwards, out, info );
+		NifStream( unknownByte, out, info );
 	};
 	if ( info.version >= 0x0A01006A ) {
-		WriteRef( StaticCast<NiObject>(manager), out, info, link_map, missing_link_stack );
-		NifStream( accumRootName, out, info );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*manager), out );
+		} else {
+			if ( manager != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(manager) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( manager );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
+		NifStream( targetName, out, info );
 	};
-	if ( info.version >= 0x14030008 ) {
-		NifStream( accumFlags, out, info );
+	if ( ( info.version >= 0x0A020000 ) && ( info.version <= 0x14000005 ) ) {
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*stringPalette), out );
+		} else {
+			if ( stringPalette != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(stringPalette) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( stringPalette );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
-	if ( ( info.version >= 0x0A010071 ) && ( info.version <= 0x14010000 ) ) {
-		WriteRef( StaticCast<NiObject>(stringPalette), out, info, link_map, missing_link_stack );
+	if ( ( info.version >= 0x14020007 ) && ( ((info.userVersion >= 11) && ((info.userVersion2 >= 24) && (info.userVersion2 <= 28))) ) ) {
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*animNotes), out );
+		} else {
+			if ( animNotes != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(animNotes) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( animNotes );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
-	if ( ( info.version >= 0x14020007 ) && ( ((info.userVersion2 >= 24) && (info.userVersion2 <= 28)) ) ) {
-		WriteRef( StaticCast<NiObject>(animNotes), out, info, link_map, missing_link_stack );
+	if ( ( info.version >= 0x14020007 ) && ( ((info.userVersion >= 11) && (info.userVersion2 > 28)) ) ) {
+		NifStream( unknownShort1, out, info );
 	};
-	if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 28) ) ) {
-		NifStream( numAnimNoteArrays, out, info );
-		for (unsigned int i2 = 0; i2 < animNoteArrays.size(); i2++) {
-			WriteRef( StaticCast<NiObject>(animNoteArrays[i2]), out, info, link_map, missing_link_stack );
-		};
+	if ( info.version >= 0x14030009 ) {
+		NifStream( unknownInt3, out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -148,35 +213,22 @@ std::string NiControllerSequence::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	unsigned int array_output_count = 0;
 	out << NiSequence::asString();
-	numAnimNoteArrays = (unsigned short)(animNoteArrays.size());
 	out << "  Weight:  " << weight << endl;
 	out << "  Text Keys:  " << textKeys << endl;
 	out << "  Cycle Type:  " << cycleType << endl;
+	out << "  Unknown Int 0:  " << unknownInt0 << endl;
 	out << "  Frequency:  " << frequency << endl;
-	out << "  Phase:  " << phase << endl;
 	out << "  Start Time:  " << startTime << endl;
+	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
 	out << "  Stop Time:  " << stopTime << endl;
-	out << "  Play Backwards:  " << playBackwards << endl;
+	out << "  Unknown Byte:  " << unknownByte << endl;
 	out << "  Manager:  " << manager << endl;
-	out << "  Accum Root Name:  " << accumRootName << endl;
-	out << "  Accum Flags:  " << accumFlags << endl;
+	out << "  Target Name:  " << targetName << endl;
 	out << "  String Palette:  " << stringPalette << endl;
 	out << "  Anim Notes:  " << animNotes << endl;
-	out << "  Num Anim Note Arrays:  " << numAnimNoteArrays << endl;
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < animNoteArrays.size(); i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
-		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Anim Note Arrays[" << i1 << "]:  " << animNoteArrays[i1] << endl;
-		array_output_count++;
-	};
+	out << "  Unknown Short 1:  " << unknownShort1 << endl;
+	out << "  Unknown Int 3:  " << unknownInt3 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -192,16 +244,11 @@ void NiControllerSequence::FixLinks( const map<unsigned int,NiObjectRef> & objec
 		textKeys = FixLink<NiTextKeyExtraData>( objects, link_stack, missing_link_stack, info );
 		manager = FixLink<NiControllerManager>( objects, link_stack, missing_link_stack, info );
 	};
-	if ( ( info.version >= 0x0A010071 ) && ( info.version <= 0x14010000 ) ) {
+	if ( ( info.version >= 0x0A020000 ) && ( info.version <= 0x14000005 ) ) {
 		stringPalette = FixLink<NiStringPalette>( objects, link_stack, missing_link_stack, info );
 	};
-	if ( ( info.version >= 0x14020007 ) && ( ((info.userVersion2 >= 24) && (info.userVersion2 <= 28)) ) ) {
+	if ( ( info.version >= 0x14020007 ) && ( ((info.userVersion >= 11) && ((info.userVersion2 >= 24) && (info.userVersion2 <= 28))) ) ) {
 		animNotes = FixLink<BSAnimNotes>( objects, link_stack, missing_link_stack, info );
-	};
-	if ( ( info.version >= 0x14020007 ) && ( (info.userVersion2 > 28) ) ) {
-		for (unsigned int i2 = 0; i2 < animNoteArrays.size(); i2++) {
-			animNoteArrays[i2] = FixLink<BSAnimNotes>( objects, link_stack, missing_link_stack, info );
-		};
 	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
@@ -217,10 +264,6 @@ std::list<NiObjectRef> NiControllerSequence::GetRefs() const {
 		refs.push_back(StaticCast<NiObject>(stringPalette));
 	if ( animNotes != NULL )
 		refs.push_back(StaticCast<NiObject>(animNotes));
-	for (unsigned int i1 = 0; i1 < animNoteArrays.size(); i1++) {
-		if ( animNoteArrays[i1] != NULL )
-			refs.push_back(StaticCast<NiObject>(animNoteArrays[i1]));
-	};
 	return refs;
 }
 
@@ -229,8 +272,6 @@ std::list<NiObject *> NiControllerSequence::GetPtrs() const {
 	ptrs = NiSequence::GetPtrs();
 	if ( manager != NULL )
 		ptrs.push_back((NiObject *)(manager));
-	for (unsigned int i1 = 0; i1 < animNoteArrays.size(); i1++) {
-	};
 	return ptrs;
 }
 
@@ -246,6 +287,7 @@ void NiControllerSequence::SetParent(NiControllerManager * parent) {
 
 void NiControllerSequence::SetTextKey( NiTextKeyExtraData * txt_key ) {
 	//Set new name
+	textKeysName = txt_key->GetName();
 	textKeys = txt_key;
 }
 
@@ -259,8 +301,8 @@ void NiControllerSequence::AddController( NiTimeController * obj ) {
 	if ( target == NULL ) {
 		throw runtime_error("Controller must have a target to be added to a NiControllerSequence.");
 	}
-	//Make a new ControlledBlock and fill out necessary data
-	ControlledBlock cl;
+	//Make a new ControllerLink and fill out necessary data
+	ControllerLink cl;
 	cl.controller = obj;
 	cl.targetName = target->GetName();
 	cl.nodeName = target->GetName();
@@ -282,8 +324,8 @@ void NiControllerSequence::AddController( string const & targetName, NiTimeContr
 		throw runtime_error("Attempted to add a null controller to NiControllerSequence.");
 	}
 
-	//Make a new ControlledBlock and fill out necessary data
-	ControlledBlock cl;
+	//Make a new ControllerLink and fill out necessary data
+	ControllerLink cl;
 	cl.controller = obj;
 	cl.targetName = targetName;
 	cl.nodeName = targetName;
@@ -315,8 +357,8 @@ void NiControllerSequence::AddInterpolator( NiSingleInterpController * obj, byte
       stringPalette = new NiStringPalette;
 	}
 
-	//Make a new ControlledBlock and fill out necessary data
-	ControlledBlock cl;
+	//Make a new ControllerLink and fill out necessary data
+	ControllerLink cl;
 
 	cl.interpolator = interp;
 	cl.priority = priority;
@@ -354,8 +396,8 @@ void NiControllerSequence::AddInterpolator( NiSingleInterpController * obj, byte
 
 
 
-	//Make a new ControlledBlock and fill out necessary data
-	ControlledBlock cl;
+	//Make a new ControllerLink and fill out necessary data
+	ControllerLink cl;
 
 	NiPropertyRef prop = DynamicCast<NiProperty>(target);
 
@@ -403,7 +445,7 @@ void NiControllerSequence::AddGenericInterpolator( NiInterpolator * interpolator
 	}
 
 	//Make a new ControllerLink and fill out necessary data
-	ControlledBlock cl;
+	ControllerLink cl;
 
 	NiPropertyRef prop = DynamicCast<NiProperty>(target);
 
@@ -447,11 +489,11 @@ void NiControllerSequence::ClearControllerData() {
 	controlledBlocks.clear();
 }
 
-vector<ControlledBlock> NiControllerSequence::GetControllerData() const {
+vector<ControllerLink> NiControllerSequence::GetControllerData() const {
 	return controlledBlocks;
 }
 
-void NiControllerSequence::SetControllerData(const vector<ControlledBlock>& value) {
+void NiControllerSequence::SetControllerData(const vector<ControllerLink>& value) {
 	if ( value.size() != controlledBlocks.size() ) 
 		throw runtime_error("The SetControllerData requires the ControllerLink array size to match the existing array.");
 	controlledBlocks = value;

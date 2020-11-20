@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiAlphaProperty::TYPE("NiAlphaProperty", &NiProperty::TYPE );
 
-NiAlphaProperty::NiAlphaProperty() : flags((unsigned short)4844), threshold((byte)128), unknownShort1((unsigned short)0), unknownInt2((unsigned int)0) {
+NiAlphaProperty::NiAlphaProperty() : flags((unsigned short)237), threshold((byte)0), unknownShort1((unsigned short)0), unknownInt2((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }

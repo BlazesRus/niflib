@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,33 +21,36 @@ class NiNode;
 class NiPSysBombModifier;
 typedef Ref<NiPSysBombModifier> NiPSysBombModifierRef;
 
-/*! Particle modifier that applies an explosive force to particles. */
+/*!
+ * Particle modifier that uses a NiNode to use as a "Bomb Object" to alter the path
+ * of particles.
+ */
 class NiPSysBombModifier : public NiPSysModifier {
 public:
 	/*! Constructor */
 	NIFLIB_API NiPSysBombModifier();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiPSysBombModifier();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -57,15 +60,17 @@ public:
 	//--BEGIN MISC CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 protected:
-	/*! The object whose position and orientation are the basis of the force. */
+	/*! Link to a NiNode for bomb to function. */
 	NiNode * bombObject;
-	/*! The local direction of the force. */
+	/*! Orientation of bomb object. */
 	Vector3 bombAxis;
-	/*! How the bomb force will decrease with distance. */
+	/*! Falloff rate of the bomb object. */
 	float decay;
-	/*! The acceleration the bomb will apply to particles. */
+	/*! DeltaV /  Strength? */
 	float deltaV;
+	/*! Decay type */
 	DecayType decayType;
+	/*! Shape/symmetry of the bomb object. */
 	SymmetryType symmetryType;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -83,5 +88,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

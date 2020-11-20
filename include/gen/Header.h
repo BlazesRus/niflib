@@ -1,9 +1,9 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
 
-// To change this file, alter the gen_niflib.py script.
+//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
 
 #ifndef _HEADER_H_
 #define _HEADER_H_
@@ -13,7 +13,6 @@ All rights reserved.  Please see niflib.h for license. */
 
 // Include structures
 #include "ExportInfo.h"
-#include "ByteArray.h"
 namespace Niflib {
 
 
@@ -33,7 +32,8 @@ struct Header {
 	 * a newline character (0x0A).
 	 */
 	HeaderString headerString;
-	Niflib::NifArray<3,LineString > copyright;
+	/*! Unknown. */
+	Niflib::array<3,LineString > copyright;
 	/*!
 	 * The NIF version, in hexadecimal notation: 0x04000002, 0x0401000C, 0x04020002,
 	 * 0x04020100, 0x04020200, 0x0A000100, 0x0A010000, 0x0A020000, 0x14000004, ...
@@ -45,10 +45,15 @@ struct Header {
 	unsigned int userVersion;
 	/*! Number of file objects. */
 	mutable unsigned int numBlocks;
+	/*!
+	 * This also appears to be the extra user version number and must be set in some
+	 * circumstances. Probably used by Bethesda to denote the Havok version.
+	 */
 	unsigned int userVersion2;
+	/*! Unknown. Possibly User Version 2? */
+	unsigned int unknownInt3;
+	/*! Unknown. */
 	ExportInfo exportInfo;
-	ShortString maxFilepath;
-	ByteArray metadata;
 	/*! Number of object types in this NIF file. */
 	mutable unsigned short numBlockTypes;
 	/*! List of all object types used in this NIF file. */
@@ -67,8 +72,8 @@ struct Header {
 	unsigned int maxStringLength;
 	/*! Strings. */
 	vector<string > strings;
-	mutable unsigned int numGroups;
-	vector<unsigned int > groups;
+	/*! Unknown. */
+	unsigned int unknownInt2;
 	NIFLIB_HIDDEN NifInfo Read( istream& in );
 	NIFLIB_HIDDEN void Write( ostream& out, const NifInfo & info = NifInfo() ) const;
 	NIFLIB_HIDDEN string asString( bool verbose = false ) const;

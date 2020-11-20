@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,12 +18,11 @@ All rights reserved.  Please see niflib.h for license. */
 
 // Include structures
 #include "../Ref.h"
-#include "../gen/FormatPrefs.h"
 namespace Niflib {
 
 // Forward define of referenced NIF objects
 class NiObject;
-class NiPixelFormat;
+class ATextureRenderData;
 class NiSourceTexture;
 typedef Ref<NiSourceTexture> NiSourceTextureRef;
 
@@ -32,28 +31,28 @@ class NiSourceTexture : public NiTexture {
 public:
 	/*! Constructor */
 	NIFLIB_API NiSourceTexture();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiSourceTexture();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -139,24 +138,22 @@ protected:
 	Ref<NiObject > unknownLink;
 	/*! Unknown. Seems to be set if Pixel Data is present? */
 	byte unknownByte;
-	/*! NiPixelData or NiPersistentSrcTextureRendererData */
-	Ref<NiPixelFormat > pixelData;
+	/*! Pixel data object index. NiPixelData or NiPersistentSrcTextureRendererData */
+	Ref<ATextureRenderData > pixelData;
+	/*! Specifies the way the image will be stored. */
+	PixelLayout pixelLayout;
+	/*! Specifies whether mip maps are used. */
+	MipMapFormat useMipmaps;
 	/*!
-	 * A set of preferences for the texture format. They are a request only and the
-	 * renderer may ignore them.
+	 * Note: the NiTriShape linked to this object must have a NiAlphaProperty in its
+	 * list of properties to enable material and/or texture transparency.
 	 */
-	FormatPrefs formatPrefs;
-	/*!
-	 * If set, then the application cannot assume that any dynamic changes to the pixel
-	 * data will show in the rendered image.
-	 */
+	AlphaFormat alphaFormat;
+	/*! Is Static? */
 	byte isStatic;
-	/*!
-	 * A hint to the renderer that the texture can be loaded directly from a texture
-	 * file into a renderer-specific resource, bypassing the NiPixelData object.
-	 */
+	/*! Load direct to renderer */
 	bool directRender;
-	/*! Pixel Data is NiPersistentSrcTextureRendererData instead of NiPixelData. */
+	/*! Render data is persistant */
 	bool persistRenderData;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
@@ -174,5 +171,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

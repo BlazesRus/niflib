@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,8 +15,9 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiSkinningMeshModifier.h"
-#include "../../include/gen/NiBound.h"
-#include "../../include/gen/NiTransform.h"
+#include "../../include/gen/SkinTransform.h"
+#include "../../include/gen/SkinTransform.h"
+#include "../../include/gen/SphereBV.h"
 #include "../../include/obj/NiAVObject.h"
 using namespace Niflib;
 
@@ -68,7 +69,7 @@ void NiSkinningMeshModifier::Read( istream& in, list<unsigned int> & link_stack,
 		NifStream( boneTransforms[i1].translation, in, info );
 		NifStream( boneTransforms[i1].scale, in, info );
 	};
-	if ( ((flags & 2) != 0) ) {
+	if ( (flags & 2) ) {
 		boneBounds.resize(numBones);
 		for (unsigned int i2 = 0; i2 < boneBounds.size(); i2++) {
 			NifStream( boneBounds[i2].center, in, info );
@@ -89,20 +90,52 @@ void NiSkinningMeshModifier::Write( ostream& out, const map<NiObjectRef,unsigned
 	NiMeshModifier::Write( out, link_map, missing_link_stack, info );
 	numBones = (unsigned int)(bones.size());
 	NifStream( flags, out, info );
-	WriteRef( StaticCast<NiObject>(skeletonRoot), out, info, link_map, missing_link_stack );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*skeletonRoot), out );
+	} else {
+		if ( skeletonRoot != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(skeletonRoot) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( skeletonRoot );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 	NifStream( skeletonTransform.rotation, out, info );
 	NifStream( skeletonTransform.translation, out, info );
 	NifStream( skeletonTransform.scale, out, info );
 	NifStream( numBones, out, info );
 	for (unsigned int i1 = 0; i1 < bones.size(); i1++) {
-		WriteRef( StaticCast<NiObject>(bones[i1]), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*bones[i1]), out );
+		} else {
+			if ( bones[i1] != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(bones[i1]) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( bones[i1] );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
 	for (unsigned int i1 = 0; i1 < boneTransforms.size(); i1++) {
 		NifStream( boneTransforms[i1].rotation, out, info );
 		NifStream( boneTransforms[i1].translation, out, info );
 		NifStream( boneTransforms[i1].scale, out, info );
 	};
-	if ( ((flags & 2) != 0) ) {
+	if ( (flags & 2) ) {
 		for (unsigned int i2 = 0; i2 < boneBounds.size(); i2++) {
 			NifStream( boneBounds[i2].center, out, info );
 			NifStream( boneBounds[i2].radius, out, info );
@@ -151,7 +184,7 @@ std::string NiSkinningMeshModifier::asString( bool verbose ) const {
 		out << "    Translation:  " << boneTransforms[i1].translation << endl;
 		out << "    Scale:  " << boneTransforms[i1].scale << endl;
 	};
-	if ( ((flags & 2) != 0) ) {
+	if ( (flags & 2) ) {
 		array_output_count = 0;
 		for (unsigned int i2 = 0; i2 < boneBounds.size(); i2++) {
 			if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {

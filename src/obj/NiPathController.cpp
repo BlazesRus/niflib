@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -21,7 +21,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiPathController::TYPE("NiPathController", &NiTimeController::TYPE );
 
-NiPathController::NiPathController() : pathFlags((PathFlags)0), bankDir((int)1), maxBankAngle(0.0f), smoothing(0.0f), followAxis((short)0), pathData(NULL), percentData(NULL) {
+NiPathController::NiPathController() : unknownShort2((unsigned short)0), unknownInt1((unsigned int)0), unknownFloat2(0.0f), unknownFloat3(0.0f), unknownShort((unsigned short)0), posData(NULL), floatData(NULL) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -46,12 +46,12 @@ void NiPathController::Read( istream& in, list<unsigned int> & link_stack, const
 	unsigned int block_num;
 	NiTimeController::Read( in, link_stack, info );
 	if ( info.version >= 0x0A010000 ) {
-		NifStream( pathFlags, in, info );
+		NifStream( unknownShort2, in, info );
 	};
-	NifStream( bankDir, in, info );
-	NifStream( maxBankAngle, in, info );
-	NifStream( smoothing, in, info );
-	NifStream( followAxis, in, info );
+	NifStream( unknownInt1, in, info );
+	NifStream( unknownFloat2, in, info );
+	NifStream( unknownFloat3, in, info );
+	NifStream( unknownShort, in, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
 	NifStream( block_num, in, info );
@@ -67,14 +67,46 @@ void NiPathController::Write( ostream& out, const map<NiObjectRef,unsigned int> 
 
 	NiTimeController::Write( out, link_map, missing_link_stack, info );
 	if ( info.version >= 0x0A010000 ) {
-		NifStream( pathFlags, out, info );
+		NifStream( unknownShort2, out, info );
 	};
-	NifStream( bankDir, out, info );
-	NifStream( maxBankAngle, out, info );
-	NifStream( smoothing, out, info );
-	NifStream( followAxis, out, info );
-	WriteRef( StaticCast<NiObject>(pathData), out, info, link_map, missing_link_stack );
-	WriteRef( StaticCast<NiObject>(percentData), out, info, link_map, missing_link_stack );
+	NifStream( unknownInt1, out, info );
+	NifStream( unknownFloat2, out, info );
+	NifStream( unknownFloat3, out, info );
+	NifStream( unknownShort, out, info );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*posData), out );
+	} else {
+		if ( posData != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(posData) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( posData );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*floatData), out );
+	} else {
+		if ( floatData != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(floatData) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( floatData );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -86,13 +118,13 @@ std::string NiPathController::asString( bool verbose ) const {
 
 	stringstream out;
 	out << NiTimeController::asString();
-	out << "  Path Flags:  " << pathFlags << endl;
-	out << "  Bank Dir:  " << bankDir << endl;
-	out << "  Max Bank Angle:  " << maxBankAngle << endl;
-	out << "  Smoothing:  " << smoothing << endl;
-	out << "  Follow Axis:  " << followAxis << endl;
-	out << "  Path Data:  " << pathData << endl;
-	out << "  Percent Data:  " << percentData << endl;
+	out << "  Unknown Short 2:  " << unknownShort2 << endl;
+	out << "  Unknown Int 1:  " << unknownInt1 << endl;
+	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
+	out << "  Unknown Float 3:  " << unknownFloat3 << endl;
+	out << "  Unknown Short:  " << unknownShort << endl;
+	out << "  Pos Data:  " << posData << endl;
+	out << "  Float Data:  " << floatData << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -104,8 +136,8 @@ void NiPathController::FixLinks( const map<unsigned int,NiObjectRef> & objects, 
 	//--END CUSTOM CODE--//
 
 	NiTimeController::FixLinks( objects, link_stack, missing_link_stack, info );
-	pathData = FixLink<NiPosData>( objects, link_stack, missing_link_stack, info );
-	percentData = FixLink<NiFloatData>( objects, link_stack, missing_link_stack, info );
+	posData = FixLink<NiPosData>( objects, link_stack, missing_link_stack, info );
+	floatData = FixLink<NiFloatData>( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -114,10 +146,10 @@ void NiPathController::FixLinks( const map<unsigned int,NiObjectRef> & objects, 
 std::list<NiObjectRef> NiPathController::GetRefs() const {
 	list<Ref<NiObject> > refs;
 	refs = NiTimeController::GetRefs();
-	if ( pathData != NULL )
-		refs.push_back(StaticCast<NiObject>(pathData));
-	if ( percentData != NULL )
-		refs.push_back(StaticCast<NiObject>(percentData));
+	if ( posData != NULL )
+		refs.push_back(StaticCast<NiObject>(posData));
+	if ( floatData != NULL )
+		refs.push_back(StaticCast<NiObject>(floatData));
 	return refs;
 }
 
@@ -129,75 +161,20 @@ std::list<NiObject *> NiPathController::GetPtrs() const {
 
 //--BEGIN MISC CUSTOM CODE--//
 
-PathFlags NiPathController::GetPathFlags() const
-{
-	return pathFlags;
+Ref<NiFloatData> NiPathController::GetFloatData() const {
+	return floatData;
 }
 
-void NiPathController::SetPathFlags(PathFlags value)
-{
-	pathFlags = value;
+void NiPathController::SetFloatData( NiFloatData * n ) {
+	floatData = n;
 }
 
-float NiPathController::GetBankDir() const
-{
-	return bankDir;
+Ref<NiPosData> NiPathController::GetPosData() const {
+	return posData;
 }
 
-void NiPathController::SetBankDir(float value)
-{
-	bankDir = value;
+void NiPathController::SetPosData( NiPosData * n ) {
+	posData = n;
 }
-
-float NiPathController::GetMaxBankAngle() const
-{
-	return maxBankAngle;
-}
-
-void NiPathController::SetMaxBankAngle(float value)
-{
-	maxBankAngle = value;
-}
-
-float NiPathController::GetSmoothing() const
-{
-	return smoothing;
-}
-
-void NiPathController::SetSmoothing(float value)
-{
-	smoothing = value;
-}
-
-float NiPathController::GetFollowAxis() const
-{
-	return followAxis;
-}
-
-void NiPathController::SetFollowAxis(float value)
-{
-	followAxis = value;
-}
-
-Ref<NiPosData> NiPathController::GetPathData() const
-{
-	return pathData;
-}
-
-void NiPathController::SetPathData(const Ref<NiPosData>& value)
-{
-	pathData = value;
-}
-
-Ref<NiFloatData> NiPathController::GetPercentData() const
-{
-	return percentData;
-}
-
-void NiPathController::SetPercentData(const Ref<NiFloatData>& value)
-{
-	percentData = value;
-}
-
 
 //--END CUSTOM CODE--//

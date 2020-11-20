@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -24,28 +24,28 @@ class NiBinaryVoxelData : public NiObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiBinaryVoxelData();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiBinaryVoxelData();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -62,9 +62,9 @@ protected:
 	/*! Unknown. Is this^3 the Unknown Bytes 1 size? */
 	unsigned short unknownShort3;
 	/*! Unknown. */
-	Niflib::NifArray<7,float > unknown7Floats;
+	Niflib::array<7,float > unknown7Floats;
 	/*! Unknown. Always a multiple of 7. */
-	Niflib::NifArray< 7, Niflib::NifArray<12,byte > > unknownBytes1;
+	Niflib::array< 7, Niflib::array<12,byte > > unknownBytes1;
 	/*! Unknown. */
 	mutable unsigned int numUnknownVectors;
 	/*! Vectors on the unit sphere. */
@@ -74,7 +74,7 @@ protected:
 	/*! Unknown. */
 	vector<byte > unknownBytes2;
 	/*! Unknown. */
-	Niflib::NifArray<5,unsigned int > unknown5Ints;
+	Niflib::array<5,unsigned int > unknown5Ints;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -91,5 +91,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

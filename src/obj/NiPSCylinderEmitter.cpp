@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,9 +18,9 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type NiPSCylinderEmitter::TYPE("NiPSCylinderEmitter", &NiPSVolumeEmitter::TYPE );
+const Type NiPSCylinderEmitter::TYPE("NiPSCylinderEmitter", &NiPSSphereEmitter::TYPE );
 
-NiPSCylinderEmitter::NiPSCylinderEmitter() : emitterRadius(0.0f), emitterHeight(0.0f) {
+NiPSCylinderEmitter::NiPSCylinderEmitter() : unknown23(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -45,9 +45,8 @@ void NiPSCylinderEmitter::Read( istream& in, list<unsigned int> & link_stack, co
 
 	//--END CUSTOM CODE--//
 
-	NiPSVolumeEmitter::Read( in, link_stack, info );
-	NifStream( emitterRadius, in, info );
-	NifStream( emitterHeight, in, info );
+	NiPSSphereEmitter::Read( in, link_stack, info );
+	NifStream( unknown23, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -59,9 +58,8 @@ void NiPSCylinderEmitter::Write( ostream& out, const map<NiObjectRef,unsigned in
 
 	//--END CUSTOM CODE--//
 
-	NiPSVolumeEmitter::Write( out, link_map, missing_link_stack, info );
-	NifStream( emitterRadius, out, info );
-	NifStream( emitterHeight, out, info );
+	NiPSSphereEmitter::Write( out, link_map, missing_link_stack, info );
+	NifStream( unknown23, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -74,9 +72,8 @@ std::string NiPSCylinderEmitter::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiPSVolumeEmitter::asString();
-	out << "  Emitter Radius:  " << emitterRadius << endl;
-	out << "  Emitter Height:  " << emitterHeight << endl;
+	out << NiPSSphereEmitter::asString();
+	out << "  Unknown 23:  " << unknown23 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -89,7 +86,7 @@ void NiPSCylinderEmitter::FixLinks( const map<unsigned int,NiObjectRef> & object
 
 	//--END CUSTOM CODE--//
 
-	NiPSVolumeEmitter::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiPSSphereEmitter::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -98,13 +95,13 @@ void NiPSCylinderEmitter::FixLinks( const map<unsigned int,NiObjectRef> & object
 
 std::list<NiObjectRef> NiPSCylinderEmitter::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiPSVolumeEmitter::GetRefs();
+	refs = NiPSSphereEmitter::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> NiPSCylinderEmitter::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiPSVolumeEmitter::GetPtrs();
+	ptrs = NiPSSphereEmitter::GetPtrs();
 	return ptrs;
 }
 

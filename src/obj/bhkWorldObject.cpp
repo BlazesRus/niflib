@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,15 +14,13 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkWorldObject.h"
-#include "../../include/gen/HavokFilter.h"
-#include "../../include/gen/hkWorldObjCinfoProperty.h"
 #include "../../include/obj/bhkShape.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type bhkWorldObject::TYPE("bhkWorldObject", &bhkSerializable::TYPE );
 
-bhkWorldObject::bhkWorldObject() : shape(NULL), broadPhaseType((BroadPhaseType)1) {
+bhkWorldObject::bhkWorldObject() : shape(NULL), layer((OblivionLayer)OL_STATIC), skyrimLayer((SkyrimLayer)SKYL_STATIC), colFilter((byte)0), flagsAndPartNumber((byte) 0), unknownShort((unsigned short)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -48,27 +46,14 @@ void bhkWorldObject::Read( istream& in, list<unsigned int> & link_stack, const N
 	bhkSerializable::Read( in, link_stack, info );
 	NifStream( block_num, in, info );
 	link_stack.push_back( block_num );
-	if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
-		NifStream( havokFilter.layer_ob, in, info );
-	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
-		NifStream( havokFilter.layer_fo, in, info );
-	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
-		NifStream( havokFilter.layer_sk, in, info );
-	};
-	NifStream( havokFilter.flagsAndPartNumber, in, info );
-	NifStream( havokFilter.group, in, info );
-	for (unsigned int i1 = 0; i1 < 4; i1++) {
-		NifStream( unused[i1], in, info );
-	};
-	NifStream( broadPhaseType, in, info );
-	for (unsigned int i1 = 0; i1 < 3; i1++) {
-		NifStream( unusedBytes[i1], in, info );
-	};
-	NifStream( cinfoProperty.data, in, info );
-	NifStream( cinfoProperty.size, in, info );
-	NifStream( cinfoProperty.capacityAndFlags, in, info );
+	if ( info.version < VER_20_2_0_7) {
+	NifStream( layer, in, info );
+	NifStream( colFilter, in, info );
+	} else {
+		NifStream( skyrimLayer, in, info );
+		NifStream( flagsAndPartNumber, in, info );
+	}
+	NifStream( unknownShort, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -79,28 +64,31 @@ void bhkWorldObject::Write( ostream& out, const map<NiObjectRef,unsigned int> & 
 	//--END CUSTOM CODE--//
 
 	bhkSerializable::Write( out, link_map, missing_link_stack, info );
-	WriteRef( StaticCast<NiObject>(shape), out, info, link_map, missing_link_stack );
-	if ( ( info.version >= 0x14000004 ) && ( info.version <= 0x14000005 ) ) {
-		NifStream( havokFilter.layer_ob, out, info );
-	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 <= 34)) ) {
-		NifStream( havokFilter.layer_fo, out, info );
-	};
-	if ( ((info.version == 0x14020007) && (info.userVersion2 > 34)) ) {
-		NifStream( havokFilter.layer_sk, out, info );
-	};
-	NifStream( havokFilter.flagsAndPartNumber, out, info );
-	NifStream( havokFilter.group, out, info );
-	for (unsigned int i1 = 0; i1 < 4; i1++) {
-		NifStream( unused[i1], out, info );
-	};
-	NifStream( broadPhaseType, out, info );
-	for (unsigned int i1 = 0; i1 < 3; i1++) {
-		NifStream( unusedBytes[i1], out, info );
-	};
-	NifStream( cinfoProperty.data, out, info );
-	NifStream( cinfoProperty.size, out, info );
-	NifStream( cinfoProperty.capacityAndFlags, out, info );
+	if ( info.version < VER_3_3_0_13 ) {
+		WritePtr32( &(*shape), out );
+	} else {
+		if ( shape != NULL ) {
+			map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(shape) );
+			if (it != link_map.end()) {
+				NifStream( it->second, out, info );
+				missing_link_stack.push_back( NULL );
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( shape );
+			}
+		} else {
+			NifStream( 0xFFFFFFFF, out, info );
+			missing_link_stack.push_back( NULL );
+		}
+	}
+	if ( info.version < VER_20_2_0_7) {
+	NifStream( layer, out, info );
+	NifStream( colFilter, out, info );
+	} else {
+		NifStream( skyrimLayer, out, info );
+		NifStream( flagsAndPartNumber, out, info );
+	}
+	NifStream( unknownShort, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 	//--END CUSTOM CODE--//
@@ -111,42 +99,13 @@ std::string bhkWorldObject::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	unsigned int array_output_count = 0;
 	out << bhkSerializable::asString();
 	out << "  Shape:  " << shape << endl;
-	out << "  Layer:  " << havokFilter.layer_ob << endl;
-	out << "  Layer:  " << havokFilter.layer_fo << endl;
-	out << "  Layer:  " << havokFilter.layer_sk << endl;
-	out << "  Flags and Part Number:  " << havokFilter.flagsAndPartNumber << endl;
-	out << "  Group:  " << havokFilter.group << endl;
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < 4; i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
-		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Unused[" << i1 << "]:  " << unused[i1] << endl;
-		array_output_count++;
-	};
-	out << "  Broad Phase Type:  " << broadPhaseType << endl;
-	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < 3; i1++) {
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
-			break;
-		};
-		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
-			break;
-		};
-		out << "    Unused Bytes[" << i1 << "]:  " << unusedBytes[i1] << endl;
-		array_output_count++;
-	};
-	out << "  Data:  " << cinfoProperty.data << endl;
-	out << "  Size:  " << cinfoProperty.size << endl;
-	out << "  Capacity and Flags:  " << cinfoProperty.capacityAndFlags << endl;
+	out << "  Layer:  " << layer << endl;
+	out << "  Col Filter:  " << colFilter << endl;
+	out << "  SkyrimLayer:  " << skyrimLayer << endl;
+	out << "  Flags and PartNumber:  " << flagsAndPartNumber << endl;
+	out << "  Unknown Short:  " << unknownShort << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -188,34 +147,20 @@ void bhkWorldObject::SetShape( bhkShape * value ) {
 	shape = value;
 }
 
-HavokFilter Niflib::bhkWorldObject::GetHavokFilter() const
-{
-	return havokFilter;
+OblivionLayer bhkWorldObject::GetLayer() const {
+	return layer;
 }
 
-void Niflib::bhkWorldObject::SetHavokFilter(HavokFilter value)
-{
-	havokFilter = value;
+void bhkWorldObject::SetLayer( OblivionLayer value ) {
+	layer = value;
 }
 
-BroadPhaseType Niflib::bhkWorldObject::GetBroadPhaseType() const
-{
-	return broadPhaseType;
+SkyrimLayer bhkWorldObject::GetSkyrimLayer() const {
+	return skyrimLayer;
 }
 
-void Niflib::bhkWorldObject::SetBroadPhaseType(BroadPhaseType value)
-{
-	broadPhaseType = value;
-}
-
-hkWorldObjCinfoProperty Niflib::bhkWorldObject::GetWorldInfoProperty() const
-{
-	return cinfoProperty;
-}
-
-void Niflib::bhkWorldObject::SetWorldInfoProperty(hkWorldObjCinfoProperty value)
-{
-	cinfoProperty = value;
+void bhkWorldObject::SetSkyrimLayer( SkyrimLayer value ) {
+	skyrimLayer = value;
 }
 
 //--END CUSTOM CODE--//

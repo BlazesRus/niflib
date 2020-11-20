@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,7 +15,6 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/bhkConvexVerticesShape.h"
-#include "../../include/gen/hkWorldObjCinfoProperty.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
@@ -44,12 +43,9 @@ void bhkConvexVerticesShape::Read( istream& in, list<unsigned int> & link_stack,
 	//--END CUSTOM CODE--//
 
 	bhkConvexShape::Read( in, link_stack, info );
-	NifStream( verticesProperty.data, in, info );
-	NifStream( verticesProperty.size, in, info );
-	NifStream( verticesProperty.capacityAndFlags, in, info );
-	NifStream( normalsProperty.data, in, info );
-	NifStream( normalsProperty.size, in, info );
-	NifStream( normalsProperty.capacityAndFlags, in, info );
+	for (unsigned int i1 = 0; i1 < 6; i1++) {
+		NifStream( unknown6Floats[i1], in, info );
+	};
 	NifStream( numVertices, in, info );
 	vertices.resize(numVertices);
 	for (unsigned int i1 = 0; i1 < vertices.size(); i1++) {
@@ -72,12 +68,9 @@ void bhkConvexVerticesShape::Write( ostream& out, const map<NiObjectRef,unsigned
 	bhkConvexShape::Write( out, link_map, missing_link_stack, info );
 	numNormals = (unsigned int)(normals.size());
 	numVertices = (unsigned int)(vertices.size());
-	NifStream( verticesProperty.data, out, info );
-	NifStream( verticesProperty.size, out, info );
-	NifStream( verticesProperty.capacityAndFlags, out, info );
-	NifStream( normalsProperty.data, out, info );
-	NifStream( normalsProperty.size, out, info );
-	NifStream( normalsProperty.capacityAndFlags, out, info );
+	for (unsigned int i1 = 0; i1 < 6; i1++) {
+		NifStream( unknown6Floats[i1], out, info );
+	};
 	NifStream( numVertices, out, info );
 	for (unsigned int i1 = 0; i1 < vertices.size(); i1++) {
 		NifStream( vertices[i1], out, info );
@@ -100,12 +93,18 @@ std::string bhkConvexVerticesShape::asString( bool verbose ) const {
 	out << bhkConvexShape::asString();
 	numNormals = (unsigned int)(normals.size());
 	numVertices = (unsigned int)(vertices.size());
-	out << "  Data:  " << verticesProperty.data << endl;
-	out << "  Size:  " << verticesProperty.size << endl;
-	out << "  Capacity and Flags:  " << verticesProperty.capacityAndFlags << endl;
-	out << "  Data:  " << normalsProperty.data << endl;
-	out << "  Size:  " << normalsProperty.size << endl;
-	out << "  Capacity and Flags:  " << normalsProperty.capacityAndFlags << endl;
+	array_output_count = 0;
+	for (unsigned int i1 = 0; i1 < 6; i1++) {
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
+			break;
+		};
+		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
+			break;
+		};
+		out << "    Unknown 6 Floats[" << i1 << "]:  " << unknown6Floats[i1] << endl;
+		array_output_count++;
+	};
 	out << "  Num Vertices:  " << numVertices << endl;
 	array_output_count = 0;
 	for (unsigned int i1 = 0; i1 < vertices.size(); i1++) {

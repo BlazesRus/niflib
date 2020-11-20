@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -15,51 +15,38 @@ All rights reserved.  Please see niflib.h for license. */
 //--END CUSTOM CODE--//
 
 #include "NiObject.h"
-
-// Include structures
-#include "../gen/ControlledBlock.h"
-#include "../Ref.h"
 namespace Niflib {
 
-// Forward define of referenced NIF objects
-class NiEvaluator;
-class NiTextKeyExtraData;
 class NiSequenceData;
 typedef Ref<NiSequenceData> NiSequenceDataRef;
 
-/*!
- * Root node in Gamebryo .kf files (20.5.0.1 and up).
- *         For 20.5.0.0, "NiSequenceData" is an alias for "NiControllerSequence"
- * and this is not handled in nifxml.
- *         This was not found in any 20.5.0.0 KFs available and they instead use
- * NiControllerSequence directly.
- */
+/*!  */
 class NiSequenceData : public NiObject {
 public:
 	/*! Constructor */
 	NIFLIB_API NiSequenceData();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiSequenceData();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -69,23 +56,6 @@ public:
 	//--BEGIN MISC CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
-protected:
-	IndexString name;
-	mutable unsigned int numControlledBlocks;
-	unsigned int arrayGrowBy;
-	vector<ControlledBlock > controlledBlocks;
-	mutable unsigned int numEvaluators;
-	vector<Ref<NiEvaluator > > evaluators;
-	Ref<NiTextKeyExtraData > textKeys;
-	float duration;
-	CycleType cycleType;
-	float frequency;
-	/*!
-	 * The name of the NiAVObject serving as the accumulation root. This is where all
-	 * accumulated translations, scales, and rotations are applied.
-	 */
-	IndexString accumRootName;
-	AccumFlags accumFlags;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -103,5 +73,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

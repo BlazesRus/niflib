@@ -1,17 +1,15 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
-//-----------------------------------NOTICE----------------------------------//
-// Some of this file is automatically filled in by a Python script.  Only    //
-// add custom code in the designated areas or it will be overwritten during  //
-// the next update.                                                          //
-//-----------------------------------NOTICE----------------------------------//
+//---THIS FILE WAS AUTOMATICALLY GENERATED.  DO NOT EDIT---//
+
+//To change this file, alter the niftools/docsys/gen_niflib.py Python script.
 
 #include "../../include/gen/CapsuleBV.h"
 using namespace Niflib;
 
 //Constructor
-CapsuleBV::CapsuleBV() : extent(0.0f), radius(0.0f) {};
+CapsuleBV::CapsuleBV() : unknownFloat1(0.0f), unknownFloat2(0.0f) {};
 
 //Copy Constructor
 CapsuleBV::CapsuleBV( const CapsuleBV & src ) {
@@ -22,8 +20,8 @@ CapsuleBV::CapsuleBV( const CapsuleBV & src ) {
 CapsuleBV & CapsuleBV::operator=( const CapsuleBV & src ) {
 	this->center = src.center;
 	this->origin = src.origin;
-	this->extent = src.extent;
-	this->radius = src.radius;
+	this->unknownFloat1 = src.unknownFloat1;
+	this->unknownFloat2 = src.unknownFloat2;
 	return *this;
 };
 

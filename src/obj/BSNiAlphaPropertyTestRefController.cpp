@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -18,7 +18,7 @@ All rights reserved.  Please see niflib.h for license. */
 using namespace Niflib;
 
 //Definition of TYPE constant
-const Type BSNiAlphaPropertyTestRefController::TYPE("BSNiAlphaPropertyTestRefController", &NiFloatInterpController::TYPE );
+const Type BSNiAlphaPropertyTestRefController::TYPE("BSNiAlphaPropertyTestRefController", &NiAlphaController::TYPE );
 
 BSNiAlphaPropertyTestRefController::BSNiAlphaPropertyTestRefController() {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
@@ -45,7 +45,7 @@ void BSNiAlphaPropertyTestRefController::Read( istream& in, list<unsigned int> &
 
 	//--END CUSTOM CODE--//
 
-	NiFloatInterpController::Read( in, link_stack, info );
+	NiAlphaController::Read( in, link_stack, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -57,7 +57,7 @@ void BSNiAlphaPropertyTestRefController::Write( ostream& out, const map<NiObject
 
 	//--END CUSTOM CODE--//
 
-	NiFloatInterpController::Write( out, link_map, missing_link_stack, info );
+	NiAlphaController::Write( out, link_map, missing_link_stack, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -70,7 +70,7 @@ std::string BSNiAlphaPropertyTestRefController::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	out << NiFloatInterpController::asString();
+	out << NiAlphaController::asString();
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//
@@ -83,7 +83,7 @@ void BSNiAlphaPropertyTestRefController::FixLinks( const map<unsigned int,NiObje
 
 	//--END CUSTOM CODE--//
 
-	NiFloatInterpController::FixLinks( objects, link_stack, missing_link_stack, info );
+	NiAlphaController::FixLinks( objects, link_stack, missing_link_stack, info );
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//
 
@@ -92,13 +92,13 @@ void BSNiAlphaPropertyTestRefController::FixLinks( const map<unsigned int,NiObje
 
 std::list<NiObjectRef> BSNiAlphaPropertyTestRefController::GetRefs() const {
 	list<Ref<NiObject> > refs;
-	refs = NiFloatInterpController::GetRefs();
+	refs = NiAlphaController::GetRefs();
 	return refs;
 }
 
 std::list<NiObject *> BSNiAlphaPropertyTestRefController::GetPtrs() const {
 	list<NiObject *> ptrs;
-	ptrs = NiFloatInterpController::GetPtrs();
+	ptrs = NiAlphaController::GetPtrs();
 	return ptrs;
 }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -20,7 +20,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiPSysAirFieldModifier::TYPE("NiPSysAirFieldModifier", &NiPSysFieldModifier::TYPE );
 
-NiPSysAirFieldModifier::NiPSysAirFieldModifier() : direction(-1.0, 0.0, 0.0), airFriction(0.0f), inheritVelocity(0.0f), inheritRotation(false), componentOnly(false), enableSpread(false), spread(0.0f) {
+NiPSysAirFieldModifier::NiPSysAirFieldModifier() : unknownFloat2(0.0f), unknownFloat3(0.0f), unknownBoolean1(false), unknownBoolean2(false), unknownBoolean3(false), unknownFloat4(0.0f) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 
 	//--END CUSTOM CODE--//
@@ -47,12 +47,12 @@ void NiPSysAirFieldModifier::Read( istream& in, list<unsigned int> & link_stack,
 
 	NiPSysFieldModifier::Read( in, link_stack, info );
 	NifStream( direction, in, info );
-	NifStream( airFriction, in, info );
-	NifStream( inheritVelocity, in, info );
-	NifStream( inheritRotation, in, info );
-	NifStream( componentOnly, in, info );
-	NifStream( enableSpread, in, info );
-	NifStream( spread, in, info );
+	NifStream( unknownFloat2, in, info );
+	NifStream( unknownFloat3, in, info );
+	NifStream( unknownBoolean1, in, info );
+	NifStream( unknownBoolean2, in, info );
+	NifStream( unknownBoolean3, in, info );
+	NifStream( unknownFloat4, in, info );
 
 	//--BEGIN POST-READ CUSTOM CODE--//
 
@@ -66,12 +66,12 @@ void NiPSysAirFieldModifier::Write( ostream& out, const map<NiObjectRef,unsigned
 
 	NiPSysFieldModifier::Write( out, link_map, missing_link_stack, info );
 	NifStream( direction, out, info );
-	NifStream( airFriction, out, info );
-	NifStream( inheritVelocity, out, info );
-	NifStream( inheritRotation, out, info );
-	NifStream( componentOnly, out, info );
-	NifStream( enableSpread, out, info );
-	NifStream( spread, out, info );
+	NifStream( unknownFloat2, out, info );
+	NifStream( unknownFloat3, out, info );
+	NifStream( unknownBoolean1, out, info );
+	NifStream( unknownBoolean2, out, info );
+	NifStream( unknownBoolean3, out, info );
+	NifStream( unknownFloat4, out, info );
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
 
@@ -86,12 +86,12 @@ std::string NiPSysAirFieldModifier::asString( bool verbose ) const {
 	stringstream out;
 	out << NiPSysFieldModifier::asString();
 	out << "  Direction:  " << direction << endl;
-	out << "  Air Friction:  " << airFriction << endl;
-	out << "  Inherit Velocity:  " << inheritVelocity << endl;
-	out << "  Inherit Rotation:  " << inheritRotation << endl;
-	out << "  Component Only:  " << componentOnly << endl;
-	out << "  Enable Spread:  " << enableSpread << endl;
-	out << "  Spread:  " << spread << endl;
+	out << "  Unknown Float 2:  " << unknownFloat2 << endl;
+	out << "  Unknown Float 3:  " << unknownFloat3 << endl;
+	out << "  Unknown Boolean 1:  " << unknownBoolean1 << endl;
+	out << "  Unknown Boolean 2:  " << unknownBoolean2 << endl;
+	out << "  Unknown Boolean 3:  " << unknownBoolean3 << endl;
+	out << "  Unknown Float 4:  " << unknownFloat4 << endl;
 	return out.str();
 
 	//--BEGIN POST-STRING CUSTOM CODE--//

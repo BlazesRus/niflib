@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -47,6 +47,8 @@ void NiDataStream::Read( istream& in, list<unsigned int> & link_stack, const Nif
 	//--END CUSTOM CODE--//
 
 	NiObject::Read( in, link_stack, info );
+	NifStream( usage, in, info );
+	NifStream( access, in, info );
 	NifStream( numBytes, in, info );
 	NifStream( cloningBehavior, in, info );
 	NifStream( numRegions, in, info );
@@ -80,6 +82,8 @@ void NiDataStream::Write( ostream& out, const map<NiObjectRef,unsigned int> & li
 	numComponents = (unsigned int)(componentFormats.size());
 	numRegions = (unsigned int)(regions.size());
 	numBytes = (unsigned int)(data.size());
+	NifStream( usage, out, info );
+	NifStream( access, out, info );
 	NifStream( numBytes, out, info );
 	NifStream( cloningBehavior, out, info );
 	NifStream( numRegions, out, info );

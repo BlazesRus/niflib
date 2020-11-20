@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,15 +14,14 @@ All rights reserved.  Please see niflib.h for license. */
 #include "../../include/ObjectRegistry.h"
 #include "../../include/NIF_IO.h"
 #include "../../include/obj/NiSourceTexture.h"
-#include "../../include/gen/FormatPrefs.h"
+#include "../../include/obj/ATextureRenderData.h"
 #include "../../include/obj/NiObject.h"
-#include "../../include/obj/NiPixelFormat.h"
 using namespace Niflib;
 
 //Definition of TYPE constant
 const Type NiSourceTexture::TYPE("NiSourceTexture", &NiTexture::TYPE );
 
-NiSourceTexture::NiSourceTexture() : useExternal((byte)1), unknownLink(NULL), unknownByte((byte)1), pixelData(NULL), isStatic((byte)1), directRender(1), persistRenderData(0) {
+NiSourceTexture::NiSourceTexture() : useExternal((byte)1), unknownLink(NULL), unknownByte((byte)1), pixelData(NULL), pixelLayout((PixelLayout)PIX_LAY_PALETTISED_4), useMipmaps((MipMapFormat)MIP_FMT_DEFAULT), alphaFormat((AlphaFormat)ALPHA_DEFAULT), isStatic((byte)1), directRender(1), persistRenderData(0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -63,21 +62,21 @@ void NiSourceTexture::Read( istream& in, list<unsigned int> & link_stack, const 
 	};
 	if ( info.version >= 0x0A010000 ) {
 		if ( (useExternal == 0) ) {
-			NifStream( (IndexString&)fileName, in, info );
+			NifStream( fileName, in, info );
 		};
 	};
 	if ( (useExternal == 0) ) {
 		NifStream( block_num, in, info );
 		link_stack.push_back( block_num );
 	};
-	NifStream( formatPrefs.pixelLayout, in, info );
-	NifStream( formatPrefs.useMipmaps, in, info );
-	NifStream( formatPrefs.alphaFormat, in, info );
+	NifStream( pixelLayout, in, info );
+	NifStream( useMipmaps, in, info );
+	NifStream( alphaFormat, in, info );
 	NifStream( isStatic, in, info );
-	if ( info.version >= 0x0A010067 ) {
+	if ( info.version >= 0x0A01006A ) {
 		NifStream( directRender, in, info );
 	};
-	if ( info.version >= 0x14020004 ) {
+	if ( info.version >= 0x14020007 ) {
 		NifStream( persistRenderData, in, info );
 	};
 
@@ -96,7 +95,23 @@ void NiSourceTexture::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	};
 	if ( info.version >= 0x0A010000 ) {
 		if ( (useExternal == 1) ) {
-			WriteRef( StaticCast<NiObject>(unknownLink), out, info, link_map, missing_link_stack );
+			if ( info.version < VER_3_3_0_13 ) {
+				WritePtr32( &(*unknownLink), out );
+			} else {
+				if ( unknownLink != NULL ) {
+					map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(unknownLink) );
+					if (it != link_map.end()) {
+						NifStream( it->second, out, info );
+						missing_link_stack.push_back( NULL );
+					} else {
+						NifStream( 0xFFFFFFFF, out, info );
+						missing_link_stack.push_back( unknownLink );
+					}
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( NULL );
+				}
+			}
 		};
 	};
 	if ( info.version <= 0x0A000100 ) {
@@ -106,20 +121,36 @@ void NiSourceTexture::Write( ostream& out, const map<NiObjectRef,unsigned int> &
 	};
 	if ( info.version >= 0x0A010000 ) {
 		if ( (useExternal == 0) ) {
-			NifStream( (IndexString&)fileName, out, info );
+			NifStream( fileName, out, info );
 		};
 	};
 	if ( (useExternal == 0) ) {
-		WriteRef( StaticCast<NiObject>(pixelData), out, info, link_map, missing_link_stack );
+		if ( info.version < VER_3_3_0_13 ) {
+			WritePtr32( &(*pixelData), out );
+		} else {
+			if ( pixelData != NULL ) {
+				map<NiObjectRef,unsigned int>::const_iterator it = link_map.find( StaticCast<NiObject>(pixelData) );
+				if (it != link_map.end()) {
+					NifStream( it->second, out, info );
+					missing_link_stack.push_back( NULL );
+				} else {
+					NifStream( 0xFFFFFFFF, out, info );
+					missing_link_stack.push_back( pixelData );
+				}
+			} else {
+				NifStream( 0xFFFFFFFF, out, info );
+				missing_link_stack.push_back( NULL );
+			}
+		}
 	};
-	NifStream( formatPrefs.pixelLayout, out, info );
-	NifStream( formatPrefs.useMipmaps, out, info );
-	NifStream( formatPrefs.alphaFormat, out, info );
+	NifStream( pixelLayout, out, info );
+	NifStream( useMipmaps, out, info );
+	NifStream( alphaFormat, out, info );
 	NifStream( isStatic, out, info );
-	if ( info.version >= 0x0A010067 ) {
+	if ( info.version >= 0x0A01006A ) {
 		NifStream( directRender, out, info );
 	};
-	if ( info.version >= 0x14020004 ) {
+	if ( info.version >= 0x14020007 ) {
 		NifStream( persistRenderData, out, info );
 	};
 
@@ -132,7 +163,6 @@ std::string NiSourceTexture::asString( bool verbose ) const {
 	//--END CUSTOM CODE--//
 
 	stringstream out;
-	unsigned int array_output_count = 0;
 	out << NiTexture::asString();
 	out << "  Use External:  " << useExternal << endl;
 	if ( (useExternal == 1) ) {
@@ -143,9 +173,9 @@ std::string NiSourceTexture::asString( bool verbose ) const {
 		out << "    Unknown Byte:  " << unknownByte << endl;
 		out << "    Pixel Data:  " << pixelData << endl;
 	};
-	out << "  Pixel Layout:  " << formatPrefs.pixelLayout << endl;
-	out << "  Use Mipmaps:  " << formatPrefs.useMipmaps << endl;
-	out << "  Alpha Format:  " << formatPrefs.alphaFormat << endl;
+	out << "  Pixel Layout:  " << pixelLayout << endl;
+	out << "  Use Mipmaps:  " << useMipmaps << endl;
+	out << "  Alpha Format:  " << alphaFormat << endl;
 	out << "  Is Static:  " << isStatic << endl;
 	out << "  Direct Render:  " << directRender << endl;
 	out << "  Persist Render Data:  " << persistRenderData << endl;
@@ -166,7 +196,7 @@ void NiSourceTexture::FixLinks( const map<unsigned int,NiObjectRef> & objects, l
 		};
 	};
 	if ( (useExternal == 0) ) {
-		pixelData = FixLink<NiPixelFormat>( objects, link_stack, missing_link_stack, info );
+		pixelData = FixLink<ATextureRenderData>( objects, link_stack, missing_link_stack, info );
 	};
 
 	//--BEGIN POST-FIXLINKS CUSTOM CODE--//

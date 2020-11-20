@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -19,7 +19,7 @@ using namespace Niflib;
 //Definition of TYPE constant
 const Type NiBSplineData::TYPE("NiBSplineData", &NiObject::TYPE );
 
-NiBSplineData::NiBSplineData() : numFloatControlPoints((unsigned int)0), numCompactControlPoints((unsigned int)0) {
+NiBSplineData::NiBSplineData() : numFloatControlPoints((unsigned int)0), numShortControlPoints((unsigned int)0) {
 	//--BEGIN CONSTRUCTOR CUSTOM CODE--//
 	//--END CUSTOM CODE--//
 }
@@ -47,10 +47,10 @@ void NiBSplineData::Read( istream& in, list<unsigned int> & link_stack, const Ni
 	for (unsigned int i1 = 0; i1 < floatControlPoints.size(); i1++) {
 		NifStream( floatControlPoints[i1], in, info );
 	};
-	NifStream( numCompactControlPoints, in, info );
-	compactControlPoints.resize(numCompactControlPoints);
-	for (unsigned int i1 = 0; i1 < compactControlPoints.size(); i1++) {
-		NifStream( compactControlPoints[i1], in, info );
+	NifStream( numShortControlPoints, in, info );
+	shortControlPoints.resize(numShortControlPoints);
+	for (unsigned int i1 = 0; i1 < shortControlPoints.size(); i1++) {
+		NifStream( shortControlPoints[i1], in, info );
 	};
 
 	//--BEGIN POST-READ CUSTOM CODE--//
@@ -62,15 +62,15 @@ void NiBSplineData::Write( ostream& out, const map<NiObjectRef,unsigned int> & l
 	//--END CUSTOM CODE--//
 
 	NiObject::Write( out, link_map, missing_link_stack, info );
-	numCompactControlPoints = (unsigned int)(compactControlPoints.size());
+	numShortControlPoints = (unsigned int)(shortControlPoints.size());
 	numFloatControlPoints = (unsigned int)(floatControlPoints.size());
 	NifStream( numFloatControlPoints, out, info );
 	for (unsigned int i1 = 0; i1 < floatControlPoints.size(); i1++) {
 		NifStream( floatControlPoints[i1], out, info );
 	};
-	NifStream( numCompactControlPoints, out, info );
-	for (unsigned int i1 = 0; i1 < compactControlPoints.size(); i1++) {
-		NifStream( compactControlPoints[i1], out, info );
+	NifStream( numShortControlPoints, out, info );
+	for (unsigned int i1 = 0; i1 < shortControlPoints.size(); i1++) {
+		NifStream( shortControlPoints[i1], out, info );
 	};
 
 	//--BEGIN POST-WRITE CUSTOM CODE--//
@@ -84,7 +84,7 @@ std::string NiBSplineData::asString( bool verbose ) const {
 	stringstream out;
 	unsigned int array_output_count = 0;
 	out << NiObject::asString();
-	numCompactControlPoints = (unsigned int)(compactControlPoints.size());
+	numShortControlPoints = (unsigned int)(shortControlPoints.size());
 	numFloatControlPoints = (unsigned int)(floatControlPoints.size());
 	out << "  Num Float Control Points:  " << numFloatControlPoints << endl;
 	array_output_count = 0;
@@ -99,9 +99,9 @@ std::string NiBSplineData::asString( bool verbose ) const {
 		out << "    Float Control Points[" << i1 << "]:  " << floatControlPoints[i1] << endl;
 		array_output_count++;
 	};
-	out << "  Num Compact Control Points:  " << numCompactControlPoints << endl;
+	out << "  Num Short Control Points:  " << numShortControlPoints << endl;
 	array_output_count = 0;
-	for (unsigned int i1 = 0; i1 < compactControlPoints.size(); i1++) {
+	for (unsigned int i1 = 0; i1 < shortControlPoints.size(); i1++) {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			out << "<Data Truncated. Use verbose mode to see complete listing.>" << endl;
 			break;
@@ -109,7 +109,7 @@ std::string NiBSplineData::asString( bool verbose ) const {
 		if ( !verbose && ( array_output_count > MAXARRAYDUMP ) ) {
 			break;
 		};
-		out << "    Compact Control Points[" << i1 << "]:  " << compactControlPoints[i1] << endl;
+		out << "    Short Control Points[" << i1 << "]:  " << shortControlPoints[i1] << endl;
 		array_output_count++;
 	};
 	return out.str();
@@ -166,7 +166,7 @@ void NiBSplineData::AppendFloatControlPoints( vector<float> value )
 	}
 }
 
-unsigned int NiBSplineData::GetNumFloatControlPoints()
+int NiBSplineData::GetNumFloatControlPoints()
 {
 	return this->numFloatControlPoints;
 }
@@ -182,40 +182,43 @@ vector<float> NiBSplineData::GetFloatControlPointRange(int offset, int count) co
 	return vector<float>(srcbeg, srcend);
 }
 
-vector<short > NiBSplineData::GetCompactControlPoints() const 
+vector<short > NiBSplineData::GetShortControlPoints() const 
 {
-	return compactControlPoints;
+	return shortControlPoints;
 }
 
-void NiBSplineData::SetCompactControlPoints( vector<short> value )
+void NiBSplineData::SetShortControlPoints( vector<short> value )
 {
-	this->compactControlPoints.clear();
-	this->numCompactControlPoints = value.size();
+	this->shortControlPoints.clear();
+	this->numShortControlPoints = value.size();
 
 	for(unsigned int i = 0; i < value.size(); i++) {
-		this->compactControlPoints.push_back(value[i]);
+		this->shortControlPoints.push_back(value[i]);
 	}
 }
 
-void NiBSplineData::AppendNumCompactControlPoints( vector<unsigned int> value )
+void NiBSplineData::AppendShortControlPoints( vector<short> value )
 {
-	this->numCompactControlPoints += value.size();
+	this->numShortControlPoints += value.size();
 
 	for(unsigned int i = 0; i < value.size(); i++) {
-		this->compactControlPoints.push_back(value[i]);
+		this->shortControlPoints.push_back(value[i]);
 	}
 }
 
-unsigned int NiBSplineData::GetNumCompactControlPoints()
+
+int NiBSplineData::GetNumShortControlPoints()
 {
-	return this->numCompactControlPoints;
+	return this->numShortControlPoints;
 }
 
-vector<short > NiBSplineData::GetCompactControlPointRange(int offset, int count) const
+
+vector<short > NiBSplineData::GetShortControlPointRange(int offset, int count) const
 {
-   if (offset < 0 || count < 0 || ((offset + count) > compactControlPoints.size()))
+   vector<short> value;
+   if (offset < 0 || count < 0 || ((offset + count) > int(shortControlPoints.size())))
       throw runtime_error("Invalid offset or count.");
-   vector<short>::const_iterator srcbeg = compactControlPoints.begin(), srcend = compactControlPoints.begin(); 
+   vector<short>::const_iterator srcbeg = shortControlPoints.begin(), srcend = shortControlPoints.begin(); 
    std::advance(srcbeg, offset);
    std::advance(srcend, offset + count);
    return vector<short>(srcbeg, srcend);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -25,33 +25,33 @@ class NiFloatData;
 class NiPathInterpolator;
 typedef Ref<NiPathInterpolator> NiPathInterpolatorRef;
 
-/*! Used to make an object follow a predefined spline path. */
+/*! Unknown interpolator. */
 class NiPathInterpolator : public NiKeyBasedInterpolator {
 public:
 	/*! Constructor */
 	NIFLIB_API NiPathInterpolator();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiPathInterpolator();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -60,39 +60,59 @@ public:
 
 	//--BEGIN MISC CUSTOM CODE--//
 
-	NIFLIB_API PathFlags GetPathFlags() const;
-	NIFLIB_API void SetPathFlags(PathFlags value);
+	/*!
+	 * Gets the NiPosData object that this interpolator links to, if any.
+	 * \return The NiPosData object that this interpolator links to, or NULL if one is not linked.
+	 */
+	NIFLIB_API Ref<NiPosData> GetPosData() const;
 
-	NIFLIB_API float GetBankDir() const;
-	NIFLIB_API void SetBankDir(float value);
+	/*!
+	 * Sets the NiPosData object that this interpolator links to, if any.
+	 * \return The NiPosData object that this interpolator should now link to, or NULL to clear the current one.
+	 */
+	NIFLIB_API void SetPosData( NiPosData * value );
 
-	NIFLIB_API float GetMaxBankAngle() const;
-	NIFLIB_API void SetMaxBankAngle(float value);
+	/*!
+	 * Gets the NiFloatData object that this interpolator links to, if any.
+	 * \return The NiFloatData object that this interpolator links to, or NULL if one is not linked.
+	 */
+	NIFLIB_API Ref<NiFloatData > GetFloatData() const;
 
-	NIFLIB_API float GetSmoothing() const;
-	NIFLIB_API void SetSmoothing(float value);
+	/*!
+	 * Sets the NiFloatData object that this interpolator links to, if any.
+	 * \return The NiFloatData object that this interpolator should now link to, or NULL to clear the current one.
+	 */
+	NIFLIB_API void SetFloatData( NiFloatData * value );
 
-	NIFLIB_API float GetFollowAxis() const;
-	NIFLIB_API void SetFollowAxis(float value);
+	/*!
+	 * This function will adjust the times in all the keys stored in the data
+	 * objects referenced by this interpolator such that phase will equal 0 and
+	 * frequency will equal one.  In other words, it will cause the key times
+	 * to be in seconds starting from zero.
+	 * \param[in] phase The phase shift to remove from any keys stored in this
+	 * object.
+	 * \param[in] frequency The frequency to normalize to 1.0 for any keys
+	 * stored in this object
+	 */
+	NIFLIB_API virtual void NormalizeKeys( float phase, float frequency );
 
-	NIFLIB_API Ref<NiPosData > GetPathData() const;
-	NIFLIB_API void SetPathData(const Ref<NiPosData >& value);
-
-	NIFLIB_API Ref<NiFloatData > GetPercentData() const;
-	NIFLIB_API void SetPercentData(const Ref<NiFloatData >& value);
 
 	//--END CUSTOM CODE--//
 protected:
-	PathFlags flags;
-	/*! -1 = Negative, 1 = Positive */
-	int bankDir;
-	/*! Max angle in radians. */
-	float maxBankAngle;
-	float smoothing;
-	/*! 0, 1, or 2 representing X, Y, or Z. */
-	short followAxis;
-	Ref<NiPosData > pathData;
-	Ref<NiFloatData > percentData;
+	/*! Unknown. */
+	unsigned short unknownShort;
+	/*! Unknown. */
+	unsigned int unknownInt;
+	/*! Unknown. */
+	float unknownFloat1;
+	/*! Unknown. */
+	float unknownFloat2;
+	/*! Unknown. Zero. */
+	unsigned short unknownShort2;
+	/*! Links to NiPosData. */
+	Ref<NiPosData > posData;
+	/*! Links to NiFloatData. */
+	Ref<NiFloatData > floatData;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -109,5 +129,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

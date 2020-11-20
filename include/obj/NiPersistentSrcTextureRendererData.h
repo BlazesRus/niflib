@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -14,44 +14,39 @@ All rights reserved.  Please see niflib.h for license. */
 
 //--END CUSTOM CODE--//
 
-#include "NiPixelFormat.h"
-
-// Include structures
-#include "../Ref.h"
-#include "../gen/MipMap.h"
+#include "ATextureRenderData.h"
 namespace Niflib {
 
-// Forward define of referenced NIF objects
-class NiPalette;
 class NiPersistentSrcTextureRendererData;
 typedef Ref<NiPersistentSrcTextureRendererData> NiPersistentSrcTextureRendererDataRef;
 
-class NiPersistentSrcTextureRendererData : public NiPixelFormat {
+/*!  */
+class NiPersistentSrcTextureRendererData : public ATextureRenderData {
 public:
 	/*! Constructor */
 	NIFLIB_API NiPersistentSrcTextureRendererData();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiPersistentSrcTextureRendererData();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -62,16 +57,19 @@ public:
 
 	//--END CUSTOM CODE--//
 protected:
-	Ref<NiPalette > palette;
-	mutable unsigned int numMipmaps;
-	unsigned int bytesPerPixel;
-	vector<MipMap > mipmaps;
-	unsigned int numPixels;
-	unsigned int padNumPixels;
-	unsigned int numFaces;
-	PlatformID platform;
-	RendererID renderer;
-	vector<byte > pixelData;
+	/*! Unknown */
+	mutable unsigned int numPixels;
+	/*! Unknown, same as the number of pixels? / number of blocks? */
+	unsigned int unknownInt6;
+	/*! Unknown */
+	mutable unsigned int numFaces;
+	/*! Unknown */
+	unsigned int unknownInt7;
+	/*!
+	 * Raw pixel data holding the mipmaps.  Mipmap zero is the full-size texture and
+	 * they get smaller by half as the number increases.
+	 */
+	vector< vector<byte > > pixelData;
 public:
 	/*! NIFLIB_HIDDEN function.  For internal use only. */
 	NIFLIB_HIDDEN virtual void Read( istream& in, list<unsigned int> & link_stack, const NifInfo & info );
@@ -89,5 +87,5 @@ public:
 
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif

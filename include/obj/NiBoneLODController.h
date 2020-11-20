@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2019, NIF File Format Library and Tools
+/* Copyright (c) 2006, NIF File Format Library and Tools
 All rights reserved.  Please see niflib.h for license. */
 
 //-----------------------------------NOTICE----------------------------------//
@@ -16,8 +16,8 @@ All rights reserved.  Please see niflib.h for license. */
 #include "NiTimeController.h"
 
 // Include structures
-#include "../gen/NodeSet.h"
-#include "../gen/SkinInfoSet.h"
+#include "../gen/NodeGroup.h"
+#include "../gen/SkinShapeGroup.h"
 #include "../Ref.h"
 namespace Niflib {
 
@@ -26,37 +26,33 @@ class NiTriBasedGeom;
 class NiBoneLODController;
 typedef Ref<NiBoneLODController> NiBoneLODControllerRef;
 
-/*!
- * DEPRECATED (20.5), Replaced by NiSkinningLODController.
- *         Level of detail controller for bones.  Priority is arranged from low to
- * high.
- */
+/*! Level of detail controller for bones.  Priority is arranged from low to high. */
 class NiBoneLODController : public NiTimeController {
 public:
 	/*! Constructor */
 	NIFLIB_API NiBoneLODController();
-	
+
 	/*! Destructor */
 	NIFLIB_API virtual ~NiBoneLODController();
-	
+
 	/*!
 	 * A constant value which uniquly identifies objects of this type.
 	 */
 	NIFLIB_API static const Type TYPE;
-	
+
 	/*!
 	 * A factory function used during file reading to create an instance of this type of object.
 	 * \return A pointer to a newly allocated instance of this type of object.
 	 */
 	NIFLIB_API static NiObject * Create();
-	
+
 	/*!
 	 * Summarizes the information contained in this object in English.
 	 * \param[in] verbose Determines whether or not detailed information about large areas of data will be printed out.
 	 * \return A string containing a summary of the information within the object in English.  This is the function that Niflyze calls to generate its analysis, so the output is the same.
 	 */
 	NIFLIB_API virtual string asString( bool verbose = false ) const;
-	
+
 	/*!
 	 * Used to determine the type of a particular instance of this object.
 	 * \return The type constant for the actual type of the object.
@@ -133,17 +129,17 @@ public:
 	//--END CUSTOM CODE--//
 protected:
 	/*! Unknown. */
-	unsigned int lod;
-	/*! Number of LODs. */
-	mutable unsigned int numLods;
-	/*! Number of node arrays. */
-	unsigned int numNodeGroups;
-	/*! A list of node sets (each set a sequence of bones). */
-	vector<NodeSet > nodeGroups;
+	unsigned int unknownInt1;
+	/*! Number of node groups. */
+	mutable unsigned int numNodeGroups;
+	/*! Number of node groups. */
+	unsigned int numNodeGroups2;
+	/*! A list of node groups (each group a sequence of bones). */
+	vector<NodeGroup > nodeGroups;
 	/*! Number of shape groups. */
 	mutable unsigned int numShapeGroups;
 	/*! List of shape groups. */
-	vector<SkinInfoSet > shapeGroups1;
+	vector<SkinShapeGroup > shapeGroups1;
 	/*! The size of the second list of shape groups. */
 	mutable unsigned int numShapeGroups2;
 	/*! Group of NiTriShape indices. */
@@ -168,5 +164,5 @@ public:
 //--BEGIN FILE FOOT CUSTOM CODE--//
 //--END CUSTOM CODE--//
 
-}
+} //End Niflib namespace
 #endif
