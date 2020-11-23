@@ -4,3 +4,6 @@
 [submodule "NifGen"]
 	path = NifGen
 	url = https://github.com/BlazesRus/NifLibGenerator
+[submodule "DocSys"]
+	path = DocSys
+	url = https://github.com/BlazesRus/nifdocsys
