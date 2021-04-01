@@ -235,8 +235,7 @@
     </ClCompile>
     <Link>
       <OutputFile>bin\niflib.dll</OutputFile>
-      <Version>
-      </Version>
+      <Version>0.7</Version>
       <ImportLibrary>lib/niflib_dll.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
